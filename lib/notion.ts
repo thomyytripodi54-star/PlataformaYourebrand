@@ -223,3 +223,91 @@ export async function mapComentario(c: any, cliente: { id: string; notionUrl: st
     notionUrl: `${cliente.notionUrl.split("#")[0]}${c.discussion_id ? `?d=${c.discussion_id.replace(/-/g, "")}` : ""}`,
   };
 }
+
+/* ---------- Calendarios de contenido ---------- */
+export type Publicacion = {
+  id: string;
+  titulo: string;
+  fecha: string | null; // YYYY-MM-DD o ISO con hora
+  estado: string | null;
+  colorEstado: string | null; // color de la opción en Notion (red, green, ...)
+  copy: string | null;
+  url: string | null; // link de Drive u otro
+  archivos: { nombre: string; url: string; imagen: boolean }[];
+  notionUrl: string;
+};
+
+async function notionPost(path: string, body: unknown) {
+  const r = await fetch(`https://api.notion.com/v1/${path}`, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${process.env.NOTION_TOKEN}`, "Notion-Version": "2025-09-03", "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+    cache: "no-store",
+  });
+  if (!r.ok) throw new Error(`Notion ${r.status}: ${await r.text()}`);
+  return r.json();
+}
+
+/** Busca todas las bases "Calendario mensual…" y las asocia al cliente que las contiene (aunque estén en subpáginas). */
+export async function mapearCalendarios(idsClientes: Set<string>): Promise<Map<string, string>> {
+  const fuentes: any[] = [];
+  let cursor: string | undefined;
+  do {
+    const j = await notionPost("search", { query: "Calendario mensual", filter: { property: "object", value: "data_source" }, page_size: 100, start_cursor: cursor });
+    fuentes.push(...j.results);
+    cursor = j.has_more ? j.next_cursor : undefined;
+  } while (cursor);
+
+  const cachePadre = new Map<string, any>();
+  const padreDe = async (p: any): Promise<any> => {
+    if (!p) return null;
+    const id = p.page_id ?? p.block_id ?? p.database_id ?? null;
+    if (!id) return null;
+    const k = `${p.type}:${id}`;
+    if (!cachePadre.has(k)) {
+      const ruta = p.type === "page_id" ? `pages/${id}` : p.type === "block_id" ? `blocks/${id}` : `databases/${id}`;
+      cachePadre.set(k, (await notionGet(ruta).catch(() => null))?.parent ?? null);
+    }
+    return cachePadre.get(k);
+  };
+
+  const resultado = new Map<string, { ds: string; editado: string }>();
+  for (const f of fuentes) {
+    const titulo = (f.title ?? []).map((t: any) => t.plain_text).join("");
+    if (!/calendario mensual/i.test(titulo) || f.in_trash || f.archived) continue;
+    let p = f.database_parent ?? (await padreDe(f.parent));
+    for (let salto = 0; p && salto < 8; salto++) {
+      const id = (p.page_id ?? p.block_id ?? "").replace(/-/g, "");
+      if (p.type === "page_id" && idsClientes.has(id)) {
+        const prev = resultado.get(id);
+        if (!prev || f.last_edited_time > prev.editado) resultado.set(id, { ds: f.id, editado: f.last_edited_time });
+        break;
+      }
+      if (p.type === "workspace") break;
+      p = await padreDe(p);
+    }
+  }
+  return new Map([...resultado].map(([k, v]) => [k, v.ds]));
+}
+
+export async function leerCalendario(dataSourceId: string): Promise<Publicacion[]> {
+  const pages = await queryDataSource(dataSourceId);
+  return pages.map((p) => {
+    const est = prop(p, "Estado");
+    const archivos = (prop(p, "Archivos multimedia")?.files ?? []).map((f: any) => {
+      const url = f.file?.url ?? f.external?.url ?? "";
+      return { nombre: f.name ?? "archivo", url, imagen: /\.(png|jpe?g|gif|webp|avif|heic)(\?|$)/i.test(f.name ?? "") || /\.(png|jpe?g|gif|webp|avif)(\?|$)/i.test(url) };
+    });
+    return {
+      id: p.id,
+      titulo: texto(prop(p, "Nombre")) ?? "Sin título",
+      fecha: prop(p, "Fecha")?.date?.start ?? null,
+      estado: est?.select?.name ?? est?.status?.name ?? null,
+      colorEstado: est?.select?.color ?? est?.status?.color ?? null,
+      copy: texto(prop(p, "Copy")),
+      url: prop(p, "Url")?.url ?? null,
+      archivos: archivos.filter((a: { url: string }) => a.url),
+      notionUrl: p.url,
+    };
+  });
+}

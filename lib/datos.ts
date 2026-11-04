@@ -5,7 +5,7 @@ import equipoLocal from "@/data/equipo.json";
 import type { Cliente } from "@/lib/clientes";
 import { ordenarCasos, type Caso, type Persona } from "@/lib/equipo";
 import { slug } from "@/lib/notion";
-import { DS, idDeUrl, listarComentarios, mapCaso, mapCliente, mapComentario, mapPersona, queryDataSource, type Comentario } from "@/lib/notion";
+import { DS, idDeUrl, leerCalendario, listarComentarios, mapCaso, mapCliente, mapComentario, mapearCalendarios, mapPersona, queryDataSource, type Comentario, type Publicacion } from "@/lib/notion";
 
 export const TAG_NOTION = "notion";
 
@@ -121,6 +121,39 @@ export async function getComentarios(): Promise<DatosComentarios> {
         : m.includes("404")
           ? "Notion no encuentra las páginas de clientes (404): conectá la integración a la página Yourebrand."
           : `Error al leer comentarios: ${m.slice(0, 160)}`,
+    };
+  }
+}
+
+/* ---------- Calendario de contenido por cliente ---------- */
+export type DatosCalendario = { publicaciones: Publicacion[]; tieneCalendario: boolean; motivo?: string };
+
+const mapaCalendarios = unstable_cache(
+  async () => {
+    const { clientes } = await getDatos();
+    const ids = new Set(clientes.map((c) => idDeUrl(c.notionUrl)).filter((x): x is string => !!x));
+    return Object.fromEntries(await mapearCalendarios(ids));
+  },
+  ["mapa-calendarios"],
+  { revalidate: 6 * 3600, tags: [TAG_NOTION, "calendarios"] },
+);
+
+const calendarioCache = unstable_cache(async (ds: string) => leerCalendario(ds), ["calendario"], { revalidate: 60, tags: [TAG_NOTION] });
+
+export async function getCalendario(notionUrl: string): Promise<DatosCalendario> {
+  if (!process.env.NOTION_TOKEN) return { publicaciones: [], tieneCalendario: false, motivo: "Falta conectar Notion (NOTION_TOKEN) para ver el calendario." };
+  try {
+    const id = idDeUrl(notionUrl);
+    const ds = id ? (await mapaCalendarios())[id] : undefined;
+    if (!ds) return { publicaciones: [], tieneCalendario: false };
+    return { publicaciones: await calendarioCache(ds), tieneCalendario: true };
+  } catch (e) {
+    console.error("[notion] No se pudo leer el calendario:", e);
+    const m = String(e instanceof Error ? e.message : e);
+    return {
+      publicaciones: [],
+      tieneCalendario: false,
+      motivo: m.includes("404") ? "La integración no tiene acceso a este calendario: conectala a la página Yourebrand en Notion." : `Error al leer el calendario: ${m.slice(0, 160)}`,
     };
   }
 }
