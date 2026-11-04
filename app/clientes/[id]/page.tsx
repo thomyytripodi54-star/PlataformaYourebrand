@@ -36,8 +36,8 @@ export default async function FichaCliente({ params }: { params: Promise<{ id: s
       <header className="mt-4 flex items-center gap-4">
         <Logo cliente={c} size={72} />
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">{c.nombre}</h1>
-          <span className="mt-1 inline-block rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-medium text-emerald-700">{c.estado}</span>
+          <h1 className="text-2xl font-black tracking-tight">{c.nombre}<span className="text-accent">.</span></h1>
+          <span className="mt-1 inline-block rounded-full bg-ink px-2 py-0.5 text-xs font-semibold text-white">{c.estado}</span>
         </div>
       </header>
 

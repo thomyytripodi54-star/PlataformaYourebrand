@@ -1,0 +1,392 @@
+[
+  {
+    "id": "thomas-tripodi",
+    "nombre": "Thomas Tripodi",
+    "rol": "Owner · CEO",
+    "area": "direccion",
+    "telefono": "+5491159311465",
+    "email": "thomyytripodi54@gmail.com",
+    "ingreso": "2026-07-02",
+    "clientes": [
+      "rafaela-belen-speaker",
+      "miramar-express",
+      "fir24"
+    ],
+    "casosAbiertos": []
+  },
+  {
+    "id": "deborah-fernandez",
+    "nombre": "Deborah Fernandez",
+    "rol": "Jefa de RRHH",
+    "area": "rrhh",
+    "telefono": "+5491130475063",
+    "email": "deborah.b.fernandez@gmail.com",
+    "ingreso": "2021-03-01",
+    "clientes": [
+      "viva-training"
+    ],
+    "casosAbiertos": []
+  },
+  {
+    "id": "marcelo-de-matos",
+    "nombre": "Marcelo De Matos",
+    "rol": "Asistente personal",
+    "area": "asistencia",
+    "telefono": "+5491166033070",
+    "email": "marcelointhemix2004@hotmail.com",
+    "ingreso": null,
+    "clientes": [],
+    "casosAbiertos": []
+  },
+  {
+    "id": "santino-tripodi",
+    "nombre": "Santino Tripodi",
+    "rol": "Desarrollador Web",
+    "area": "paid",
+    "telefono": "+5491170281022",
+    "email": "santino@yourebrand.store",
+    "ingreso": null,
+    "clientes": [],
+    "casosAbiertos": []
+  },
+  {
+    "id": "estefania-carfi",
+    "nombre": "Estefania Carfi",
+    "rol": "Community Manager Senior",
+    "area": "cms",
+    "telefono": "+5491166596336",
+    "email": "tefycarfi@gmail.com",
+    "ingreso": "2023-12-28",
+    "clientes": [
+      "gema-salud-animal",
+      "rolmer-cortinas",
+      "fir24"
+    ],
+    "casosAbiertos": [
+      {
+        "titulo": "Bajos resultados",
+        "gravedad": "Leve",
+        "cliente": "fundacion-senales",
+        "fecha": "2026-10-19",
+        "notionUrl": "https://app.notion.com/3fe029cc0dee80c7bf80d7664cb97f4b"
+      }
+    ]
+  },
+  {
+    "id": "victoria-calisaya",
+    "nombre": "Victoria Calisaya",
+    "rol": "Community Manager Senior",
+    "area": "cms",
+    "telefono": "+5491149169625",
+    "email": "victoriacalisaya@gmail.com",
+    "ingreso": "2023-11-21",
+    "clientes": [
+      "tamya-marroquineria",
+      "cuota-q",
+      "bb-estudio",
+      "aq-capital",
+      "gbs",
+      "palace-gym",
+      "stumpy-coffee"
+    ],
+    "casosAbiertos": [
+      {
+        "titulo": "Contenido malo",
+        "gravedad": "Leve",
+        "cliente": "bb-estudio",
+        "fecha": "2026-09-01",
+        "notionUrl": "https://app.notion.com/3ce029cc0dee80cd9c5bf8905c0049d3"
+      },
+      {
+        "titulo": "Nuevamente contenido malo",
+        "gravedad": "Grave",
+        "cliente": "palace-gym",
+        "fecha": "2026-10-19",
+        "notionUrl": "https://app.notion.com/3fe029cc0dee80cdbe89c174f9846565"
+      },
+      {
+        "titulo": "Errores operativos",
+        "gravedad": "Leve",
+        "cliente": "cuota-q",
+        "fecha": "2026-10-23",
+        "notionUrl": "https://app.notion.com/402029cc0dee80f192daf1b6e3a3c14e"
+      },
+      {
+        "titulo": "Atrasos",
+        "gravedad": "Grave",
+        "cliente": "tamya-marroquineria",
+        "fecha": "2026-10-29",
+        "notionUrl": "https://app.notion.com/408029cc0dee808c952ee49760f6acc8"
+      },
+      {
+        "titulo": "Poco contenido",
+        "gravedad": "Leve",
+        "cliente": "aq-capital",
+        "fecha": "2026-11-02",
+        "notionUrl": "https://app.notion.com/40c029cc0dee80c8b89af024c84b2ca7"
+      }
+    ]
+  },
+  {
+    "id": "isadora-lemos",
+    "nombre": "Isadora Lemos",
+    "rol": "Community Manager",
+    "area": "cms",
+    "telefono": "+5491136843086",
+    "email": "isadoralemosrobles@gmail.com",
+    "ingreso": "2023-12-14",
+    "clientes": [
+      "askal-perros",
+      "aeky"
+    ],
+    "casosAbiertos": []
+  },
+  {
+    "id": "julieta-calvo",
+    "nombre": "Julieta Calvo",
+    "rol": "Community Manager",
+    "area": "cms",
+    "telefono": "+5491133461420",
+    "email": "sebokjulieta@gmail.com",
+    "ingreso": "2025-12-01",
+    "clientes": [
+      "alejandra-ochoa-psicologa",
+      "bis-eventos",
+      "cafe-y-chocolate",
+      "auralux",
+      "rafaela-belen-speaker"
+    ],
+    "casosAbiertos": [
+      {
+        "titulo": "De todo",
+        "gravedad": "Leve",
+        "cliente": "rafaela-belen-speaker",
+        "fecha": "2026-10-19",
+        "notionUrl": "https://app.notion.com/3fe029cc0dee8007964dcf68b4775ab6"
+      }
+    ]
+  },
+  {
+    "id": "lara-molina-speranza",
+    "nombre": "Lara Molina Speranza",
+    "rol": "Community Manager",
+    "area": "cms",
+    "telefono": "+5491164218369",
+    "email": "laramolinasperanza@gmail.com",
+    "ingreso": "2023-09-03",
+    "clientes": [
+      "fedora-coffee",
+      "ferriol",
+      "english-now"
+    ],
+    "casosAbiertos": []
+  },
+  {
+    "id": "brisa-vallejos",
+    "nombre": "Brisa Vallejos",
+    "rol": "Community Manager",
+    "area": "cms",
+    "telefono": "+5491163516477",
+    "email": "brisasol014@gmail.com",
+    "ingreso": "2026-09-25",
+    "clientes": [
+      "miramar-express",
+      "biovelum",
+      "cupking",
+      "sanos-salud",
+      "hakuna-cafe"
+    ],
+    "casosAbiertos": []
+  },
+  {
+    "id": "camila-aurello",
+    "nombre": "Camila Aurello",
+    "rol": "Community Manager",
+    "area": "cms",
+    "telefono": "+5491151804505",
+    "email": "camila.s.aurello@gmail.com",
+    "ingreso": "2026-09-28",
+    "clientes": [
+      "flyware",
+      "pancitas-arriba"
+    ],
+    "casosAbiertos": [
+      {
+        "titulo": "Mala gestión",
+        "gravedad": "Grave",
+        "cliente": "flyware",
+        "fecha": "2026-10-21",
+        "notionUrl": "https://app.notion.com/400029cc0dee806a93c8c8b7c3ca00e0"
+      }
+    ]
+  },
+  {
+    "id": "celeste-ostinelli",
+    "nombre": "Celeste Ostinelli",
+    "rol": "Community Manager",
+    "area": "cms",
+    "telefono": "+5492215422722",
+    "email": "celesteostinellir@gmail.com",
+    "ingreso": "2026-10-14",
+    "clientes": [
+      "viva-training",
+      "riva-divani",
+      "fundacion-senales"
+    ],
+    "casosAbiertos": [
+      {
+        "titulo": "Contenido malo",
+        "gravedad": "Leve",
+        "cliente": "viva-training",
+        "fecha": "2026-10-20",
+        "notionUrl": "https://app.notion.com/3ff029cc0dee807487fef472de772c59"
+      }
+    ]
+  },
+  {
+    "id": "macarena-llaneza",
+    "nombre": "Macarena Llaneza",
+    "rol": "Community Manager",
+    "area": "cms",
+    "telefono": "+5493412686056",
+    "email": "macallaneza13@gmail.com",
+    "ingreso": "2026-10-23",
+    "clientes": [
+      "astillero-geuna",
+      "soy-pacha"
+    ],
+    "casosAbiertos": []
+  },
+  {
+    "id": "bruno-nicolas-pais",
+    "nombre": "Bruno Nicolas Pais",
+    "rol": "Publicista",
+    "area": "paid",
+    "telefono": "+5491170399744",
+    "email": "paisbruno1@gmail.com",
+    "ingreso": "2025-05-22",
+    "clientes": [
+      "gema-salud-animal",
+      "javier-urich",
+      "english-now",
+      "alejandra-ochoa-psicologa",
+      "auralux",
+      "flyware",
+      "fir24",
+      "pancitas-arriba",
+      "gorrion"
+    ],
+    "casosAbiertos": []
+  },
+  {
+    "id": "reyner-garcia-moya",
+    "nombre": "Reyner Garcia Moya",
+    "rol": "Publicista",
+    "area": "paid",
+    "telefono": "+5491125913187",
+    "email": "reynermarketing1@gmail.com",
+    "ingreso": "2026-02-23",
+    "clientes": [
+      "fundacion-senales",
+      "bb-estudio",
+      "rolmer-cortinas",
+      "gbs",
+      "palace-gym",
+      "ferriol",
+      "miramar-express",
+      "viva-training"
+    ],
+    "casosAbiertos": [
+      {
+        "titulo": "Malos resultados",
+        "gravedad": "Leve",
+        "cliente": "ferriol",
+        "fecha": "2026-10-23",
+        "notionUrl": "https://app.notion.com/402029cc0dee80c6b45ec3dac948b10f"
+      }
+    ]
+  },
+  {
+    "id": "valentin-soraggi",
+    "nombre": "Valentín Soraggi",
+    "rol": "Publicista",
+    "area": "paid",
+    "telefono": "+5491148885471",
+    "email": "valentinsoraggi8@gmail.com",
+    "ingreso": "2026-10-14",
+    "clientes": [
+      "astillero-geuna",
+      "sanos-salud",
+      "hakuna-cafe",
+      "soy-pacha"
+    ],
+    "casosAbiertos": []
+  },
+  {
+    "id": "agus-birarda",
+    "nombre": "Agus Birarda",
+    "rol": "Jefa creativa",
+    "area": "jefatura-creativa",
+    "telefono": null,
+    "email": null,
+    "ingreso": "2026-03-10",
+    "clientes": [
+      "fedora-coffee",
+      "palace-gym",
+      "gbs",
+      "auralux",
+      "miramar-express",
+      "fir24",
+      "viva-training",
+      "sanos-salud",
+      "soy-pacha"
+    ],
+    "casosAbiertos": []
+  },
+  {
+    "id": "evangelina-rost",
+    "nombre": "Evangelina Rost",
+    "rol": "Creador de Contenido",
+    "area": "ugc",
+    "telefono": "+5493585040171",
+    "email": "evangelinarost9@gmail.com",
+    "ingreso": "2025-10-09",
+    "clientes": [],
+    "casosAbiertos": []
+  },
+  {
+    "id": "marcia",
+    "nombre": "Marcia",
+    "rol": "Creador de Contenido",
+    "area": "ugc",
+    "telefono": "+5491131351809",
+    "email": null,
+    "ingreso": "2026-03-10",
+    "clientes": [],
+    "casosAbiertos": []
+  },
+  {
+    "id": "maru-gandolfo",
+    "nombre": "Maru Gandolfo",
+    "rol": "Creador de Contenido",
+    "area": "ugc",
+    "telefono": "+5491162249336",
+    "email": "Marujitagandolfo@gmail.com",
+    "ingreso": "2026-10-23",
+    "clientes": [],
+    "casosAbiertos": []
+  },
+  {
+    "id": "matias-jerez",
+    "nombre": "Matias Jerez",
+    "rol": "Editor de Video",
+    "area": "ugc",
+    "telefono": "+5491154820041",
+    "email": "matiasnjerez@gmail.com",
+    "ingreso": "2025-04-11",
+    "clientes": [
+      "gema-salud-animal"
+    ],
+    "casosAbiertos": []
+  }
+]
