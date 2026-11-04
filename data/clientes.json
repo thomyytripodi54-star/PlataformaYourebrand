@@ -26,7 +26,9 @@
       "moneda": "EUR"
     },
     "logo": null,
-    "notionUrl": "https://app.notion.com/391029cc0dee8074b932c927393831f1"
+    "notionUrl": "https://app.notion.com/391029cc0dee8074b932c927393831f1",
+    "satisfaccion": "Expectante",
+    "margen": 435120
   },
   {
     "id": "alejandra-ochoa-psicologa",
@@ -54,7 +56,9 @@
       "moneda": "EUR"
     },
     "logo": null,
-    "notionUrl": "https://app.notion.com/190029cc0dee80b7bcbcedcc8f8e14d7"
+    "notionUrl": "https://app.notion.com/190029cc0dee80b7bcbcedcc8f8e14d7",
+    "satisfaccion": "Contento",
+    "margen": 155400
   },
   {
     "id": "aq-capital",
@@ -83,7 +87,9 @@
       "moneda": "ARS"
     },
     "logo": null,
-    "notionUrl": "https://app.notion.com/3ba029cc0dee805c9615db996c429492"
+    "notionUrl": "https://app.notion.com/3ba029cc0dee805c9615db996c429492",
+    "satisfaccion": "Expectante",
+    "margen": 360750
   },
   {
     "id": "askal-perros",
@@ -111,7 +117,9 @@
       "moneda": "EUR"
     },
     "logo": null,
-    "notionUrl": "https://app.notion.com/190029cc0dee8073bed0dffbbf6b4cd0"
+    "notionUrl": "https://app.notion.com/190029cc0dee8073bed0dffbbf6b4cd0",
+    "satisfaccion": "Contento",
+    "margen": 210012
   },
   {
     "id": "astillero-geuna",
@@ -140,7 +148,9 @@
       "moneda": "ARS"
     },
     "logo": null,
-    "notionUrl": "https://app.notion.com/3e6029cc0dee80feb41ef0a634dd67f3"
+    "notionUrl": "https://app.notion.com/3e6029cc0dee80feb41ef0a634dd67f3",
+    "satisfaccion": "Expectante",
+    "margen": 310000
   },
   {
     "id": "auralux",
@@ -170,7 +180,9 @@
       "moneda": "ARS"
     },
     "logo": null,
-    "notionUrl": "https://app.notion.com/3c9029cc0dee80bb87e8c1e1db9e5ea6"
+    "notionUrl": "https://app.notion.com/3c9029cc0dee80bb87e8c1e1db9e5ea6",
+    "satisfaccion": "Contento",
+    "margen": 525000
   },
   {
     "id": "bb-estudio",
@@ -201,7 +213,9 @@
       "moneda": "ARS"
     },
     "logo": null,
-    "notionUrl": "https://app.notion.com/2f4029cc0dee80578177c3e01933a014"
+    "notionUrl": "https://app.notion.com/2f4029cc0dee80578177c3e01933a014",
+    "satisfaccion": "Contento",
+    "margen": 460650
   },
   {
     "id": "biovelum",
@@ -231,7 +245,9 @@
       "moneda": "ARS"
     },
     "logo": null,
-    "notionUrl": "https://app.notion.com/3ed029cc0dee803bace5e33880b3420b"
+    "notionUrl": "https://app.notion.com/3ed029cc0dee803bace5e33880b3420b",
+    "satisfaccion": "Expectante",
+    "margen": 637000
   },
   {
     "id": "bis-eventos",
@@ -258,7 +274,9 @@
       "moneda": "ARS"
     },
     "logo": null,
-    "notionUrl": "https://app.notion.com/2fb029cc0dee80e58b5ce76021ddc7df"
+    "notionUrl": "https://app.notion.com/2fb029cc0dee80e58b5ce76021ddc7df",
+    "satisfaccion": "Contento",
+    "margen": 327450
   },
   {
     "id": "cafe-y-chocolate",
@@ -285,7 +303,9 @@
       "moneda": "ARS"
     },
     "logo": null,
-    "notionUrl": "https://app.notion.com/34a029cc0dee80338fefe245b1403a49"
+    "notionUrl": "https://app.notion.com/34a029cc0dee80338fefe245b1403a49",
+    "satisfaccion": "Contento",
+    "margen": 327450
   },
   {
     "id": "cuota-q",
@@ -315,7 +335,9 @@
       "moneda": "ARS"
     },
     "logo": null,
-    "notionUrl": "https://app.notion.com/325029cc0dee80d8b3decee3e8eb02ce"
+    "notionUrl": "https://app.notion.com/325029cc0dee80d8b3decee3e8eb02ce",
+    "satisfaccion": "Contento",
+    "margen": 471750
   },
   {
     "id": "cupking",
@@ -340,7 +362,9 @@
     "contacto": "Fer",
     "pagoMensual": null,
     "logo": null,
-    "notionUrl": "https://app.notion.com/3ed029cc0dee8019aa3fcca42d7a6c5f"
+    "notionUrl": "https://app.notion.com/3ed029cc0dee8019aa3fcca42d7a6c5f",
+    "satisfaccion": "Expectante",
+    "margen": null
   },
   {
     "id": "english-now",
@@ -368,7 +392,9 @@
       "moneda": "ARS"
     },
     "logo": null,
-    "notionUrl": "https://app.notion.com/1d7029cc0dee808e8937e4a8dbccb33a"
+    "notionUrl": "https://app.notion.com/1d7029cc0dee808e8937e4a8dbccb33a",
+    "satisfaccion": "Contento",
+    "margen": 327450
   },
   {
     "id": "fedora-coffee",
@@ -397,7 +423,9 @@
       "moneda": "ARS"
     },
     "logo": null,
-    "notionUrl": "https://app.notion.com/364029cc0dee805d8bc7ec50483ee7d9"
+    "notionUrl": "https://app.notion.com/364029cc0dee805d8bc7ec50483ee7d9",
+    "satisfaccion": "Contento",
+    "margen": 580000
   },
   {
     "id": "ferriol",
@@ -426,7 +454,9 @@
       "moneda": "ARS"
     },
     "logo": null,
-    "notionUrl": "https://app.notion.com/3c6029cc0dee8027aa71d6e60ae708ea"
+    "notionUrl": "https://app.notion.com/3c6029cc0dee8027aa71d6e60ae708ea",
+    "satisfaccion": "Expectante",
+    "margen": 347000
   },
   {
     "id": "fir24",
@@ -458,7 +488,9 @@
       "moneda": "ARS"
     },
     "logo": null,
-    "notionUrl": "https://app.notion.com/3ed029cc0dee80b5a153cf117b671edb"
+    "notionUrl": "https://app.notion.com/3ed029cc0dee80b5a153cf117b671edb",
+    "satisfaccion": "Expectante",
+    "margen": 590000
   },
   {
     "id": "flyware",
@@ -488,7 +520,9 @@
       "moneda": "ARS"
     },
     "logo": null,
-    "notionUrl": "https://app.notion.com/3e9029cc0dee8024ab0fe072bc8c7c83"
+    "notionUrl": "https://app.notion.com/3e9029cc0dee8024ab0fe072bc8c7c83",
+    "satisfaccion": "Expectante",
+    "margen": 413000
   },
   {
     "id": "fundacion-senales",
@@ -520,7 +554,9 @@
       "moneda": "ARS"
     },
     "logo": null,
-    "notionUrl": "https://app.notion.com/319029cc0dee8062a32ef65936eb241e"
+    "notionUrl": "https://app.notion.com/319029cc0dee8062a32ef65936eb241e",
+    "satisfaccion": "Contento",
+    "margen": 555000
   },
   {
     "id": "gbs",
@@ -549,7 +585,9 @@
       "moneda": "ARS"
     },
     "logo": null,
-    "notionUrl": "https://app.notion.com/3c6029cc0dee80329ef3c691797c294b"
+    "notionUrl": "https://app.notion.com/3c6029cc0dee80329ef3c691797c294b",
+    "satisfaccion": "Expectante",
+    "margen": 542000
   },
   {
     "id": "gema-salud-animal",
@@ -578,7 +616,9 @@
       "moneda": "ARS"
     },
     "logo": null,
-    "notionUrl": "https://app.notion.com/2f5029cc0dee80dd9cbeda1eecaf5819"
+    "notionUrl": "https://app.notion.com/2f5029cc0dee80dd9cbeda1eecaf5819",
+    "satisfaccion": "Contento",
+    "margen": 558330
   },
   {
     "id": "gorrion",
@@ -607,7 +647,9 @@
       "moneda": "ARS"
     },
     "logo": null,
-    "notionUrl": "https://app.notion.com/3f9029cc0dee8075b8c2cfee52165c4f"
+    "notionUrl": "https://app.notion.com/3f9029cc0dee8075b8c2cfee52165c4f",
+    "satisfaccion": "Expectante",
+    "margen": 200000
   },
   {
     "id": "hakuna-cafe",
@@ -638,7 +680,9 @@
       "moneda": "ARS"
     },
     "logo": null,
-    "notionUrl": "https://app.notion.com/406029cc0dee8075a859cc3ea941eb3d"
+    "notionUrl": "https://app.notion.com/406029cc0dee8075a859cc3ea941eb3d",
+    "satisfaccion": "Expectante",
+    "margen": 486000
   },
   {
     "id": "javier-urich",
@@ -665,7 +709,9 @@
       "moneda": "ARS"
     },
     "logo": null,
-    "notionUrl": "https://app.notion.com/2fb029cc0dee80f6bf18caa5bbe64485"
+    "notionUrl": "https://app.notion.com/2fb029cc0dee80f6bf18caa5bbe64485",
+    "satisfaccion": "Contento",
+    "margen": 283050
   },
   {
     "id": "miramar-express",
@@ -695,7 +741,9 @@
       "moneda": "ARS"
     },
     "logo": null,
-    "notionUrl": "https://app.notion.com/3e6029cc0dee80028dd3cafce90d2448"
+    "notionUrl": "https://app.notion.com/3e6029cc0dee80028dd3cafce90d2448",
+    "satisfaccion": "Contento",
+    "margen": 730000
   },
   {
     "id": "palace-gym",
@@ -724,7 +772,9 @@
       "moneda": "ARS"
     },
     "logo": null,
-    "notionUrl": "https://app.notion.com/3c6029cc0dee8028a922dc7a46f795d9"
+    "notionUrl": "https://app.notion.com/3c6029cc0dee8028a922dc7a46f795d9",
+    "satisfaccion": "Expectante",
+    "margen": 542000
   },
   {
     "id": "pancitas-arriba",
@@ -752,7 +802,9 @@
       "moneda": "ARS"
     },
     "logo": null,
-    "notionUrl": "https://app.notion.com/3f1029cc0dee8054a840d679f5ab81f6"
+    "notionUrl": "https://app.notion.com/3f1029cc0dee8054a840d679f5ab81f6",
+    "satisfaccion": "Expectante",
+    "margen": 331000
   },
   {
     "id": "rafaela-belen-speaker",
@@ -782,7 +834,9 @@
       "moneda": "ARS"
     },
     "logo": null,
-    "notionUrl": "https://app.notion.com/3d0029cc0dee800ba533d4d62836eabb"
+    "notionUrl": "https://app.notion.com/3d0029cc0dee800ba533d4d62836eabb",
+    "satisfaccion": "Expectante",
+    "margen": 475000
   },
   {
     "id": "riva-divani",
@@ -810,7 +864,9 @@
       "moneda": "ARS"
     },
     "logo": null,
-    "notionUrl": "https://app.notion.com/406029cc0dee80fa9a0adcd15444d81f"
+    "notionUrl": "https://app.notion.com/406029cc0dee80fa9a0adcd15444d81f",
+    "satisfaccion": "Expectante",
+    "margen": 370000
   },
   {
     "id": "rolmer-cortinas",
@@ -838,7 +894,9 @@
       "moneda": "ARS"
     },
     "logo": null,
-    "notionUrl": "https://app.notion.com/1f3029cc0dee80688191ecc54d917d4d"
+    "notionUrl": "https://app.notion.com/1f3029cc0dee80688191ecc54d917d4d",
+    "satisfaccion": "Expectante",
+    "margen": 327450
   },
   {
     "id": "sanos-salud",
@@ -867,7 +925,9 @@
       "moneda": "ARS"
     },
     "logo": null,
-    "notionUrl": "https://app.notion.com/402029cc0dee80ec8578f8c30bde0a59"
+    "notionUrl": "https://app.notion.com/402029cc0dee80ec8578f8c30bde0a59",
+    "satisfaccion": "Expectante",
+    "margen": 580000
   },
   {
     "id": "soy-pacha",
@@ -897,7 +957,9 @@
       "moneda": "ARS"
     },
     "logo": null,
-    "notionUrl": "https://app.notion.com/40c029cc0dee80d6a4f3c6fa4b99cdb2"
+    "notionUrl": "https://app.notion.com/40c029cc0dee80d6a4f3c6fa4b99cdb2",
+    "satisfaccion": "Expectante",
+    "margen": 580000
   },
   {
     "id": "stumpy-coffee",
@@ -926,7 +988,9 @@
       "moneda": "ARS"
     },
     "logo": null,
-    "notionUrl": "https://app.notion.com/391029cc0dee80b0a2bef3ab10561f84"
+    "notionUrl": "https://app.notion.com/391029cc0dee80b0a2bef3ab10561f84",
+    "satisfaccion": "Expectante",
+    "margen": 389000
   },
   {
     "id": "tamya-marroquineria",
@@ -953,7 +1017,9 @@
       "moneda": "ARS"
     },
     "logo": null,
-    "notionUrl": "https://app.notion.com/238029cc0dee801ca20cd36f84287800"
+    "notionUrl": "https://app.notion.com/238029cc0dee801ca20cd36f84287800",
+    "satisfaccion": "Contento",
+    "margen": 283050
   },
   {
     "id": "viva-training",
@@ -982,6 +1048,8 @@
       "moneda": "ARS"
     },
     "logo": null,
-    "notionUrl": "https://app.notion.com/3f9029cc0dee801eb2e2f9f6309a03bf"
+    "notionUrl": "https://app.notion.com/3f9029cc0dee801eb2e2f9f6309a03bf",
+    "satisfaccion": "Expectante",
+    "margen": 880000
   }
 ]

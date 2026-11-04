@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Montserrat } from "next/font/google";
 import "./globals.css";
 import { logout } from "./login/actions";
+import { EstadoDatos } from "@/components/EstadoDatos";
 
 const montserrat = Montserrat({ subsets: ["latin"], weight: ["200", "400", "600", "700", "800", "900"], variable: "--font-montserrat" });
 
@@ -12,8 +13,8 @@ export const metadata: Metadata = {
 };
 
 const areas = [
-  { nombre: "Dirección", items: [{ href: "/clientes", label: "Clientes" }, { href: "/clientes/mapa", label: "Mapa de clientes" }] },
-  { nombre: "RRHH", items: [{ href: "/rrhh/organigrama", label: "Organigrama" }] },
+  { nombre: "Dirección", items: [{ href: "/clientes/dashboard", label: "Dashboard de clientes" }] },
+  { nombre: "RRHH", items: [{ href: "/rrhh/organigrama", label: "Organigrama" }, { href: "/rrhh/casos", label: "Casos abiertos" }] },
   { nombre: "Creativa", items: [] },
   { nombre: "Operaciones", items: [] },
 ];
@@ -44,6 +45,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 </div>
               ))}
             </nav>
+            <EstadoDatos />
             <form action={logout} className="mt-6 hidden md:block">
               <button className="text-xs text-zinc-400 hover:text-accent">Cerrar sesión</button>
             </form>

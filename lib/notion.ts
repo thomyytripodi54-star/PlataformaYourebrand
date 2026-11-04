@@ -89,11 +89,13 @@ export function mapCliente(p: Page, logos: Map<string, string | null>): Cliente 
     pagoMensual: ars ? { monto: ars, moneda: "ARS" } : eur ? { monto: eur, moneda: "EUR" } : null,
     logo: logos.get(id) ?? null,
     notionUrl: p.url,
+    satisfaccion: (select(prop(p, "Satisfaccion")) as Cliente["satisfaccion"]) ?? null,
+    margen: numero(prop(p, "Margen contribucion")),
   };
 }
 
 /* ---------- Casos ---------- */
-export function mapCaso(p: Page, clientePorNotion: Map<string, string>): (Caso & { notionId: string }) | null {
+export function mapCaso(p: Page, clientePorNotion: Map<string, string>): (Caso & { notionId: string; responsablesNotion: string[] }) | null {
   const etiquetas = multi(prop(p, "Etiquetas"));
   if (etiquetas.includes("Solucionado")) return null;
   const gravedad = (["URGENTE", "Grave", "Leve"] as const).find((g) => etiquetas.includes(g)) ?? "Leve";
@@ -105,6 +107,8 @@ export function mapCaso(p: Page, clientePorNotion: Map<string, string>): (Caso &
     cliente: (c && clientePorNotion.get(c)) || null,
     fecha: p.created_time.slice(0, 10),
     notionUrl: p.url,
+    situacion: texto(prop(p, "Situacion")),
+    responsablesNotion: relacion(prop(p, "Account manager")),
   };
 }
 
