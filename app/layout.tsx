@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Montserrat } from "next/font/google";
 import "./globals.css";
+import { logout } from "./login/actions";
 
 const montserrat = Montserrat({ subsets: ["latin"], weight: ["200", "400", "600", "700", "800", "900"], variable: "--font-montserrat" });
 
@@ -43,6 +44,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 </div>
               ))}
             </nav>
+            <form action={logout} className="mt-6 hidden md:block">
+              <button className="text-xs text-zinc-400 hover:text-accent">Cerrar sesión</button>
+            </form>
           </aside>
           <main className="flex-1 px-4 py-6 md:px-10 md:py-8">{children}</main>
         </div>
