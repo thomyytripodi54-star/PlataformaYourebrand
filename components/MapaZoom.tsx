@@ -84,14 +84,25 @@ export function MapaZoom({
     });
     m.addControl(new maplibregl.NavigationControl({ showCompass: false }), "bottom-right");
     m.on("click", () => onSel.current(null));
+    // Fondo liso SOLO si el estilo del proveedor nunca llega (sin conexión o bloqueado).
+    // Errores sueltos de calles/íconos no reemplazan el mapa.
+    let estiloListo = false;
     let respaldo = false;
+    m.once("style.load", () => {
+      estiloListo = true;
+      contenedor.current?.setAttribute("data-estilo", respaldo ? "respaldo" : "proveedor");
+    });
     const usarRespaldo = () => {
-      if (respaldo || m.isStyleLoaded()) return;
+      if (respaldo || estiloListo) return;
       respaldo = true;
       m.setStyle(RESPALDO);
     };
-    m.on("error", usarRespaldo);
-    const tEstilo = setTimeout(usarRespaldo, 6000);
+    m.on("error", (e) => {
+      // solo el fallo de descarga del estilo en sí activa el respaldo
+      const url = (e as { error?: { url?: string } }).error?.url ?? "";
+      if (!estiloListo && url.includes("style.json")) usarRespaldo();
+    });
+    const tEstilo = setTimeout(usarRespaldo, 20000);
     mapa.current = m;
     // El vuelo arranca enseguida: la cámara no necesita que hayan cargado las calles.
     const t = setTimeout(() => m.fitBounds(encuadre, { padding: 40, maxZoom: 13, duration: 2400, curve: 1.6, essential: true }), 350);
