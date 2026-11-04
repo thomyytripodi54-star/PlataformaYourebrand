@@ -14,7 +14,7 @@ export const metadata: Metadata = {
 
 const areas = [
   { nombre: "Dirección", items: [{ href: "/clientes", label: "Clientes" }, { href: "/clientes/mapa", label: "Mapa de clientes" }] },
-  { nombre: "RRHH", items: [{ href: "/rrhh/organigrama", label: "Organigrama" }] },
+  { nombre: "RRHH", items: [{ href: "/rrhh/organigrama", label: "Organigrama" }, { href: "/rrhh/casos", label: "Casos abiertos" }] },
   { nombre: "Creativa", items: [] },
   { nombre: "Operaciones", items: [] },
 ];
