@@ -1,0 +1,987 @@
+[
+  {
+    "id": "aeky",
+    "nombre": "Aeky",
+    "estado": "Activo",
+    "instagram": "aekyredsocial",
+    "web": null,
+    "linkedin": null,
+    "pais": "España",
+    "segmento": "AA",
+    "planes": [
+      "Plan redes",
+      "Trimestral"
+    ],
+    "rubros": [
+      "Terapia alternativa",
+      "Yoga"
+    ],
+    "desde": "2026-07-02",
+    "vencimiento": "2027-01-03",
+    "email": "comunicacion@aeky.es",
+    "telefono": "34600933330",
+    "contacto": "Natalia",
+    "pagoMensual": {
+      "monto": 250,
+      "moneda": "EUR"
+    },
+    "logo": null,
+    "notionUrl": "https://app.notion.com/391029cc0dee8074b932c927393831f1"
+  },
+  {
+    "id": "alejandra-ochoa-psicologa",
+    "nombre": "Alejandra ochoa psicologa",
+    "estado": "Activo",
+    "instagram": "alejandraochoapsicologa",
+    "web": null,
+    "linkedin": null,
+    "pais": "España",
+    "segmento": "A",
+    "planes": [
+      "Plan Full 2.0",
+      "Anual"
+    ],
+    "rubros": [
+      "Salud"
+    ],
+    "desde": "2025-02-04",
+    "vencimiento": "2027-02-05",
+    "email": "alejandraochoa.psicologa@gmail.com",
+    "telefono": "34625917758",
+    "contacto": "Alejandra",
+    "pagoMensual": {
+      "monto": 177,
+      "moneda": "EUR"
+    },
+    "logo": null,
+    "notionUrl": "https://app.notion.com/190029cc0dee80b7bcbcedcc8f8e14d7"
+  },
+  {
+    "id": "aq-capital",
+    "nombre": "AQ Capital",
+    "estado": "Activo",
+    "instagram": "aqcapital.ar",
+    "web": "https://www.aqcapital.com.ar/",
+    "linkedin": null,
+    "pais": "Argentina",
+    "segmento": "AA",
+    "planes": [
+      "Plan redes",
+      "Linkedin",
+      "Trimestral"
+    ],
+    "rubros": [
+      "Consultoria"
+    ],
+    "desde": "2026-08-12",
+    "vencimiento": "2026-11-12",
+    "email": "Info@aqcapital.com.ar",
+    "telefono": "5491158761279",
+    "contacto": "Santi",
+    "pagoMensual": {
+      "monto": 582750,
+      "moneda": "ARS"
+    },
+    "logo": null,
+    "notionUrl": "https://app.notion.com/3ba029cc0dee805c9615db996c429492"
+  },
+  {
+    "id": "askal-perros",
+    "nombre": "Askal Perros",
+    "estado": "Activo",
+    "instagram": "askal_companerosdevida",
+    "web": null,
+    "linkedin": null,
+    "pais": "España",
+    "segmento": "A",
+    "planes": [
+      "Plan Full",
+      "Semestral"
+    ],
+    "rubros": [
+      "Mascotas"
+    ],
+    "desde": "2025-02-04",
+    "vencimiento": "2026-11-05",
+    "email": "naticanarg@gmail.com",
+    "telefono": "+54 9 2262 530627",
+    "contacto": "Nati",
+    "pagoMensual": {
+      "monto": 177,
+      "moneda": "EUR"
+    },
+    "logo": null,
+    "notionUrl": "https://app.notion.com/190029cc0dee8073bed0dffbbf6b4cd0"
+  },
+  {
+    "id": "astillero-geuna",
+    "nombre": "Astillero Geuna",
+    "estado": "Activo",
+    "instagram": "astillerogeuna",
+    "web": null,
+    "linkedin": null,
+    "pais": "Argentina",
+    "segmento": "AA",
+    "planes": [
+      "Plan redes",
+      "Campañas"
+    ],
+    "rubros": [
+      "Producto",
+      "Automoviles"
+    ],
+    "desde": "2026-09-25",
+    "vencimiento": "2026-10-29",
+    "email": "ASTILLEROGEUNA@HOTMAIL.COM",
+    "telefono": "5491165871747",
+    "contacto": "Dai",
+    "pagoMensual": {
+      "monto": 630000,
+      "moneda": "ARS"
+    },
+    "logo": null,
+    "notionUrl": "https://app.notion.com/3e6029cc0dee80feb41ef0a634dd67f3"
+  },
+  {
+    "id": "auralux",
+    "nombre": "Auralux",
+    "estado": "Activo",
+    "instagram": "somosauralux",
+    "web": null,
+    "linkedin": null,
+    "pais": "Argentina",
+    "segmento": "AA",
+    "planes": [
+      "Plan redes",
+      "Grabacion Trimestral",
+      "Campañas"
+    ],
+    "rubros": [
+      "Producto",
+      "Reformas"
+    ],
+    "desde": "2026-08-27",
+    "vencimiento": "2026-11-28",
+    "email": "personamenteemilio@gmail.com",
+    "telefono": "5491165593153",
+    "contacto": "Emilio",
+    "pagoMensual": {
+      "monto": 875000,
+      "moneda": "ARS"
+    },
+    "logo": null,
+    "notionUrl": "https://app.notion.com/3c9029cc0dee80bb87e8c1e1db9e5ea6"
+  },
+  {
+    "id": "bb-estudio",
+    "nombre": "BB estudio",
+    "estado": "Activo",
+    "instagram": "bb.estudio_",
+    "web": null,
+    "linkedin": null,
+    "pais": "Argentina",
+    "segmento": "AA",
+    "planes": [
+      "Plan redes",
+      "Campañas",
+      "Edicion Pro 3 videos"
+    ],
+    "rubros": [
+      "Fitness",
+      "Terapia alternativa",
+      "Yoga"
+    ],
+    "desde": "2026-01-26",
+    "vencimiento": "2026-11-28",
+    "email": "bottarobelen@gmail.com",
+    "telefono": "5491125262410",
+    "contacto": "Belen",
+    "pagoMensual": {
+      "monto": 749250,
+      "moneda": "ARS"
+    },
+    "logo": null,
+    "notionUrl": "https://app.notion.com/2f4029cc0dee80578177c3e01933a014"
+  },
+  {
+    "id": "biovelum",
+    "nombre": "Biovelum",
+    "estado": "Activo",
+    "instagram": "biovelum.compostable",
+    "web": null,
+    "linkedin": null,
+    "pais": "Argentina",
+    "segmento": "AA",
+    "planes": [
+      "Plan redes",
+      "Linkedin",
+      "Grabacion Trimestral"
+    ],
+    "rubros": [
+      "Producto",
+      "Empresa B"
+    ],
+    "desde": "2026-10-02",
+    "vencimiento": "2026-11-06",
+    "email": "fernandoguerra@waienergy.com",
+    "telefono": "5491138252403",
+    "contacto": "Fer",
+    "pagoMensual": {
+      "monto": 1080000,
+      "moneda": "ARS"
+    },
+    "logo": null,
+    "notionUrl": "https://app.notion.com/3ed029cc0dee803bace5e33880b3420b"
+  },
+  {
+    "id": "bis-eventos",
+    "nombre": "Bis Eventos",
+    "estado": "Activo",
+    "instagram": "bis.eventos",
+    "web": null,
+    "linkedin": null,
+    "pais": "Argentina",
+    "segmento": "AA",
+    "planes": [
+      "Plan redes"
+    ],
+    "rubros": [
+      "Eventos"
+    ],
+    "desde": "2026-02-02",
+    "vencimiento": "2026-11-03",
+    "email": "biseventos882@hotmail.com",
+    "telefono": "5493413605392",
+    "contacto": "Nati",
+    "pagoMensual": {
+      "monto": 471750,
+      "moneda": "ARS"
+    },
+    "logo": null,
+    "notionUrl": "https://app.notion.com/2fb029cc0dee80e58b5ce76021ddc7df"
+  },
+  {
+    "id": "cafe-y-chocolate",
+    "nombre": "Cafe y Chocolate",
+    "estado": "Activo",
+    "instagram": "cafeychocolate.ba",
+    "web": null,
+    "linkedin": null,
+    "pais": "Argentina",
+    "segmento": "AA",
+    "planes": [
+      "Plan redes"
+    ],
+    "rubros": [
+      "Gastronomia"
+    ],
+    "desde": "2026-04-22",
+    "vencimiento": "2026-11-22",
+    "email": "sbernardele@hotmail.com",
+    "telefono": "5491149170400",
+    "contacto": "Sebastian",
+    "pagoMensual": {
+      "monto": 471750,
+      "moneda": "ARS"
+    },
+    "logo": null,
+    "notionUrl": "https://app.notion.com/34a029cc0dee80338fefe245b1403a49"
+  },
+  {
+    "id": "cuota-q",
+    "nombre": "Cuota Q",
+    "estado": "Activo",
+    "instagram": "cuotaq",
+    "web": null,
+    "linkedin": null,
+    "pais": "Argentina",
+    "segmento": "AA",
+    "planes": [
+      "Plan redes",
+      "Trimestral"
+    ],
+    "rubros": [
+      "Tecnologia",
+      "ONG",
+      "Finanzas"
+    ],
+    "desde": "2026-03-17",
+    "vencimiento": "2026-11-18",
+    "email": null,
+    "telefono": "5492914318919",
+    "contacto": "Diego",
+    "pagoMensual": {
+      "monto": 721500,
+      "moneda": "ARS"
+    },
+    "logo": null,
+    "notionUrl": "https://app.notion.com/325029cc0dee80d8b3decee3e8eb02ce"
+  },
+  {
+    "id": "cupking",
+    "nombre": "Cupking",
+    "estado": "Activo",
+    "instagram": "cupking.compostable",
+    "web": null,
+    "linkedin": null,
+    "pais": "Argentina",
+    "segmento": "AA",
+    "planes": [
+      "Plan redes"
+    ],
+    "rubros": [
+      "Producto",
+      "Empresa B"
+    ],
+    "desde": "2026-10-02",
+    "vencimiento": "2026-11-06",
+    "email": null,
+    "telefono": null,
+    "contacto": "Fer",
+    "pagoMensual": null,
+    "logo": null,
+    "notionUrl": "https://app.notion.com/3ed029cc0dee8019aa3fcca42d7a6c5f"
+  },
+  {
+    "id": "english-now",
+    "nombre": "English Now",
+    "estado": "Activo",
+    "instagram": "englishnowlp",
+    "web": null,
+    "linkedin": null,
+    "pais": "Argentina",
+    "segmento": "A",
+    "planes": [
+      "Plan Full 2.0"
+    ],
+    "rubros": [
+      "Educacion",
+      "Ingles"
+    ],
+    "desde": "2025-04-16",
+    "vencimiento": "2026-11-22",
+    "email": "englishnowinfo.lp@gmail.com",
+    "telefono": "542215456111",
+    "contacto": "Sol",
+    "pagoMensual": {
+      "monto": 471750,
+      "moneda": "ARS"
+    },
+    "logo": null,
+    "notionUrl": "https://app.notion.com/1d7029cc0dee808e8937e4a8dbccb33a"
+  },
+  {
+    "id": "fedora-coffee",
+    "nombre": "Fedora Coffee",
+    "estado": "Activo",
+    "instagram": "fedora_coffee",
+    "web": null,
+    "linkedin": null,
+    "pais": "Argentina",
+    "segmento": "AA",
+    "planes": [
+      "Plan redes",
+      "Grabacion Trimestral"
+    ],
+    "rubros": [
+      "Cafeteria",
+      "Producto"
+    ],
+    "desde": "2026-05-18",
+    "vencimiento": "2026-11-25",
+    "email": "info@fedoracoffee.com.ar",
+    "telefono": "5491122947212",
+    "contacto": "Juanjo",
+    "pagoMensual": {
+      "monto": 960000,
+      "moneda": "ARS"
+    },
+    "logo": null,
+    "notionUrl": "https://app.notion.com/364029cc0dee805d8bc7ec50483ee7d9"
+  },
+  {
+    "id": "ferriol",
+    "nombre": "Ferriol",
+    "estado": "Activo",
+    "instagram": "ferriolpropiedades",
+    "web": null,
+    "linkedin": null,
+    "pais": "Argentina",
+    "segmento": "AA",
+    "planes": [
+      "Plan redes",
+      "Campañas",
+      "Trimestral"
+    ],
+    "rubros": [
+      "Inmobiliaria"
+    ],
+    "desde": "2026-08-24",
+    "vencimiento": "2026-11-25",
+    "email": "info@ferriolpropiedades.com.ar",
+    "telefono": "5491138526622",
+    "contacto": "Marce",
+    "pagoMensual": {
+      "monto": 607000,
+      "moneda": "ARS"
+    },
+    "logo": null,
+    "notionUrl": "https://app.notion.com/3c6029cc0dee8027aa71d6e60ae708ea"
+  },
+  {
+    "id": "fir24",
+    "nombre": "Fir24",
+    "estado": "Activo",
+    "instagram": "fir24ar",
+    "web": null,
+    "linkedin": "https://www.linkedin.com/company/fir-24/home/",
+    "pais": "Argentina",
+    "segmento": "AA",
+    "planes": [
+      "Web",
+      "Plan redes",
+      "Linkedin",
+      "Grabacion Trimestral"
+    ],
+    "rubros": [
+      "Muebles",
+      "B2B",
+      "Producto"
+    ],
+    "desde": "2026-10-02",
+    "vencimiento": "2026-11-05",
+    "email": "fsecotrabella@gmail.com",
+    "telefono": "5491121652259",
+    "contacto": "Fede",
+    "pagoMensual": {
+      "monto": 900000,
+      "moneda": "ARS"
+    },
+    "logo": null,
+    "notionUrl": "https://app.notion.com/3ed029cc0dee80b5a153cf117b671edb"
+  },
+  {
+    "id": "flyware",
+    "nombre": "Flyware",
+    "estado": "Activo",
+    "instagram": null,
+    "web": null,
+    "linkedin": "https://www.linkedin.com/company/flyware/",
+    "pais": "USA",
+    "segmento": "AA",
+    "planes": [
+      "Linkedin",
+      "Plan google",
+      "Web"
+    ],
+    "rubros": [
+      "Software",
+      "Tecnologia"
+    ],
+    "desde": "2026-09-28",
+    "vencimiento": "2026-10-28",
+    "email": "lgalarreta@flywarelabs.com",
+    "telefono": "17032139947",
+    "contacto": "Kevin",
+    "pagoMensual": {
+      "monto": 693000,
+      "moneda": "ARS"
+    },
+    "logo": null,
+    "notionUrl": "https://app.notion.com/3e9029cc0dee8024ab0fe072bc8c7c83"
+  },
+  {
+    "id": "fundacion-senales",
+    "nombre": "Fundacion Señales",
+    "estado": "Activo",
+    "instagram": "comunidad_senales",
+    "web": null,
+    "linkedin": null,
+    "pais": "Argentina",
+    "segmento": "AA",
+    "planes": [
+      "Plan redes",
+      "Campañas",
+      "Plan google"
+    ],
+    "rubros": [
+      "Servicios varios",
+      "Salud",
+      "Terapia alternativa",
+      "ONG"
+    ],
+    "desde": "2026-03-06",
+    "vencimiento": "2026-11-06",
+    "email": "senalesadm@gmail.com",
+    "telefono": "541166084974",
+    "contacto": "Samanta",
+    "pagoMensual": {
+      "monto": 987900,
+      "moneda": "ARS"
+    },
+    "logo": null,
+    "notionUrl": "https://app.notion.com/319029cc0dee8062a32ef65936eb241e"
+  },
+  {
+    "id": "gbs",
+    "nombre": "GBS",
+    "estado": "Activo",
+    "instagram": "gbs.womens.fitness",
+    "web": null,
+    "linkedin": null,
+    "pais": "Argentina",
+    "segmento": "AA",
+    "planes": [
+      "Grabacion Trimestral",
+      "Plan redes",
+      "Campañas"
+    ],
+    "rubros": [
+      "Fitness"
+    ],
+    "desde": "2026-08-24",
+    "vencimiento": "2026-11-25",
+    "email": "correcaminos42km@hotmail.com",
+    "telefono": "5491164104624",
+    "contacto": "Betty",
+    "pagoMensual": {
+      "monto": 922300,
+      "moneda": "ARS"
+    },
+    "logo": null,
+    "notionUrl": "https://app.notion.com/3c6029cc0dee80329ef3c691797c294b"
+  },
+  {
+    "id": "gema-salud-animal",
+    "nombre": "Gema Salud animal",
+    "estado": "Activo",
+    "instagram": "gemasaludanimal",
+    "web": null,
+    "linkedin": null,
+    "pais": "Argentina",
+    "segmento": "AA",
+    "planes": [
+      "Plan redes",
+      "Campañas",
+      "Edicion Pro 3 videos"
+    ],
+    "rubros": [
+      "Mascotas"
+    ],
+    "desde": "2026-01-27",
+    "vencimiento": "2026-11-22",
+    "email": "ivangonzalor@gmail.com",
+    "telefono": "5491172327834",
+    "contacto": "Ivan",
+    "pagoMensual": {
+      "monto": 926850,
+      "moneda": "ARS"
+    },
+    "logo": null,
+    "notionUrl": "https://app.notion.com/2f5029cc0dee80dd9cbeda1eecaf5819"
+  },
+  {
+    "id": "gorrion",
+    "nombre": "Gorrion",
+    "estado": "Activo",
+    "instagram": null,
+    "web": "https://www.productosgorrion.com.ar/",
+    "linkedin": null,
+    "pais": "Argentina",
+    "segmento": "AA",
+    "planes": [
+      "Web"
+    ],
+    "rubros": [
+      "Producto",
+      "Industria",
+      "B2B"
+    ],
+    "desde": "2026-10-14",
+    "vencimiento": "2026-10-30",
+    "email": null,
+    "telefono": "5491130959012",
+    "contacto": "Agus",
+    "pagoMensual": {
+      "monto": 550000,
+      "moneda": "ARS"
+    },
+    "logo": null,
+    "notionUrl": "https://app.notion.com/3f9029cc0dee8075b8c2cfee52165c4f"
+  },
+  {
+    "id": "hakuna-cafe",
+    "nombre": "Hakuna Cafe",
+    "estado": "Activo",
+    "instagram": "hakunacafe.ar",
+    "web": null,
+    "linkedin": null,
+    "pais": "Argentina",
+    "segmento": "AA",
+    "planes": [
+      "Plan redes",
+      "Grabacion Trimestral",
+      "Campañas",
+      "Trimestral"
+    ],
+    "rubros": [
+      "Cafeteria",
+      "Gastronomia"
+    ],
+    "desde": "2026-10-27",
+    "vencimiento": "2027-01-28",
+    "email": null,
+    "telefono": "5491141811495",
+    "contacto": "Cesar",
+    "pagoMensual": {
+      "monto": 866000,
+      "moneda": "ARS"
+    },
+    "logo": null,
+    "notionUrl": "https://app.notion.com/406029cc0dee8075a859cc3ea941eb3d"
+  },
+  {
+    "id": "javier-urich",
+    "nombre": "Javier urich",
+    "estado": "Activo",
+    "instagram": null,
+    "web": "https://cardiologodrurich.com.ar/",
+    "linkedin": null,
+    "pais": "Argentina",
+    "segmento": "AA",
+    "planes": [
+      "Plan google"
+    ],
+    "rubros": [
+      "Salud"
+    ],
+    "desde": "2026-02-02",
+    "vencimiento": "2026-11-04",
+    "email": "javierurich@hotmail.com",
+    "telefono": "5493434407050",
+    "contacto": "Javi",
+    "pagoMensual": {
+      "monto": 471750,
+      "moneda": "ARS"
+    },
+    "logo": null,
+    "notionUrl": "https://app.notion.com/2fb029cc0dee80f6bf18caa5bbe64485"
+  },
+  {
+    "id": "miramar-express",
+    "nombre": "Miramar Express",
+    "estado": "Activo",
+    "instagram": "miramarexpresslaundry",
+    "web": null,
+    "linkedin": null,
+    "pais": "Argentina",
+    "segmento": "AA",
+    "planes": [
+      "Plan redes",
+      "Campañas",
+      "Plan google",
+      "Grabacion Trimestral"
+    ],
+    "rubros": [
+      "Limpieza"
+    ],
+    "desde": "2026-09-25",
+    "vencimiento": "2026-11-28",
+    "email": "luanasayago@hotmail.com",
+    "telefono": "5491154752641",
+    "contacto": "Luana",
+    "pagoMensual": {
+      "monto": 1200000,
+      "moneda": "ARS"
+    },
+    "logo": null,
+    "notionUrl": "https://app.notion.com/3e6029cc0dee80028dd3cafce90d2448"
+  },
+  {
+    "id": "palace-gym",
+    "nombre": "Palace Gym",
+    "estado": "Activo",
+    "instagram": "palacegym_",
+    "web": null,
+    "linkedin": null,
+    "pais": "Argentina",
+    "segmento": "AA",
+    "planes": [
+      "Grabacion Trimestral",
+      "Plan redes",
+      "Campañas"
+    ],
+    "rubros": [
+      "Fitness"
+    ],
+    "desde": "2026-08-24",
+    "vencimiento": "2026-11-25",
+    "email": "correcaminos42km@hotmail.com",
+    "telefono": "5491164104624",
+    "contacto": "Betty",
+    "pagoMensual": {
+      "monto": 922300,
+      "moneda": "ARS"
+    },
+    "logo": null,
+    "notionUrl": "https://app.notion.com/3c6029cc0dee8028a922dc7a46f795d9"
+  },
+  {
+    "id": "pancitas-arriba",
+    "nombre": "Pancitas Arriba",
+    "estado": "Activo",
+    "instagram": "pancitasarriba",
+    "web": "https://patitas.connectmedia.com.ar/",
+    "linkedin": null,
+    "pais": "Argentina",
+    "segmento": "AA",
+    "planes": [
+      "Plan redes"
+    ],
+    "rubros": [
+      "Producto",
+      "Mascotas"
+    ],
+    "desde": "2026-10-06",
+    "vencimiento": "2026-11-09",
+    "email": null,
+    "telefono": "5491133818398",
+    "contacto": "Euge",
+    "pagoMensual": {
+      "monto": 471500,
+      "moneda": "ARS"
+    },
+    "logo": null,
+    "notionUrl": "https://app.notion.com/3f1029cc0dee8054a840d679f5ab81f6"
+  },
+  {
+    "id": "rafaela-belen-speaker",
+    "nombre": "Rafaela Belen Speaker",
+    "estado": "Activo",
+    "instagram": "rafaelabelenacosta",
+    "web": null,
+    "linkedin": null,
+    "pais": "Argentina",
+    "segmento": "AA",
+    "planes": [
+      "Grabacion Trimestral",
+      "Plan redes",
+      "TikTok"
+    ],
+    "rubros": [
+      "Marca personal",
+      "Coaching"
+    ],
+    "desde": "2026-09-03",
+    "vencimiento": "2026-11-06",
+    "email": "rafaelabelenacosta@gmail.com",
+    "telefono": "5491167119260",
+    "contacto": "Rafa",
+    "pagoMensual": {
+      "monto": 785000,
+      "moneda": "ARS"
+    },
+    "logo": null,
+    "notionUrl": "https://app.notion.com/3d0029cc0dee800ba533d4d62836eabb"
+  },
+  {
+    "id": "riva-divani",
+    "nombre": "Riva divani",
+    "estado": "Activo",
+    "instagram": "rivadivani",
+    "web": null,
+    "linkedin": null,
+    "pais": "Argentina",
+    "segmento": "AA",
+    "planes": [
+      "Plan redes"
+    ],
+    "rubros": [
+      "Muebles",
+      "Producto"
+    ],
+    "desde": "2026-10-27",
+    "vencimiento": "2026-11-28",
+    "email": null,
+    "telefono": "5491121652259",
+    "contacto": "Fede",
+    "pagoMensual": {
+      "monto": 550000,
+      "moneda": "ARS"
+    },
+    "logo": null,
+    "notionUrl": "https://app.notion.com/406029cc0dee80fa9a0adcd15444d81f"
+  },
+  {
+    "id": "rolmer-cortinas",
+    "nombre": "Rolmer Cortinas",
+    "estado": "Activo",
+    "instagram": "rolmer.cortinas",
+    "web": null,
+    "linkedin": null,
+    "pais": "Argentina",
+    "segmento": "A",
+    "planes": [
+      "Plan Full 2.0"
+    ],
+    "rubros": [
+      "Decoracion",
+      "Producto"
+    ],
+    "desde": "2025-05-14",
+    "vencimiento": "2026-11-16",
+    "email": "rolmer2009@gmail.com",
+    "telefono": "1130072688",
+    "contacto": "David y monica",
+    "pagoMensual": {
+      "monto": 471750,
+      "moneda": "ARS"
+    },
+    "logo": null,
+    "notionUrl": "https://app.notion.com/1f3029cc0dee80688191ecc54d917d4d"
+  },
+  {
+    "id": "sanos-salud",
+    "nombre": "Sanos salud",
+    "estado": "Activo",
+    "instagram": "sanos.bsas",
+    "web": null,
+    "linkedin": null,
+    "pais": "Argentina",
+    "segmento": "AA",
+    "planes": [
+      "Plan redes",
+      "Campañas",
+      "Grabacion Trimestral"
+    ],
+    "rubros": [
+      "Salud"
+    ],
+    "desde": "2026-10-23",
+    "vencimiento": "2026-11-27",
+    "email": null,
+    "telefono": "5491172327834",
+    "contacto": "Ivan",
+    "pagoMensual": {
+      "monto": 960000,
+      "moneda": "ARS"
+    },
+    "logo": null,
+    "notionUrl": "https://app.notion.com/402029cc0dee80ec8578f8c30bde0a59"
+  },
+  {
+    "id": "soy-pacha",
+    "nombre": "Soy pacha",
+    "estado": "Activo",
+    "instagram": "soypacha.cacao",
+    "web": null,
+    "linkedin": null,
+    "pais": "Argentina",
+    "segmento": "AA",
+    "planes": [
+      "Plan redes",
+      "Campañas",
+      "Grabacion Trimestral"
+    ],
+    "rubros": [
+      "Producto",
+      "Gastronomia"
+    ],
+    "desde": "2026-11-02",
+    "vencimiento": "2026-12-03",
+    "email": "soypacha.info@gmail.com",
+    "telefono": "541139218876",
+    "contacto": "Dana",
+    "pagoMensual": {
+      "monto": 960000,
+      "moneda": "ARS"
+    },
+    "logo": null,
+    "notionUrl": "https://app.notion.com/40c029cc0dee80d6a4f3c6fa4b99cdb2"
+  },
+  {
+    "id": "stumpy-coffee",
+    "nombre": "Stumpy Coffee",
+    "estado": "Activo",
+    "instagram": "stumpycoffeepoint",
+    "web": null,
+    "linkedin": null,
+    "pais": "Argentina",
+    "segmento": "AA",
+    "planes": [
+      "Plan redes",
+      "Grabacion Trimestral"
+    ],
+    "rubros": [
+      "Cafeteria",
+      "Gastronomia"
+    ],
+    "desde": "2026-07-02",
+    "vencimiento": "2026-10-03",
+    "email": "nglezerman@gmail.com",
+    "telefono": "541138515931",
+    "contacto": "Norman",
+    "pagoMensual": {
+      "monto": 675000,
+      "moneda": "ARS"
+    },
+    "logo": null,
+    "notionUrl": "https://app.notion.com/391029cc0dee80b0a2bef3ab10561f84"
+  },
+  {
+    "id": "tamya-marroquineria",
+    "nombre": "Tamya marroquineria",
+    "estado": "Activo",
+    "instagram": "tamya.marroquineria",
+    "web": null,
+    "linkedin": null,
+    "pais": "Argentina",
+    "segmento": "AA",
+    "planes": [
+      "Plan redes"
+    ],
+    "rubros": [
+      "Producto"
+    ],
+    "desde": "2026-07-22",
+    "vencimiento": "2026-11-22",
+    "email": "sfluciano@hotmail.com",
+    "telefono": "541134363232",
+    "contacto": "Luciano",
+    "pagoMensual": {
+      "monto": 472000,
+      "moneda": "ARS"
+    },
+    "logo": null,
+    "notionUrl": "https://app.notion.com/238029cc0dee801ca20cd36f84287800"
+  },
+  {
+    "id": "viva-training",
+    "nombre": "Viva training",
+    "estado": "Activo",
+    "instagram": "vivatrainingclub",
+    "web": null,
+    "linkedin": null,
+    "pais": "Argentina",
+    "segmento": "AA",
+    "planes": [
+      "Plan redes",
+      "Grabacion Trimestral",
+      "Campañas"
+    ],
+    "rubros": [
+      "Fitness"
+    ],
+    "desde": "2026-10-14",
+    "vencimiento": "2026-11-16",
+    "email": null,
+    "telefono": "5491145693461",
+    "contacto": "Vero",
+    "pagoMensual": {
+      "monto": 1260000,
+      "moneda": "ARS"
+    },
+    "logo": null,
+    "notionUrl": "https://app.notion.com/3f9029cc0dee801eb2e2f9f6309a03bf"
+  }
+]
