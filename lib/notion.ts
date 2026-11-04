@@ -160,3 +160,66 @@ export function mapPersona(
     casosAbiertos: relacion(prop(p, "Casos abiertos ")).map((id) => casoPorNotion.get(id)).filter(Boolean) as Caso[],
   };
 }
+
+/* ---------- Comentarios ---------- */
+export type Comentario = {
+  id: string;
+  cliente: string; // id del cliente en la plataforma
+  autor: string;
+  autorId: string;
+  texto: string;
+  fecha: string; // ISO con hora
+  notionUrl: string;
+};
+
+async function notionGet(path: string) {
+  const r = await fetch(`https://api.notion.com/v1/${path}`, {
+    headers: { Authorization: `Bearer ${process.env.NOTION_TOKEN}`, "Notion-Version": "2025-09-03" },
+    cache: "no-store",
+  });
+  if (!r.ok) throw new Error(`Notion ${r.status}: ${await r.text()}`);
+  return r.json();
+}
+
+/** Comentarios de una página (incluye los de bloques de la discusión principal de la página). */
+export async function listarComentarios(pageId: string) {
+  const out: any[] = [];
+  let cursor: string | undefined;
+  do {
+    const j = await notionGet(`comments?block_id=${pageId}&page_size=100${cursor ? `&start_cursor=${cursor}` : ""}`);
+    out.push(...j.results);
+    cursor = j.has_more ? j.next_cursor : undefined;
+  } while (cursor);
+  return out;
+}
+
+const nombres = new Map<string, string>();
+export async function nombreUsuario(id: string, sugerido?: string | null) {
+  if (sugerido) return sugerido;
+  if (nombres.has(id)) return nombres.get(id)!;
+  let n = "Usuario de Notion";
+  try {
+    const u = await notionGet(`users/${id}`);
+    n = u.name ?? (u.type === "bot" ? "Integración" : n);
+  } catch {
+    // sin permiso "Leer información de usuarios": queda el nombre genérico
+  }
+  nombres.set(id, n);
+  return n;
+}
+
+export function idDeUrl(url: string) {
+  return url.match(/([0-9a-f]{32})(?:\?|$)/)?.[1] ?? url.replace(/-/g, "").match(/[0-9a-f]{32}/)?.[0] ?? null;
+}
+
+export async function mapComentario(c: any, cliente: { id: string; notionUrl: string }): Promise<Comentario> {
+  return {
+    id: c.id,
+    cliente: cliente.id,
+    autorId: c.created_by?.id ?? "",
+    autor: await nombreUsuario(c.created_by?.id ?? "", c.display_name?.resolved_name),
+    texto: (c.rich_text ?? []).map((t: any) => t.plain_text).join("").trim(),
+    fecha: c.created_time,
+    notionUrl: `${cliente.notionUrl.split("#")[0]}${c.discussion_id ? `?d=${c.discussion_id.replace(/-/g, "")}` : ""}`,
+  };
+}

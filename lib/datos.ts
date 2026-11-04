@@ -5,7 +5,7 @@ import equipoLocal from "@/data/equipo.json";
 import type { Cliente } from "@/lib/clientes";
 import { ordenarCasos, type Caso, type Persona } from "@/lib/equipo";
 import { slug } from "@/lib/notion";
-import { DS, mapCaso, mapCliente, mapPersona, queryDataSource } from "@/lib/notion";
+import { DS, idDeUrl, listarComentarios, mapCaso, mapCliente, mapComentario, mapPersona, queryDataSource, type Comentario } from "@/lib/notion";
 
 export const TAG_NOTION = "notion";
 
@@ -80,4 +80,47 @@ export async function getDatos(): Promise<Datos> {
     origen: "local",
     actualizado: new Date().toISOString(),
   };
+}
+
+/* ---------- Comentarios de clientes (Notion) ---------- */
+
+export type DatosComentarios = { comentarios: Comentario[]; motivo?: string };
+
+async function comentariosDesdeNotion(): Promise<Comentario[]> {
+  const { clientes } = await getDatos();
+  const out: Comentario[] = [];
+  // De a 3 páginas por vez para respetar el límite de la API de Notion (~3 pedidos por segundo).
+  for (let i = 0; i < clientes.length; i += 3) {
+    const lote = clientes.slice(i, i + 3);
+    const res = await Promise.all(
+      lote.map(async (c) => {
+        const id = idDeUrl(c.notionUrl);
+        if (!id) return [];
+        const crudos = await listarComentarios(id);
+        return Promise.all(crudos.map((k) => mapComentario(k, c)));
+      }),
+    );
+    out.push(...res.flat().filter((k) => k.texto));
+  }
+  return out.sort((a, b) => a.fecha.localeCompare(b.fecha));
+}
+
+const comentariosCache = unstable_cache(comentariosDesdeNotion, ["comentarios-notion"], { revalidate: 120, tags: [TAG_NOTION] });
+
+export async function getComentarios(): Promise<DatosComentarios> {
+  if (!process.env.NOTION_TOKEN) return { comentarios: [], motivo: "Falta conectar Notion (NOTION_TOKEN) para leer los comentarios." };
+  try {
+    return { comentarios: await comentariosCache() };
+  } catch (e) {
+    console.error("[notion] No se pudieron leer los comentarios:", e);
+    const m = String(e instanceof Error ? e.message : e);
+    return {
+      comentarios: [],
+      motivo: m.includes("403")
+        ? "La integración no tiene permiso para leer comentarios: activá «Leer comentarios» en notion.so/profile/integrations → Plataforma Yourebrand → Capacidades."
+        : m.includes("404")
+          ? "Notion no encuentra las páginas de clientes (404): conectá la integración a la página Yourebrand."
+          : `Error al leer comentarios: ${m.slice(0, 160)}`,
+    };
+  }
 }
