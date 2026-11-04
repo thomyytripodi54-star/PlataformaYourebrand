@@ -2,7 +2,7 @@ import data from "@/data/equipo.json";
 import { clientes, type Cliente } from "@/lib/clientes";
 
 export type Caso = { titulo: string; gravedad: "Leve" | "Grave" | "URGENTE"; cliente: string | null; fecha: string; notionUrl: string };
-export type AreaId = "direccion" | "cms" | "publicistas" | "creadores" | "edicion" | "staff";
+export type AreaId = "direccion" | "rrhh" | "asistencia" | "jefatura-creativa" | "cms" | "ugc" | "paid";
 export type Persona = {
   id: string;
   nombre: string;
@@ -17,13 +17,14 @@ export type Persona = {
 
 export const equipo = data as Persona[];
 
-export const AREAS: { id: Exclude<AreaId, "direccion">; nombre: string; descripcion: string }[] = [
-  { id: "cms", nombre: "Community Managers", descripcion: "Gestión de cuentas y redes" },
-  { id: "publicistas", nombre: "Publicistas", descripcion: "Campañas y pauta" },
-  { id: "creadores", nombre: "Creadores de contenido", descripcion: "Grabación y UGC" },
-  { id: "edicion", nombre: "Edición", descripcion: "Edición de video" },
-  { id: "staff", nombre: "Staff", descripcion: "RRHH, asistencia y desarrollo" },
-];
+export const AREAS = {
+  cms: { nombre: "Community Managers", descripcion: "Gestión de cuentas y redes" },
+  ugc: { nombre: "Área UGC", descripcion: "Creación, grabación y edición" },
+  paid: { nombre: "Paid media", descripcion: "Campañas, pauta y web" },
+} as const;
+
+/** Asesores externos (no figuran en la Nómina). */
+export const EXTERNOS = [{ nombre: "Germán Brameri", rol: "Contador" }];
 
 const porId = new Map(clientes.map((c) => [c.id, c]));
 export function clientesDe(p: Persona): Pick<Cliente, "id" | "nombre" | "logo">[] {
