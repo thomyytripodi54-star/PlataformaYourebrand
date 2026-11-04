@@ -89,6 +89,8 @@ export function mapCliente(p: Page, logos: Map<string, string | null>): Cliente 
     pagoMensual: ars ? { monto: ars, moneda: "ARS" } : eur ? { monto: eur, moneda: "EUR" } : null,
     logo: logos.get(id) ?? null,
     notionUrl: p.url,
+    satisfaccion: (select(prop(p, "Satisfaccion")) as Cliente["satisfaccion"]) ?? null,
+    margen: numero(prop(p, "Margen contribucion")),
   };
 }
 

@@ -193,7 +193,7 @@ function TarjetaCliente({ c, i }: { c: Cliente; i: number }) {
   );
 }
 
-export function MapaClientes({ clientes }: { clientes: Cliente[] }) {
+export function MapaClientes({ clientes, embebido = false }: { clientes: Cliente[]; embebido?: boolean }) {
   const [pais, setPais] = useState<string | null>(null);
 
   const paises = useMemo(() => {
@@ -205,9 +205,9 @@ export function MapaClientes({ clientes }: { clientes: Cliente[] }) {
   const lista = clientes.filter((c) => !pais || c.pais === pais).sort((a, b) => a.nombre.localeCompare(b.nombre, "es"));
 
   return (
-    <div className="-mx-4 -my-6 min-h-screen bg-ink px-4 py-8 text-white md:-mx-10 md:-my-8 md:px-10">
+    <div className={embebido ? "rounded-3xl bg-ink px-4 py-6 text-white md:px-8 md:py-8" : "-mx-4 -my-6 min-h-screen bg-ink px-4 py-8 text-white md:-mx-10 md:-my-8 md:px-10"}>
       <div className="mx-auto max-w-7xl">
-        <motion.header initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, ease }}>
+        {!embebido && <motion.header initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, ease }}>
           <p className="text-xs font-medium uppercase tracking-wider text-white/40">Dirección · Clientes</p>
           <h1 className="mt-1 text-3xl font-black uppercase tracking-tight md:text-4xl">
             Mapa de clientes<span className="text-accent">.</span>
@@ -215,9 +215,9 @@ export function MapaClientes({ clientes }: { clientes: Cliente[] }) {
           <p className="mt-1 text-sm font-extralight text-white/60">
             Clientes activos en <span className="font-bold text-white">{paises.length} países</span>. Arrastrá el globo para girarlo.
           </p>
-        </motion.header>
+        </motion.header>}
 
-        <div className="mt-8 grid grid-cols-1 items-start gap-10 lg:grid-cols-[1.15fr_1fr]">
+        <div className={`${embebido ? "" : "mt-8 "}grid grid-cols-1 items-start gap-10 lg:grid-cols-[1.15fr_1fr]`}>
           <div className="lg:sticky lg:top-8">
             <Globo paises={paises} foco={pais} />
           </div>

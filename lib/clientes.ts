@@ -17,6 +17,9 @@ export type Cliente = {
   pagoMensual: { monto: number; moneda: "ARS" | "EUR" } | null;
   logo: string | null;
   notionUrl: string;
+  satisfaccion: "Contento" | "Expectante" | "Insatisfecho" | null;
+  /** Margen de contribución mensual, en ARS (campo "Margen contribucion" de Notion). */
+  margen: number | null;
 };
 
 export function formatFecha(iso: string | null) {

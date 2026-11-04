@@ -31,7 +31,7 @@ export default async function FichaCliente({ params }: { params: Promise<{ id: s
 
   return (
     <div className="mx-auto max-w-3xl">
-      <Link href="/clientes" className="text-sm text-zinc-500 hover:text-zinc-800">← Clientes</Link>
+      <Link href="/clientes/dashboard" className="text-sm text-zinc-500 hover:text-zinc-800">← Dashboard de clientes</Link>
       <header className="mt-4 flex items-center gap-4">
         <Logo cliente={c} size={72} />
         <div>
