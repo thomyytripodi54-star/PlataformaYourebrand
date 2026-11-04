@@ -13,7 +13,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
     <Dashboard
       clientes={clientes.filter((c) => c.estado === "Activo")}
       casos={casos}
-      vistaInicial={VISTAS.includes(vista as Vista) ? (vista as Vista) : "estadisticas"}
+      vistaInicial={VISTAS.includes(vista as Vista) ? (vista as Vista) : "geografia"}
     />
   );
 }
