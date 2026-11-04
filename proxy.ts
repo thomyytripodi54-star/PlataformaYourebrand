@@ -10,5 +10,5 @@ export async function proxy(req: NextRequest) {
 
 export const config = {
   // Todo requiere login salvo la pantalla de login y los archivos estáticos.
-  matcher: ["/((?!login|_next/static|_next/image|favicon.ico|logos/).*)"],
+  matcher: ["/((?!login|api/notion-webhook|_next/static|_next/image|favicon.ico|logos/).*)"],
 };

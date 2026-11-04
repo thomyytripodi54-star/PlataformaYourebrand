@@ -1,7 +1,10 @@
-import { clientes } from "@/lib/clientes";
+import { getDatos } from "@/lib/datos";
 import { ListaClientes } from "./ListaClientes";
 
-export default function ClientesPage() {
+export const revalidate = 60;
+
+export default async function ClientesPage() {
+  const { clientes } = await getDatos();
   const activos = clientes.filter((c) => c.estado === "Activo");
   return (
     <div className="mx-auto max-w-6xl">
@@ -10,7 +13,7 @@ export default function ClientesPage() {
         <h1 className="mt-1 text-3xl font-black uppercase tracking-tight">Clientes<span className="text-accent">.</span></h1>
         <p className="mt-1 text-sm text-zinc-500">{activos.length} clientes activos</p>
       </header>
-      <ListaClientes clientes={clientes} />
+      <ListaClientes clientes={activos} />
     </div>
   );
 }

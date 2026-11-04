@@ -4,7 +4,10 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion, type Variants } from "motion/react";
 import { Logo } from "@/components/Logo";
-import { AREAS, EXTERNOS, clientesDe, equipo, nombreCliente, type AreaId, type Persona } from "@/lib/equipo";
+import { createContext, useContext } from "react";
+import { AREAS, EXTERNOS, type AreaId, type ClienteMin, type Persona } from "@/lib/equipo";
+
+const Ctx = createContext<{ equipo: Persona[]; clientes: Map<string, ClienteMin> }>({ equipo: [], clientes: new Map() });
 
 const ease = [0.22, 1, 0.36, 1] as const;
 
@@ -66,7 +69,9 @@ function Tarjeta({ p, onSelect, destacado = false, k = p.id }: { p: Persona; onS
 }
 
 function Panel({ p, k, onClose }: { p: Persona; k: string; onClose: () => void }) {
-  const proyectos = clientesDe(p);
+  const { clientes } = useContext(Ctx);
+  const proyectos = p.clientes.map((id) => clientes.get(id)).filter((c): c is ClienteMin => !!c);
+  const nombreCliente = (id: string | null) => (id && clientes.get(id)?.nombre) || "Cliente";
   const tel = p.telefono?.replace(/[^\d+]/g, "");
   return (
     <>
@@ -202,6 +207,7 @@ function Linea({ vertical = true, delay = 0, className = "" }: { vertical?: bool
 }
 
 function Area({ id, delay, nota, onSelect, extra = [] }: { id: keyof typeof AREAS; delay: number; nota?: string; onSelect: (s: Sel) => void; extra?: Persona[] }) {
+  const { equipo } = useContext(Ctx);
   const personas = [...extra, ...equipo.filter((p) => p.area === id)];
   const a = AREAS[id];
   const cols = id === "cms" ? "sm:grid-cols-2" : "";
@@ -229,6 +235,7 @@ function Area({ id, delay, nota, onSelect, extra = [] }: { id: keyof typeof AREA
 }
 
 function Uno({ area, onSelect, destacado = false, delay = 0 }: { area: AreaId; onSelect: (s: Sel) => void; destacado?: boolean; delay?: number }) {
+  const { equipo } = useContext(Ctx);
   const p = equipo.find((x) => x.area === area);
   if (!p) return null;
   return (
@@ -238,7 +245,8 @@ function Uno({ area, onSelect, destacado = false, delay = 0 }: { area: AreaId; o
   );
 }
 
-export function Organigrama() {
+export function Organigrama({ equipo, clientes }: { equipo: Persona[]; clientes: ClienteMin[] }) {
+  const ctx = { equipo, clientes: new Map(clientes.map((c) => [c.id, c])) };
   const [sel, setSel] = useState<Sel | null>(null);
   const jefa = equipo.find((p) => p.area === "jefatura-creativa");
 
@@ -249,6 +257,7 @@ export function Organigrama() {
   }, []);
 
   return (
+    <Ctx.Provider value={ctx}>
     <div className="mx-auto max-w-7xl">
       <motion.header initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease }} className="mb-10 flex flex-wrap items-end justify-between gap-4">
         <div>
@@ -306,5 +315,6 @@ export function Organigrama() {
 
       <AnimatePresence>{sel && <Panel key={sel.key} p={sel.p} k={sel.key} onClose={() => setSel(null)} />}</AnimatePresence>
     </div>
+    </Ctx.Provider>
   );
 }

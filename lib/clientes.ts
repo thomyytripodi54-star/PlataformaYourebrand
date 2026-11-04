@@ -1,5 +1,3 @@
-import data from "@/data/clientes.json";
-
 export type Cliente = {
   id: string;
   nombre: string;
@@ -20,12 +18,6 @@ export type Cliente = {
   logo: string | null;
   notionUrl: string;
 };
-
-export const clientes = data as Cliente[];
-
-export function getCliente(id: string) {
-  return clientes.find((c) => c.id === id);
-}
 
 export function formatFecha(iso: string | null) {
   if (!iso) return "—";
