@@ -3,7 +3,7 @@
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import createGlobe from "cobe";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useImperativeHandle, useMemo, useRef, useState } from "react";
 import { AnimatePresence, animate, motion, useMotionValue, useSpring, useTransform } from "motion/react";
 import { Logo } from "@/components/Logo";
 import type { Cliente } from "@/lib/clientes";
@@ -272,7 +272,19 @@ function encuadreDe(puntos: { lat: number; lng: number }[], m = 0.08): [number, 
   return [o - m, s - m, e + m, n + m];
 }
 
-export function MapaClientes({ clientes, embebido = false, casos = [] }: { clientes: Cliente[]; embebido?: boolean; casos?: Caso[] }) {
+export type MapaHandle = { enfocar: (clienteId: string) => void };
+
+export function MapaClientes({
+  clientes,
+  embebido = false,
+  casos = [],
+  ref,
+}: {
+  clientes: Cliente[];
+  embebido?: boolean;
+  casos?: Caso[];
+  ref?: React.Ref<MapaHandle>;
+}) {
   const casosDe = useMemo(() => {
     const m: Record<string, Caso[]> = {};
     for (const k of casos) if (k.cliente) (m[k.cliente] ??= []).push(k);
@@ -294,6 +306,18 @@ export function MapaClientes({ clientes, embebido = false, casos = [] }: { clien
     setTodaArgentina(false);
     setSel(null);
   };
+
+  // Desde el buscador: ir al país del cliente, abrir la zona correcta y seleccionarlo.
+  useImperativeHandle(ref, () => ({
+    enfocar: (id) => {
+      const c = clientes.find((x) => x.id === id);
+      if (!c?.pais) return;
+      const u = ubicar(c.ubicacion ?? [], c.pais);
+      setPais(c.pais);
+      setTodaArgentina(c.pais === "Argentina" && !(u?.precisa && esAMBA(u.lat, u.lng)));
+      setSel(id);
+    },
+  }));
 
   // Clientes del país elegido, con coordenadas
   const ubicados = useMemo(
@@ -318,9 +342,7 @@ export function MapaClientes({ clientes, embebido = false, casos = [] }: { clien
           : amba.length
             ? encuadreDe(amba.map((x) => x.u), 0.015) // ajustado a donde están los clientes de CABA y GBA
             : ENCUADRES.AMBA
-        : ubicados.length
-          ? encuadreDe(ubicados.map((x) => x.u))
-          : (ENCUADRES[pais ?? ""] ?? ENCUADRES.Argentina),
+        : (ENCUADRES[pais ?? ""] ?? (ubicados.length ? encuadreDe(ubicados.map((x) => x.u), 2.5) : ENCUADRES.Argentina)), // el país completo, con sus clientes marcados
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [pais, todaArgentina, ubicados.length],
   );

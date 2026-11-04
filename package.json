@@ -7,7 +7,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "logos": "node scripts/descargar-logos.mjs"
+    "logos": "node scripts/descargar-logos.mjs",
+    "prebuild": "node scripts/copiar-worker-mapa.mjs",
+    "predev": "node scripts/copiar-worker-mapa.mjs"
   },
   "dependencies": {
     "cobe": "^2.0.1",
