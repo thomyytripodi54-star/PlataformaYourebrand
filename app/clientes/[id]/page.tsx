@@ -25,8 +25,11 @@ function Lista({ items }: { items: [string, React.ReactNode][] }) {
 
 export default async function FichaCliente({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const c = (await getDatos()).clientes.find((x) => x.id === id);
+  const datos = await getDatos();
+  const c = datos.clientes.find((x) => x.id === id);
   if (!c) notFound();
+  const casos = datos.casos.filter((k) => k.cliente === c.id);
+  const nombreDe = new Map(datos.equipo.map((p) => [p.id, p.nombre]));
   const sinContenido = c.planes.length > 0 && c.planes.every((p) => PLANES_SIN_CONTENIDO.has(p));
   const cal = sinContenido ? null : await getCalendario(c.notionUrl);
 
@@ -55,7 +58,7 @@ export default async function FichaCliente({ params }: { params: Promise<{ id: s
       </Link>
 
       <header className="mt-4 flex flex-wrap items-center gap-4">
-        <Logo cliente={c} size={72} />
+        <Logo cliente={c} size={72} casos={casos.length} />
         <div className="min-w-0">
           <h1 className="text-3xl font-black tracking-tight">
             {c.nombre}
@@ -92,6 +95,37 @@ export default async function FichaCliente({ params }: { params: Promise<{ id: s
           <Lista items={contrato} />
         </section>
       </div>
+
+      <section className={`mt-6 rounded-3xl border bg-white p-4 md:p-6 ${casos.length ? "border-accent/40" : "border-zinc-200"}`}>
+        <h2 className="flex items-center gap-2 text-xl font-black uppercase tracking-tight">
+          Casos abiertos<span className="-ml-2 text-accent">.</span>
+          <span className={`rounded-full px-2 py-0.5 text-xs ${casos.length ? "bg-accent text-white" : "bg-surface text-zinc-500"}`}>{casos.length}</span>
+        </h2>
+        {casos.length ? (
+          <ul className="mt-4 grid grid-cols-1 gap-2 md:grid-cols-2">
+            {casos.map((k) => (
+              <li key={k.notionUrl}>
+                <a href={k.notionUrl} target="_blank" rel="noreferrer" className="relative block overflow-hidden rounded-2xl border border-zinc-200 p-4 pl-5 hover:border-ink">
+                  <span className={`absolute inset-y-0 left-0 w-1 ${k.gravedad === "Leve" ? "bg-zinc-300" : "bg-accent"}`} />
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider ${k.gravedad === "Leve" ? "bg-surface text-ink/70" : "bg-accent text-white"}`}>
+                      {k.gravedad === "URGENTE" ? "Urgente" : k.gravedad}
+                    </span>
+                    <span className="font-bold">{k.titulo}</span>
+                  </div>
+                  {k.situacion && <p className="mt-1 line-clamp-2 text-sm text-zinc-600">{k.situacion}</p>}
+                  <p className="mt-2 text-xs text-zinc-500">
+                    Cargado el {k.fecha.split("-").reverse().join("/")}
+                    {k.responsables?.length ? ` · ${k.responsables.map((r) => nombreDe.get(r) ?? r).join(", ")}` : ""}
+                  </p>
+                </a>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="mt-3 text-sm text-zinc-500">Este cliente no tiene casos abiertos.</p>
+        )}
+      </section>
 
       <section className="mt-6 rounded-3xl border border-zinc-200 bg-white p-4 md:p-6">
         <h2 className="mb-4 text-xl font-black uppercase tracking-tight">

@@ -235,7 +235,7 @@ export function Dashboard({ clientes, casos, vistaInicial }: { clientes: Cliente
         <motion.div key={vista} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.25, ease }}>
           {vista === "estadisticas" && <Estadisticas clientes={clientes} casos={casos} />}
           {vista === "satisfaccion" && <Satisfaccion clientes={clientes} casosPorCliente={casosPorCliente} />}
-          {vista === "geografia" && <MapaClientes clientes={clientes} embebido casosPorCliente={casosPorCliente} />}
+          {vista === "geografia" && <MapaClientes clientes={clientes} embebido casos={casos} />}
         </motion.div>
       </AnimatePresence>
     </div>

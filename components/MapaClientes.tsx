@@ -7,6 +7,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, animate, motion, useMotionValue, useSpring, useTransform } from "motion/react";
 import { Logo } from "@/components/Logo";
 import type { Cliente } from "@/lib/clientes";
+import type { Caso } from "@/lib/equipo";
 import { ENCUADRES, PAISES, SEDE, angulos, esAMBA, ubicar } from "@/lib/geo";
 import type { PuntoCliente } from "@/components/MapaZoom";
 
@@ -209,21 +210,75 @@ function TarjetaCliente({ c, i, casos, lugar, activo, onSeleccionar }: { c: Clie
   );
 }
 
+function FichaMapa({ c, lugar, casos, onClose }: { c: Cliente; lugar?: string; casos: Caso[]; onClose: () => void }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 24, scale: 0.97 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      exit={{ opacity: 0, y: 24, scale: 0.97 }}
+      transition={{ duration: 0.35, ease }}
+      className="absolute inset-x-3 bottom-3 z-10 max-h-[55%] overflow-y-auto rounded-2xl bg-white p-4 text-ink shadow-2xl sm:right-auto sm:w-80"
+    >
+      <div className="flex items-start gap-3">
+        <Logo cliente={c} size={40} casos={casos.length} />
+        <div className="min-w-0 flex-1">
+          <p className="truncate font-bold">
+            {c.nombre}
+            <span className="text-accent">.</span>
+          </p>
+          <p className="text-xs text-zinc-500">{lugar ?? c.pais}</p>
+        </div>
+        <button onClick={onClose} aria-label="Cerrar" className="text-xl leading-none text-zinc-400 hover:text-ink">
+          ×
+        </button>
+      </div>
+      <p className="mt-3 text-[11px] font-bold uppercase tracking-wider text-zinc-400">Casos abiertos · {casos.length}</p>
+      {casos.length ? (
+        <ul className="mt-2 space-y-1.5">
+          {casos.map((k) => (
+            <li key={k.notionUrl}>
+              <a href={k.notionUrl} target="_blank" rel="noreferrer" className="block rounded-xl border border-zinc-200 px-3 py-2 hover:border-ink">
+                <div className="flex items-center justify-between gap-2">
+                  <span className="text-sm font-semibold">{k.titulo}</span>
+                  <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${k.gravedad === "Leve" ? "bg-surface text-ink" : "bg-accent text-white"}`}>
+                    {k.gravedad === "URGENTE" ? "Urgente" : k.gravedad}
+                  </span>
+                </div>
+                <p className="mt-0.5 text-[11px] text-zinc-500">Cargado el {k.fecha.split("-").reverse().join("/")}</p>
+              </a>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p className="mt-1 text-sm text-zinc-500">Sin casos abiertos.</p>
+      )}
+      <Link href={`/clientes/${c.id}`} className="mt-3 inline-block text-xs font-bold hover:text-accent">
+        Ver ficha completa →
+      </Link>
+    </motion.div>
+  );
+}
+
 const MapaZoom = dynamic(() => import("@/components/MapaZoom").then((m) => m.MapaZoom), {
   ssr: false,
   loading: () => <div className="h-full w-full animate-pulse bg-white/[0.03]" />,
 });
 
 /** Encuadre que contiene todos los puntos, con un margen mínimo para que una sola ciudad se vea a nivel barrio. */
-function encuadreDe(puntos: PuntoCliente[]): [number, number, number, number] {
+function encuadreDe(puntos: { lat: number; lng: number }[], m = 0.08): [number, number, number, number] {
   const lats = puntos.map((p) => p.lat);
   const lngs = puntos.map((p) => p.lng);
   const [s, n, o, e] = [Math.min(...lats), Math.max(...lats), Math.min(...lngs), Math.max(...lngs)];
-  const m = 0.08;
   return [o - m, s - m, e + m, n + m];
 }
 
-export function MapaClientes({ clientes, embebido = false, casosPorCliente = {} }: { clientes: Cliente[]; embebido?: boolean; casosPorCliente?: Record<string, number> }) {
+export function MapaClientes({ clientes, embebido = false, casos = [] }: { clientes: Cliente[]; embebido?: boolean; casos?: Caso[] }) {
+  const casosDe = useMemo(() => {
+    const m: Record<string, Caso[]> = {};
+    for (const k of casos) if (k.cliente) (m[k.cliente] ??= []).push(k);
+    return m;
+  }, [casos]);
+  const casosPorCliente = Object.fromEntries(Object.entries(casosDe).map(([k, v]) => [k, v.length]));
   const [pais, setPais] = useState<string | null>(null);
   const [todaArgentina, setTodaArgentina] = useState(false);
   const [sel, setSel] = useState<string | null>(null);
@@ -256,7 +311,16 @@ export function MapaClientes({ clientes, embebido = false, casosPorCliente = {} 
   const visibles = esArg && !todaArgentina ? amba : ubicados;
   const puntos: PuntoCliente[] = visibles.map(({ c, u }) => ({ id: c.id, nombre: c.nombre, logo: c.logo, lat: u.lat, lng: u.lng, lugar: u.lugar, casos: casosPorCliente[c.id] ?? 0 }));
   const encuadre = useMemo<[number, number, number, number]>(
-    () => (esArg ? (todaArgentina ? ENCUADRES.Argentina : ENCUADRES.AMBA) : ubicados.length ? encuadreDe(ubicados.map(({ u }) => ({ ...u, id: "", nombre: "", logo: null, casos: 0 }))) : ENCUADRES[pais ?? ""] ?? ENCUADRES.Argentina),
+    () =>
+      esArg
+        ? todaArgentina
+          ? ENCUADRES.Argentina
+          : amba.length
+            ? encuadreDe(amba.map((x) => x.u), 0.015) // ajustado a donde están los clientes de CABA y GBA
+            : ENCUADRES.AMBA
+        : ubicados.length
+          ? encuadreDe(ubicados.map((x) => x.u))
+          : (ENCUADRES[pais ?? ""] ?? ENCUADRES.Argentina),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [pais, todaArgentina, ubicados.length],
   );
@@ -280,6 +344,17 @@ export function MapaClientes({ clientes, embebido = false, casosPorCliente = {} 
                   className="relative h-[460px] overflow-hidden rounded-3xl border border-white/10 lg:h-[640px]"
                 >
                   <MapaZoom key={pais} puntos={puntos} encuadre={encuadre} seleccionado={sel} onSeleccionar={setSel} />
+                  <AnimatePresence>
+                    {sel && clientes.find((c) => c.id === sel) && (
+                      <FichaMapa
+                        key={sel}
+                        c={clientes.find((c) => c.id === sel)!}
+                        lugar={ubicados.find((x) => x.c.id === sel)?.u.lugar}
+                        casos={casosDe[sel] ?? []}
+                        onClose={() => setSel(null)}
+                      />
+                    )}
+                  </AnimatePresence>
                   <div className="pointer-events-none absolute left-3 top-3 rounded-full bg-ink/80 px-3 py-1.5 text-xs font-bold backdrop-blur">
                     {PAISES[pais]?.bandera} {esArg ? (todaArgentina ? "Toda Argentina" : "CABA y Gran Buenos Aires") : pais}
                   </div>

@@ -94,7 +94,7 @@ export function MapaZoom({
     const tEstilo = setTimeout(usarRespaldo, 6000);
     mapa.current = m;
     // El vuelo arranca enseguida: la cámara no necesita que hayan cargado las calles.
-    const t = setTimeout(() => m.fitBounds(encuadre, { padding: 50, duration: 2600, curve: 1.6, pitch: 30, essential: true }), 350);
+    const t = setTimeout(() => m.fitBounds(encuadre, { padding: 40, maxZoom: 13, duration: 2400, curve: 1.6, essential: true }), 350);
     const marks = marcadores.current;
     return () => {
       clearTimeout(t);
@@ -113,7 +113,7 @@ export function MapaZoom({
       primera.current = false;
       return;
     }
-    mapa.current?.fitBounds(encuadre, { padding: 50, duration: 2200, curve: 1.5, essential: true });
+    mapa.current?.fitBounds(encuadre, { padding: 40, maxZoom: 13, duration: 1800, curve: 1.4, essential: true });
   }, [encuadre]);
 
   // Marcadores: los que comparten lugar se acomodan en ronda para que se vean todos.
@@ -156,7 +156,7 @@ export function MapaZoom({
   useEffect(() => {
     for (const [id, x] of marcadores.current) x.el.classList.toggle("activo", id === seleccionado);
     const s = seleccionado && marcadores.current.get(seleccionado);
-    if (s && mapa.current) mapa.current.flyTo({ center: [s.p.lng, s.p.lat], zoom: Math.max(mapa.current.getZoom(), 12.5), duration: 1600, essential: true });
+    if (s && mapa.current) mapa.current.flyTo({ center: [s.p.lng, s.p.lat], zoom: Math.max(mapa.current.getZoom(), 13.5), offset: [0, -60], duration: 1400, essential: true });
   }, [seleccionado]);
 
   return <div ref={contenedor} className="yb-mapa h-full w-full" />;
