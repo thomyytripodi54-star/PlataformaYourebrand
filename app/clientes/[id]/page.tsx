@@ -1,15 +1,14 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Logo } from "@/components/Logo";
-import { clientes, formatFecha, formatPago, getCliente } from "@/lib/clientes";
+import { formatFecha, formatPago } from "@/lib/clientes";
+import { getDatos } from "@/lib/datos";
 
-export function generateStaticParams() {
-  return clientes.map((c) => ({ id: c.id }));
-}
+export const revalidate = 60;
 
 export default async function FichaCliente({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const c = getCliente(id);
+  const c = (await getDatos()).clientes.find((x) => x.id === id);
   if (!c) notFound();
 
   const datos: [string, React.ReactNode][] = [
