@@ -26,3 +26,74 @@ body {
   color: var(--yb-black);
   font-family: var(--font-montserrat), sans-serif;
 }
+
+/* ---------- Mapa con zoom (MapLibre) ---------- */
+.yb-mapa { background: #1b1a1a; }
+.yb-mapa .maplibregl-ctrl-group { background: #272626; border: 1px solid rgb(255 255 255 / 0.1); box-shadow: none; }
+.yb-mapa .maplibregl-ctrl-group button + button { border-top-color: rgb(255 255 255 / 0.1); }
+.yb-mapa .maplibregl-ctrl-icon { filter: invert(1); }
+.yb-mapa .maplibregl-ctrl-attrib { background: rgb(39 38 38 / 0.7) !important; color: rgb(255 255 255 / 0.5); }
+.yb-mapa .maplibregl-ctrl-attrib a { color: rgb(255 255 255 / 0.6); }
+
+.yb-marcador {
+  position: relative;
+  display: block;
+  cursor: pointer;
+  opacity: 0;
+  animation: yb-caer 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+.yb-marcador-logo {
+  display: flex;
+  height: 34px;
+  width: 34px;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 9999px;
+  border: 2px solid #fff;
+  background: #272626;
+  color: #fff;
+  font: 700 11px/1 var(--font-montserrat), sans-serif;
+  box-shadow: 0 6px 18px -6px rgb(0 0 0 / 0.6);
+  transition: transform 0.2s, border-color 0.2s;
+}
+.yb-marcador-logo img { height: 100%; width: 100%; object-fit: cover; }
+.yb-marcador:hover .yb-marcador-logo,
+.yb-marcador.activo .yb-marcador-logo { transform: scale(1.25); border-color: var(--yb-red); }
+.yb-marcador-alerta {
+  position: absolute;
+  right: -4px;
+  top: -4px;
+  display: flex;
+  height: 16px;
+  min-width: 16px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  background: var(--yb-red);
+  color: #fff;
+  font: 700 9px/1 var(--font-montserrat), sans-serif;
+  box-shadow: 0 0 0 2px #fff;
+}
+.yb-marcador-nombre {
+  pointer-events: none;
+  position: absolute;
+  left: 50%;
+  top: calc(100% + 6px);
+  translate: -50% 4px;
+  white-space: nowrap;
+  border-radius: 6px;
+  background: #fff;
+  padding: 3px 7px;
+  color: #000;
+  font: 700 11px/1.2 var(--font-montserrat), sans-serif;
+  opacity: 0;
+  transition: opacity 0.15s, translate 0.15s;
+}
+.yb-marcador:hover .yb-marcador-nombre,
+.yb-marcador.activo .yb-marcador-nombre { opacity: 1; translate: -50% 0; }
+.maplibregl-marker:has(.yb-marcador:hover), .maplibregl-marker:has(.yb-marcador.activo) { z-index: 10; }
+@keyframes yb-caer {
+  from { opacity: 0; transform: translateY(-18px) scale(0.6); }
+  to { opacity: 1; transform: none; }
+}

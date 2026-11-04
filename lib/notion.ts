@@ -91,6 +91,7 @@ export function mapCliente(p: Page, logos: Map<string, string | null>): Cliente 
     notionUrl: p.url,
     satisfaccion: (select(prop(p, "Satisfaccion")) as Cliente["satisfaccion"]) ?? null,
     margen: numero(prop(p, "Margen contribucion")),
+    ubicacion: multi(prop(p, "Ubicacion geografic") ?? prop(p, "Ubicacion geografica")),
   };
 }
 

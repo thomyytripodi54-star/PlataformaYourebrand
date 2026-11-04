@@ -20,6 +20,8 @@ export type Cliente = {
   satisfaccion: "Contento" | "Expectante" | "Insatisfecho" | null;
   /** Margen de contribución mensual, en ARS (campo "Margen contribucion" de Notion). */
   margen: number | null;
+  /** Barrio o ciudad (campo "Ubicacion geografic" de Notion). */
+  ubicacion: string[];
 };
 
 export function formatFecha(iso: string | null) {
