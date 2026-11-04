@@ -4,6 +4,9 @@ import "maplibre-gl/dist/maplibre-gl.css";
 import * as maplibregl from "maplibre-gl";
 import { useEffect, useRef } from "react";
 
+// El worker se sirve desde /public (lo copia scripts/copiar-worker-mapa.mjs en cada build).
+maplibregl.setWorkerUrl("/maplibre/maplibre-gl-worker.mjs");
+
 export type PuntoCliente = {
   id: string;
   nombre: string;
@@ -15,21 +18,45 @@ export type PuntoCliente = {
 };
 
 type Encuadre = [number, number, number, number];
+type FC = GeoJSON.FeatureCollection<GeoJSON.Polygon | GeoJSON.MultiPolygon, { nombre?: string; name?: string }>;
 
-const ESTILO = "https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json";
-// Si el proveedor de mapas no responde, se usa un fondo liso para que el mapa y el zoom igual funcionen.
-const RESPALDO: maplibregl.StyleSpecification = {
-  version: 8,
-  sources: {},
-  layers: [{ id: "fondo", type: "background", paint: { "background-color": "#1b1a1a" } }],
+// Paleta del manual de marca
+const C = {
+  agua: "#eceae6",
+  tierra: "#ffffff",
+  borde: "#d4d4d4",
+  bordeFuerte: "#a9a8a8",
+  grafito: "#272626",
+  rojo: "#d30805",
+  rojo20: "#f6cecd",
 };
 
-function iniciales(n: string) {
-  return n.split(/\s+/).slice(0, 2).map((p) => p[0]?.toUpperCase()).join("");
+/* ---------- geometría ---------- */
+function anillos(g: GeoJSON.Polygon | GeoJSON.MultiPolygon): GeoJSON.Position[][][] {
+  return g.type === "Polygon" ? [g.coordinates] : g.coordinates;
+}
+function dentro([x, y]: [number, number], g: GeoJSON.Polygon | GeoJSON.MultiPolygon) {
+  return anillos(g).some((poly) => {
+    let adentro = false;
+    const ring = poly[0];
+    for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
+      const [xi, yi] = ring[i];
+      const [xj, yj] = ring[j];
+      if (yi > y !== yj > y && x < ((xj - xi) * (y - yi)) / (yj - yi) + xi) adentro = !adentro;
+    }
+    return adentro;
+  });
+}
+/** Centro aproximado (del anillo exterior más grande) para ubicar el nombre del partido. */
+function centro(g: GeoJSON.Polygon | GeoJSON.MultiPolygon): [number, number] {
+  const ring = anillos(g).map((p) => p[0]).sort((a, b) => b.length - a.length)[0];
+  const xs = ring.map((p) => p[0]);
+  const ys = ring.map((p) => p[1]);
+  return [(Math.min(...xs) + Math.max(...xs)) / 2, (Math.min(...ys) + Math.max(...ys)) / 2];
 }
 
-/** Marcador HTML: logo o iniciales del cliente, con punto rojo si tiene casos abiertos. */
 const esc = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/"/g, "&quot;");
+const iniciales = (n: string) => n.split(/\s+/).slice(0, 2).map((p) => p[0]?.toUpperCase()).join("");
 
 function crearMarcador(p: PuntoCliente, onClick: () => void) {
   // MapLibre posiciona el contenedor; la animación va en el botón interno.
@@ -50,6 +77,48 @@ function crearMarcador(p: PuntoCliente, onClick: () => void) {
   return { pin, el };
 }
 
+/** Mapa propio (sin proveedores externos): países, provincias, partidos del AMBA y comunas de CABA. */
+function estilo(): maplibregl.StyleSpecification {
+  const vacio: GeoJSON.FeatureCollection = { type: "FeatureCollection", features: [] };
+  const src = (): maplibregl.GeoJSONSourceSpecification => ({ type: "geojson", data: vacio });
+  return {
+    version: 8,
+    sources: { mundo: src(), provincias: src(), partidos: { ...src(), promoteId: "nombre" }, caba: src(), comunas: src() },
+    layers: [
+      { id: "agua", type: "background", paint: { "background-color": C.agua } },
+      { id: "mundo", type: "fill", source: "mundo", paint: { "fill-color": C.tierra } },
+      { id: "mundo-borde", type: "line", source: "mundo", paint: { "line-color": C.borde, "line-width": 0.6 } },
+      { id: "provincias-borde", type: "line", source: "provincias", paint: { "line-color": C.bordeFuerte, "line-width": ["interpolate", ["linear"], ["zoom"], 3, 0.4, 8, 1.2] } },
+      {
+        id: "partidos",
+        type: "fill",
+        source: "partidos",
+        paint: {
+          "fill-color": [
+            "case",
+            ["boolean", ["feature-state", "hover"], false],
+            "#ececec",
+            ["boolean", ["feature-state", "clientes"], false],
+            C.rojo20,
+            C.tierra,
+          ],
+          "fill-opacity": 0,
+          "fill-opacity-transition": { duration: 900, delay: 300 },
+        },
+      },
+      {
+        id: "partidos-borde",
+        type: "line",
+        source: "partidos",
+        paint: { "line-color": "#8a8988", "line-width": ["interpolate", ["linear"], ["zoom"], 7, 0.5, 11, 1.4], "line-opacity": 0, "line-opacity-transition": { duration: 1200, delay: 200 } },
+      },
+      { id: "comunas", type: "line", source: "comunas", paint: { "line-color": C.borde, "line-width": 0.8, "line-dasharray": [2, 2] } },
+      { id: "caba", type: "fill", source: "caba", paint: { "fill-color": C.grafito, "fill-opacity": 0.06 } },
+      { id: "caba-borde", type: "line", source: "caba", paint: { "line-color": C.grafito, "line-width": ["interpolate", ["linear"], ["zoom"], 7, 1, 12, 2.5] } },
+    ],
+  };
+}
+
 export function MapaZoom({
   puntos,
   encuadre,
@@ -63,61 +132,111 @@ export function MapaZoom({
 }) {
   const contenedor = useRef<HTMLDivElement>(null);
   const mapa = useRef<maplibregl.Map | null>(null);
+  const partidos = useRef<FC | null>(null);
+  const etiquetas = useRef<maplibregl.Marker[]>([]);
   const marcadores = useRef(new Map<string, { m: maplibregl.Marker; el: HTMLElement; p: PuntoCliente }>());
   const onSel = useRef(onSeleccionar);
   useEffect(() => {
     onSel.current = onSeleccionar;
   }, [onSeleccionar]);
+  const puntosRef = useRef(puntos);
+  useEffect(() => {
+    puntosRef.current = puntos;
+  }, [puntos]);
 
-  // Crear el mapa una sola vez: arranca lejos y "vuela" hasta el país.
+  /** Marca en rojo suave los partidos donde hay clientes. */
+  const marcarPartidos = () => {
+    const m = mapa.current;
+    const fc = partidos.current;
+    if (!m || !fc || !m.getSource("partidos")) return;
+    for (const f of fc.features) {
+      const tiene = puntosRef.current.some((p) => dentro([p.lng, p.lat], f.geometry));
+      m.setFeatureState({ source: "partidos", id: f.properties.nombre }, { clientes: tiene });
+    }
+  };
+
+  // Crear el mapa una sola vez: arranca en la vista del país y "vuela" hasta el encuadre.
   useEffect(() => {
     if (!contenedor.current) return;
-    const centro: [number, number] = [(encuadre[0] + encuadre[2]) / 2, (encuadre[1] + encuadre[3]) / 2];
+    const centroIni: [number, number] = [(encuadre[0] + encuadre[2]) / 2, (encuadre[1] + encuadre[3]) / 2];
     const m = new maplibregl.Map({
       container: contenedor.current,
-      style: ESTILO,
-      center: centro,
-      zoom: 1.6,
-      pitch: 0,
-      attributionControl: { compact: true },
+      style: estilo(),
+      center: centroIni,
+      zoom: 3,
+      attributionControl: false,
       fadeDuration: 0,
+      renderWorldCopies: false,
     });
     m.addControl(new maplibregl.NavigationControl({ showCompass: false }), "bottom-right");
     m.on("click", () => onSel.current(null));
-    // Fondo liso SOLO si el estilo del proveedor nunca llega (sin conexión o bloqueado).
-    // Errores sueltos de calles/íconos no reemplazan el mapa.
-    let estiloListo = false;
-    let respaldo = false;
-    m.once("style.load", () => {
-      estiloListo = true;
-      contenedor.current?.setAttribute("data-estilo", respaldo ? "respaldo" : "proveedor");
-    });
-    const usarRespaldo = () => {
-      if (respaldo || estiloListo) return;
-      respaldo = true;
-      m.setStyle(RESPALDO);
-    };
-    m.on("error", (e) => {
-      // solo el fallo de descarga del estilo en sí activa el respaldo
-      const url = (e as { error?: { url?: string } }).error?.url ?? "";
-      if (!estiloListo && url.includes("style.json")) usarRespaldo();
-    });
-    const tEstilo = setTimeout(usarRespaldo, 20000);
     mapa.current = m;
-    // El vuelo arranca enseguida: la cámara no necesita que hayan cargado las calles.
+    contenedor.current.setAttribute("data-estilo", "local");
+
+    let vivo = true;
+    m.once("load", async () => {
+      const cargar = async (n: string) => (await fetch(`/geo/${n}.geojson`)).json();
+      const [mundo, provincias, part, caba, comunas] = await Promise.all(["mundo", "provincias", "partidos", "caba", "comunas"].map(cargar));
+      if (!vivo) return;
+      (m.getSource("mundo") as maplibregl.GeoJSONSource).setData(mundo);
+      (m.getSource("provincias") as maplibregl.GeoJSONSource).setData(provincias);
+      (m.getSource("partidos") as maplibregl.GeoJSONSource).setData(part);
+      (m.getSource("caba") as maplibregl.GeoJSONSource).setData(caba);
+      (m.getSource("comunas") as maplibregl.GeoJSONSource).setData(comunas);
+      partidos.current = part;
+      // Aparición animada de los partidos
+      m.setPaintProperty("partidos", "fill-opacity", 1);
+      m.setPaintProperty("partidos-borde", "line-opacity", 0.9);
+      m.once("idle", marcarPartidos);
+
+      // Nombres de partidos (HTML, visibles desde cierto zoom)
+      for (const f of (part as FC).features) {
+        // MapLibre controla la opacidad del contenedor del marcador; el texto va en un elemento interno.
+        const el = document.createElement("div");
+        const txt = document.createElement("span");
+        txt.className = "yb-partido";
+        txt.textContent = f.properties.nombre ?? "";
+        el.appendChild(txt);
+        etiquetas.current.push(new maplibregl.Marker({ element: el }).setLngLat(centro(f.geometry)).addTo(m));
+      }
+      // Los nombres solo se muestran de cerca (se controla en cada etiqueta, no con clases del contenedor).
+      const visibilidad = () => {
+        const ver = m.getZoom() >= 8.6;
+        for (const e of etiquetas.current) (e.getElement().firstElementChild as HTMLElement).style.opacity = ver ? "1" : "0";
+      };
+      m.on("zoom", visibilidad);
+      visibilidad();
+
+      // Hover de partidos
+      let hover: string | null = null;
+      m.on("mousemove", "partidos", (e) => {
+        const id = e.features?.[0]?.id as string | undefined;
+        if (id === hover) return;
+        if (hover) m.setFeatureState({ source: "partidos", id: hover }, { hover: false });
+        hover = id ?? null;
+        if (hover) m.setFeatureState({ source: "partidos", id: hover }, { hover: true });
+      });
+      m.on("mouseleave", "partidos", () => {
+        if (hover) m.setFeatureState({ source: "partidos", id: hover }, { hover: false });
+        hover = null;
+      });
+    });
+
     const t = setTimeout(() => m.fitBounds(encuadre, { padding: 40, maxZoom: 13, duration: 2400, curve: 1.6, essential: true }), 350);
     const marks = marcadores.current;
+    const labels = etiquetas.current;
     return () => {
+      vivo = false;
       clearTimeout(t);
-      clearTimeout(tEstilo);
       marks.clear();
+      labels.length = 0;
       m.remove();
       mapa.current = null;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Cambios de encuadre (p. ej. "Ver toda Argentina")
+  // Cambios de encuadre (CABA y GBA ↔ toda Argentina)
   const primera = useRef(true);
   useEffect(() => {
     if (primera.current) {
@@ -150,7 +269,7 @@ export function MapaZoom({
           return;
         }
         const { pin, el } = crearMarcador(p, () => onSel.current(p.id));
-        el.style.animationDelay = `${0.9 + (i % 6) * 0.08 + Math.random() * 0.6}s`;
+        el.style.animationDelay = `${1.2 + (i % 6) * 0.08 + Math.random() * 0.6}s`;
         const mk = new maplibregl.Marker({ element: pin, offset }).setLngLat([p.lng, p.lat]).addTo(m);
         marcadores.current.set(p.id, { m: mk, el, p });
       });
@@ -161,13 +280,14 @@ export function MapaZoom({
         marcadores.current.delete(id);
       }
     }
+    marcarPartidos();
   }, [puntos]);
 
   // Selección: resalta el marcador y vuela hasta el cliente.
   useEffect(() => {
     for (const [id, x] of marcadores.current) x.el.classList.toggle("activo", id === seleccionado);
     const s = seleccionado && marcadores.current.get(seleccionado);
-    if (s && mapa.current) mapa.current.flyTo({ center: [s.p.lng, s.p.lat], zoom: Math.max(mapa.current.getZoom(), 13.5), offset: [0, -60], duration: 1400, essential: true });
+    if (s && mapa.current) mapa.current.flyTo({ center: [s.p.lng, s.p.lat], zoom: Math.max(mapa.current.getZoom(), 13), offset: [0, -60], duration: 1400, essential: true });
   }, [seleccionado]);
 
   return <div ref={contenedor} className="yb-mapa h-full w-full" />;

@@ -4,7 +4,8 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, animate, motion } from "motion/react";
 import { Logo } from "@/components/Logo";
-import { MapaClientes } from "@/components/MapaClientes";
+import { MapaClientes, type MapaHandle } from "@/components/MapaClientes";
+import { useRouter } from "next/navigation";
 import type { Cliente } from "@/lib/clientes";
 import type { Caso } from "@/lib/equipo";
 
@@ -200,11 +201,108 @@ function Satisfaccion({ clientes, casosPorCliente }: { clientes: Cliente[]; caso
   );
 }
 
+/* ---------- Buscador ---------- */
+const normalizar = (s: string) => s.normalize("NFKD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+
+function Buscador({ clientes, casosPorCliente, onMapa }: { clientes: Cliente[]; casosPorCliente: Record<string, number>; onMapa: (id: string) => void }) {
+  const router = useRouter();
+  const [q, setQ] = useState("");
+  const [abierto, setAbierto] = useState(false);
+  const [i, setI] = useState(0);
+  const t = normalizar(q.trim());
+  const res = t
+    ? clientes
+        .filter((c) => [c.nombre, c.contacto, c.instagram, c.pais, ...c.rubros, ...(c.ubicacion ?? []), ...c.planes].some((v) => v && normalizar(v).includes(t)))
+        .sort((a, b) => Number(!normalizar(a.nombre).startsWith(t)) - Number(!normalizar(b.nombre).startsWith(t)) || a.nombre.localeCompare(b.nombre, "es"))
+        .slice(0, 8)
+    : [];
+  const ir = (id: string) => {
+    setAbierto(false);
+    router.push(`/clientes/${id}`);
+  };
+  return (
+    <div className="relative w-full sm:w-80">
+      <input
+        value={q}
+        onChange={(e) => {
+          setQ(e.target.value);
+          setAbierto(true);
+          setI(0);
+        }}
+        onFocus={() => setAbierto(true)}
+        onBlur={() => setTimeout(() => setAbierto(false), 150)}
+        onKeyDown={(e) => {
+          if (e.key === "ArrowDown") setI((x) => Math.min(x + 1, res.length - 1));
+          if (e.key === "ArrowUp") setI((x) => Math.max(x - 1, 0));
+          if (e.key === "Enter" && res[i]) ir(res[i].id);
+          if (e.key === "Escape") setAbierto(false);
+        }}
+        placeholder="Buscar cliente, rubro, barrio…"
+        className="w-full rounded-full border border-zinc-200 bg-white py-2.5 pl-10 pr-4 text-sm outline-none focus:border-ink"
+      />
+      <svg className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" aria-hidden>
+        <circle cx="11" cy="11" r="7" />
+        <path d="m20 20-3.5-3.5" />
+      </svg>
+      <AnimatePresence>
+        {abierto && t && (
+          <motion.ul
+            initial={{ opacity: 0, y: -6 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -6 }}
+            transition={{ duration: 0.18 }}
+            className="absolute right-0 z-30 mt-2 w-full overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-xl sm:w-[26rem]"
+          >
+            {res.length ? (
+              res.map((c, k) => (
+                <li key={c.id} onMouseEnter={() => setI(k)} className={`flex items-center gap-3 px-3 py-2 ${k === i ? "bg-surface" : ""}`}>
+                  <button onMouseDown={() => ir(c.id)} className="flex min-w-0 flex-1 items-center gap-3 text-left">
+                    <Logo cliente={c} size={32} casos={casosPorCliente[c.id] ?? 0} />
+                    <span className="min-w-0">
+                      <span className="block truncate text-sm font-semibold">{c.nombre}</span>
+                      <span className="block truncate text-[11px] text-zinc-500">{[c.ubicacion?.[0], c.rubros[0]].filter(Boolean).join(" · ") || c.pais}</span>
+                    </span>
+                  </button>
+                  {c.pais && (
+                    <button
+                      onMouseDown={() => {
+                        setAbierto(false);
+                        setQ("");
+                        onMapa(c.id);
+                      }}
+                      className="shrink-0 rounded-full border border-zinc-200 px-2.5 py-1 text-[11px] font-bold hover:border-ink"
+                    >
+                      Ver en mapa
+                    </button>
+                  )}
+                </li>
+              ))
+            ) : (
+              <li className="px-4 py-3 text-sm text-zinc-400">Sin resultados para “{q}”.</li>
+            )}
+          </motion.ul>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
 /* ---------- Dashboard ---------- */
 export function Dashboard({ clientes, casos, vistaInicial }: { clientes: Cliente[]; casos: Caso[]; vistaInicial: Vista }) {
   const [vista, setVista] = useState<Vista>(vistaInicial);
   const casosPorCliente: Record<string, number> = {};
   for (const k of casos) if (k.cliente) casosPorCliente[k.cliente] = (casosPorCliente[k.cliente] ?? 0) + 1;
+  const mapaRef = useRef<MapaHandle>(null);
+  const verEnMapa = (id: string) => {
+    cambiar("geografia");
+    // el mapa puede tardar un instante en montarse al cambiar de pestaña
+    let intentos = 0;
+    const probar = () => {
+      if (mapaRef.current) mapaRef.current.enfocar(id);
+      else if (intentos++ < 20) setTimeout(probar, 80);
+    };
+    probar();
+  };
   const cambiar = (v: Vista) => {
     setVista(v);
     window.history.replaceState(null, "", v === "geografia" ? "/clientes/dashboard" : `/clientes/dashboard?vista=${v}`);
@@ -220,7 +318,8 @@ export function Dashboard({ clientes, casos, vistaInicial }: { clientes: Cliente
         <p className="mt-1 text-sm text-zinc-500">{clientes.length} clientes activos</p>
       </motion.header>
 
-      <div className="mb-6 inline-flex rounded-full bg-surface p-1">
+      <div className="mb-6 flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-between">
+      <div className="inline-flex w-fit rounded-full bg-surface p-1">
         {TABS.map((t) => (
           <button key={t.id} onClick={() => cambiar(t.id)} className="relative rounded-full px-4 py-2 text-sm font-semibold">
             {vista === t.id && (
@@ -230,12 +329,14 @@ export function Dashboard({ clientes, casos, vistaInicial }: { clientes: Cliente
           </button>
         ))}
       </div>
+        <Buscador clientes={clientes} casosPorCliente={casosPorCliente} onMapa={verEnMapa} />
+      </div>
 
       <AnimatePresence mode="wait">
         <motion.div key={vista} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.25, ease }}>
           {vista === "estadisticas" && <Estadisticas clientes={clientes} casos={casos} />}
           {vista === "satisfaccion" && <Satisfaccion clientes={clientes} casosPorCliente={casosPorCliente} />}
-          {vista === "geografia" && <MapaClientes clientes={clientes} embebido casos={casos} />}
+          {vista === "geografia" && <MapaClientes ref={mapaRef} clientes={clientes} embebido casos={casos} />}
         </motion.div>
       </AnimatePresence>
     </div>

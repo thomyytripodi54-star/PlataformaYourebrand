@@ -27,13 +27,20 @@ body {
   font-family: var(--font-montserrat), sans-serif;
 }
 
-/* ---------- Mapa con zoom (MapLibre) ---------- */
-.yb-mapa { background: #1b1a1a; }
-.yb-mapa .maplibregl-ctrl-group { background: #272626; border: 1px solid rgb(255 255 255 / 0.1); box-shadow: none; }
-.yb-mapa .maplibregl-ctrl-group button + button { border-top-color: rgb(255 255 255 / 0.1); }
-.yb-mapa .maplibregl-ctrl-icon { filter: invert(1); }
-.yb-mapa .maplibregl-ctrl-attrib { background: rgb(39 38 38 / 0.7) !important; color: rgb(255 255 255 / 0.5); }
-.yb-mapa .maplibregl-ctrl-attrib a { color: rgb(255 255 255 / 0.6); }
+/* ---------- Mapa con zoom (MapLibre, estilo propio claro) ---------- */
+.yb-mapa { background: #eceae6; }
+.yb-mapa .maplibregl-ctrl-group { background: #fff; border: 1px solid #d4d4d4; box-shadow: 0 4px 14px -6px rgb(0 0 0 / 0.25); }
+.yb-partido {
+  display: block;
+  pointer-events: none;
+  color: #525151;
+  font: 600 10px/1 var(--font-montserrat), sans-serif;
+  letter-spacing: 0.02em;
+  text-shadow: 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff;
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity 0.4s;
+}
 
 .yb-marcador {
   position: relative;
@@ -52,6 +59,7 @@ body {
   border-radius: 9999px;
   border: 2px solid #fff;
   background: #272626;
+  outline: 1px solid rgb(39 38 38 / 0.25);
   color: #fff;
   font: 700 11px/1 var(--font-montserrat), sans-serif;
   box-shadow: 0 6px 18px -6px rgb(0 0 0 / 0.6);
