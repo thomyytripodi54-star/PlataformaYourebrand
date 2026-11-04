@@ -8,7 +8,7 @@ import { DS, mapCaso, mapCliente, mapPersona, queryDataSource } from "@/lib/noti
 
 export const TAG_NOTION = "notion";
 
-export type Datos = { clientes: Cliente[]; equipo: Persona[]; origen: "notion" | "local"; actualizado: string };
+export type Datos = { clientes: Cliente[]; equipo: Persona[]; origen: "notion" | "local"; actualizado: string; motivo?: string };
 
 // Logos ya descargados (public/logos), por id de cliente.
 const logos = new Map((clientesLocal as Cliente[]).map((c) => [c.id, c.logo]));
@@ -33,14 +33,22 @@ async function desdeNotion(): Promise<Datos> {
 const cacheado = unstable_cache(desdeNotion, ["datos-notion"], { revalidate: 60, tags: [TAG_NOTION] });
 
 export async function getDatos(): Promise<Datos> {
+  let motivo = "Falta la variable NOTION_TOKEN en Vercel (o falta hacer Redeploy).";
   if (process.env.NOTION_TOKEN) {
     try {
       return await cacheado();
     } catch (e) {
       console.error("[notion] No se pudo leer Notion, uso los datos locales:", e);
+      const m = String(e instanceof Error ? e.message : e);
+      motivo = m.includes("401")
+        ? "Notion rechazó el token (401): revisá que NOTION_TOKEN esté bien copiado."
+        : m.includes("404")
+          ? "Notion no encuentra las bases (404): conectá la integración a la página Yourebrand (··· → Conexiones)."
+          : `Error al leer Notion: ${m.slice(0, 160)}`;
     }
   }
   return {
+    motivo,
     clientes: clientesLocal as Cliente[],
     equipo: equipoLocal as Persona[],
     origen: "local",
