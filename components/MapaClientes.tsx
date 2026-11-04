@@ -1,12 +1,14 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import createGlobe from "cobe";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, animate, motion, useMotionValue, useSpring, useTransform } from "motion/react";
 import { Logo } from "@/components/Logo";
 import type { Cliente } from "@/lib/clientes";
-import { PAISES, SEDE, angulos } from "@/lib/geo";
+import { ENCUADRES, PAISES, SEDE, angulos, esAMBA, ubicar } from "@/lib/geo";
+import type { PuntoCliente } from "@/components/MapaZoom";
 
 const ease = [0.22, 1, 0.36, 1] as const;
 const ROJO: [number, number, number] = [211 / 255, 8 / 255, 5 / 255];
@@ -149,12 +151,24 @@ function Globo({ paises, foco }: { paises: [string, number][]; foco: string | nu
   );
 }
 
-function TarjetaCliente({ c, i }: { c: Cliente; i: number }) {
+function TarjetaCliente({ c, i, casos, lugar, activo, onSeleccionar }: { c: Cliente; i: number; casos: number; lugar?: string; activo?: boolean; onSeleccionar?: () => void }) {
   // inclinación 3D siguiendo el mouse
   const x = useMotionValue(0);
   const y = useMotionValue(0);
   const rx = useSpring(useTransform(y, [-0.5, 0.5], [8, -8]), { stiffness: 200, damping: 18 });
   const ry = useSpring(useTransform(x, [-0.5, 0.5], [-8, 8]), { stiffness: 200, damping: 18 });
+  const clase = `flex w-full items-center gap-3 rounded-2xl border p-3 text-left transition-colors ${
+    activo ? "border-accent bg-white/[0.09]" : "border-white/10 bg-white/[0.04] hover:border-accent/60 hover:bg-white/[0.07]"
+  }`;
+  const contenido = (
+    <>
+      <Logo cliente={c} size={38} casos={casos} />
+      <div className="min-w-0 flex-1">
+        <p className="truncate text-sm font-semibold text-white">{c.nombre}</p>
+        <p className="truncate text-[11px] text-white/45">{lugar ?? (c.rubros.slice(0, 2).join(" · ") || "—")}</p>
+      </div>
+    </>
+  );
   return (
     <motion.li
       layout
@@ -176,25 +190,43 @@ function TarjetaCliente({ c, i }: { c: Cliente; i: number }) {
           y.set(0);
         }}
       >
-        <Link
-          href={`/clientes/${c.id}`}
-          className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.04] p-3 transition-colors hover:border-accent/60 hover:bg-white/[0.07]"
-        >
-          <Logo cliente={c} size={38} />
-          <div className="min-w-0">
-            <p className="truncate text-sm font-semibold text-white">{c.nombre}</p>
-            <p className="truncate text-[11px] text-white/45">
-              {c.rubros.slice(0, 2).join(" · ") || "—"}
-            </p>
+        {onSeleccionar ? (
+          <div className={clase}>
+            <button onClick={onSeleccionar} className="flex min-w-0 flex-1 items-center gap-3 text-left">
+              {contenido}
+            </button>
+            <Link href={`/clientes/${c.id}`} className="shrink-0 rounded-full px-2 py-1 text-[11px] font-semibold text-white/50 hover:bg-white/10 hover:text-white">
+              Ficha →
+            </Link>
           </div>
-        </Link>
+        ) : (
+          <Link href={`/clientes/${c.id}`} className={clase}>
+            {contenido}
+          </Link>
+        )}
       </motion.div>
     </motion.li>
   );
 }
 
-export function MapaClientes({ clientes, embebido = false }: { clientes: Cliente[]; embebido?: boolean }) {
+const MapaZoom = dynamic(() => import("@/components/MapaZoom").then((m) => m.MapaZoom), {
+  ssr: false,
+  loading: () => <div className="h-full w-full animate-pulse bg-white/[0.03]" />,
+});
+
+/** Encuadre que contiene todos los puntos, con un margen mínimo para que una sola ciudad se vea a nivel barrio. */
+function encuadreDe(puntos: PuntoCliente[]): [number, number, number, number] {
+  const lats = puntos.map((p) => p.lat);
+  const lngs = puntos.map((p) => p.lng);
+  const [s, n, o, e] = [Math.min(...lats), Math.max(...lats), Math.min(...lngs), Math.max(...lngs)];
+  const m = 0.08;
+  return [o - m, s - m, e + m, n + m];
+}
+
+export function MapaClientes({ clientes, embebido = false, casosPorCliente = {} }: { clientes: Cliente[]; embebido?: boolean; casosPorCliente?: Record<string, number> }) {
   const [pais, setPais] = useState<string | null>(null);
+  const [todaArgentina, setTodaArgentina] = useState(false);
+  const [sel, setSel] = useState<string | null>(null);
 
   const paises = useMemo(() => {
     const m = new Map<string, number>();
@@ -202,40 +234,99 @@ export function MapaClientes({ clientes, embebido = false }: { clientes: Cliente
     return [...m.entries()].sort((a, b) => b[1] - a[1]);
   }, [clientes]);
 
+  const elegirPais = (p: string | null) => {
+    setPais(p);
+    setTodaArgentina(false);
+    setSel(null);
+  };
+
+  // Clientes del país elegido, con coordenadas
+  const ubicados = useMemo(
+    () =>
+      clientes
+        .filter((c) => pais && c.pais === pais)
+        .map((c) => ({ c, u: ubicar(c.ubicacion ?? [], c.pais) }))
+        .filter((x): x is { c: Cliente; u: NonNullable<ReturnType<typeof ubicar>> } => !!x.u)
+        .sort((a, b) => a.c.nombre.localeCompare(b.c.nombre, "es")),
+    [clientes, pais],
+  );
+  const esArg = pais === "Argentina";
+  const amba = ubicados.filter((x) => x.u.precisa && esAMBA(x.u.lat, x.u.lng));
+  const interior = esArg ? ubicados.filter((x) => !amba.includes(x)) : [];
+  const visibles = esArg && !todaArgentina ? amba : ubicados;
+  const puntos: PuntoCliente[] = visibles.map(({ c, u }) => ({ id: c.id, nombre: c.nombre, logo: c.logo, lat: u.lat, lng: u.lng, lugar: u.lugar, casos: casosPorCliente[c.id] ?? 0 }));
+  const encuadre = useMemo<[number, number, number, number]>(
+    () => (esArg ? (todaArgentina ? ENCUADRES.Argentina : ENCUADRES.AMBA) : ubicados.length ? encuadreDe(ubicados.map(({ u }) => ({ ...u, id: "", nombre: "", logo: null, casos: 0 }))) : ENCUADRES[pais ?? ""] ?? ENCUADRES.Argentina),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [pais, todaArgentina, ubicados.length],
+  );
+
   const lista = clientes.filter((c) => !pais || c.pais === pais).sort((a, b) => a.nombre.localeCompare(b.nombre, "es"));
+  const sinUbicacion = ubicados.filter((x) => !x.u.precisa);
 
   return (
     <div className={embebido ? "rounded-3xl bg-ink px-4 py-6 text-white md:px-8 md:py-8" : "-mx-4 -my-6 min-h-screen bg-ink px-4 py-8 text-white md:-mx-10 md:-my-8 md:px-10"}>
       <div className="mx-auto max-w-7xl">
-        {!embebido && <motion.header initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, ease }}>
-          <p className="text-xs font-medium uppercase tracking-wider text-white/40">Dirección · Clientes</p>
-          <h1 className="mt-1 text-3xl font-black uppercase tracking-tight md:text-4xl">
-            Mapa de clientes<span className="text-accent">.</span>
-          </h1>
-          <p className="mt-1 text-sm font-extralight text-white/60">
-            Clientes activos en <span className="font-bold text-white">{paises.length} países</span>. Arrastrá el globo para girarlo.
-          </p>
-        </motion.header>}
-
-        <div className={`${embebido ? "" : "mt-8 "}grid grid-cols-1 items-start gap-10 lg:grid-cols-[1.15fr_1fr]`}>
+        <div className="grid grid-cols-1 items-start gap-10 lg:grid-cols-[1.15fr_1fr]">
           <div className="lg:sticky lg:top-8">
-            <Globo paises={paises} foco={pais} />
+            <AnimatePresence mode="wait" initial={false}>
+              {pais ? (
+                <motion.div
+                  key="mapa"
+                  initial={{ opacity: 0, scale: 0.88, filter: "blur(8px)" }}
+                  animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
+                  exit={{ opacity: 0, scale: 0.9, filter: "blur(8px)" }}
+                  transition={{ duration: 0.7, ease }}
+                  className="relative h-[460px] overflow-hidden rounded-3xl border border-white/10 lg:h-[640px]"
+                >
+                  <MapaZoom key={pais} puntos={puntos} encuadre={encuadre} seleccionado={sel} onSeleccionar={setSel} />
+                  <div className="pointer-events-none absolute left-3 top-3 rounded-full bg-ink/80 px-3 py-1.5 text-xs font-bold backdrop-blur">
+                    {PAISES[pais]?.bandera} {esArg ? (todaArgentina ? "Toda Argentina" : "CABA y Gran Buenos Aires") : pais}
+                  </div>
+                  <button
+                    onClick={() => elegirPais(null)}
+                    className="absolute right-3 top-3 rounded-full bg-ink/80 px-3 py-1.5 text-xs font-bold text-white backdrop-blur hover:bg-accent"
+                  >
+                    ← Volver al globo
+                  </button>
+                </motion.div>
+              ) : (
+                <motion.div
+                  key="globo"
+                  initial={{ opacity: 0, scale: 0.85 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 1.6, filter: "blur(10px)" }}
+                  transition={{ duration: 0.7, ease }}
+                >
+                  <Globo paises={paises} foco={null} />
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
 
           <div>
+            {!embebido && (
+              <motion.header initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, ease }} className="mb-6">
+                <h1 className="text-3xl font-black uppercase tracking-tight md:text-4xl">
+                  Mapa de clientes<span className="text-accent">.</span>
+                </h1>
+              </motion.header>
+            )}
             {/* KPIs */}
             <div className="grid grid-cols-2 gap-3">
               <div className="rounded-2xl bg-white/[0.04] p-4">
                 <p className="text-4xl font-black tracking-tight text-accent">
-                  <Contador valor={lista.length} />
+                  <Contador valor={esArg && !todaArgentina ? amba.length : lista.length} />
                 </p>
-                <p className="mt-1 text-[11px] uppercase tracking-wider text-white/50">{pais ? `Clientes en ${pais}` : "Clientes activos"}</p>
+                <p className="mt-1 text-[11px] uppercase tracking-wider text-white/50">
+                  {!pais ? "Clientes activos" : esArg && !todaArgentina ? "En CABA y GBA" : `Clientes en ${pais}`}
+                </p>
               </div>
               <div className="rounded-2xl bg-white/[0.04] p-4">
                 <p className="text-4xl font-black tracking-tight">
-                  <Contador valor={pais ? 1 : paises.length} />
+                  <Contador valor={pais ? lista.filter((c) => casosPorCliente[c.id]).length : paises.length} />
                 </p>
-                <p className="mt-1 text-[11px] uppercase tracking-wider text-white/50">{pais ? PAISES[pais].ciudad : "Países"}</p>
+                <p className="mt-1 text-[11px] uppercase tracking-wider text-white/50">{pais ? "Con casos abiertos" : "Países"}</p>
               </div>
             </div>
 
@@ -244,18 +335,8 @@ export function MapaClientes({ clientes, embebido = false }: { clientes: Cliente
               {[["Todos", clientes.length] as [string, number], ...paises].map(([p, n]) => {
                 const activo = (p === "Todos" && !pais) || p === pais;
                 return (
-                  <button
-                    key={p}
-                    onClick={() => setPais(p === "Todos" ? null : p)}
-                    className="relative rounded-full px-4 py-2 text-sm font-semibold"
-                  >
-                    {activo && (
-                      <motion.span
-                        layoutId="chip-pais"
-                        className="absolute inset-0 rounded-full bg-accent"
-                        transition={{ type: "spring", stiffness: 400, damping: 32 }}
-                      />
-                    )}
+                  <button key={p} onClick={() => elegirPais(p === "Todos" ? null : p)} className="relative rounded-full px-4 py-2 text-sm font-semibold">
+                    {activo && <motion.span layoutId="chip-pais" className="absolute inset-0 rounded-full bg-accent" transition={{ type: "spring", stiffness: 400, damping: 32 }} />}
                     <span className={`relative flex items-center gap-2 ${activo ? "text-white" : "text-white/60 hover:text-white"}`}>
                       {p !== "Todos" && <span>{PAISES[p].bandera}</span>}
                       {p}
@@ -266,14 +347,85 @@ export function MapaClientes({ clientes, embebido = false }: { clientes: Cliente
               })}
             </div>
 
-            {/* Clientes */}
-            <motion.ul layout className="mt-6 grid grid-cols-1 gap-2 sm:grid-cols-2">
-              <AnimatePresence mode="popLayout">
-                {lista.map((c, i) => (
-                  <TarjetaCliente key={c.id} c={c} i={i} />
-                ))}
-              </AnimatePresence>
-            </motion.ul>
+            {!pais ? (
+              <motion.ul layout className="mt-6 grid grid-cols-1 gap-2 sm:grid-cols-2">
+                <AnimatePresence mode="popLayout">
+                  {lista.map((c, i) => (
+                    <TarjetaCliente key={c.id} c={c} i={i} casos={casosPorCliente[c.id] ?? 0} />
+                  ))}
+                </AnimatePresence>
+              </motion.ul>
+            ) : (
+              <>
+                {esArg && (
+                  <div className="mt-6 inline-flex rounded-full bg-white/[0.06] p-1">
+                    {[
+                      [false, `CABA y GBA · ${amba.length}`],
+                      [true, `Toda Argentina · ${ubicados.length}`],
+                    ].map(([v, l]) => (
+                      <button
+                        key={String(v)}
+                        onClick={() => {
+                          setTodaArgentina(v as boolean);
+                          setSel(null);
+                        }}
+                        className="relative rounded-full px-4 py-1.5 text-xs font-bold"
+                      >
+                        {todaArgentina === v && <motion.span layoutId="zona-arg" className="absolute inset-0 rounded-full bg-white" transition={{ type: "spring", stiffness: 400, damping: 34 }} />}
+                        <span className={`relative ${todaArgentina === v ? "text-ink" : "text-white/60"}`}>{l as string}</span>
+                      </button>
+                    ))}
+                  </div>
+                )}
+
+                <p className="mt-5 text-[11px] font-bold uppercase tracking-wider text-white/40">
+                  {esArg && !todaArgentina ? "CABA y Gran Buenos Aires" : "Clientes"} · tocá uno para verlo en el mapa
+                </p>
+                <motion.ul layout className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2">
+                  <AnimatePresence mode="popLayout">
+                    {visibles.map(({ c, u }, i) => (
+                      <TarjetaCliente key={c.id} c={c} i={i} casos={casosPorCliente[c.id] ?? 0} lugar={u.lugar} activo={sel === c.id} onSeleccionar={() => setSel(c.id)} />
+                    ))}
+                  </AnimatePresence>
+                </motion.ul>
+
+                {esArg && !todaArgentina && interior.length > 0 && (
+                  <motion.aside initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3, ease }} className="mt-6 rounded-2xl border border-white/10 p-4">
+                    <div className="flex items-center justify-between gap-2">
+                      <p className="text-sm font-bold">
+                        Interior del país<span className="text-accent">.</span> <span className="font-normal text-white/50">{interior.length}</span>
+                      </p>
+                      <button onClick={() => setTodaArgentina(true)} className="rounded-full bg-white px-3 py-1.5 text-xs font-bold text-ink hover:bg-accent hover:text-white">
+                        Ver toda Argentina →
+                      </button>
+                    </div>
+                    <ul className="mt-3 space-y-1">
+                      {interior.map(({ c, u }) => (
+                        <li key={c.id}>
+                          <button
+                            onClick={() => {
+                              setTodaArgentina(true);
+                              setSel(c.id);
+                            }}
+                            className="flex w-full items-center gap-2.5 rounded-lg px-1.5 py-1 text-left hover:bg-white/[0.06]"
+                          >
+                            <Logo cliente={c} size={26} casos={casosPorCliente[c.id] ?? 0} />
+                            <span className="flex-1 truncate text-sm">{c.nombre}</span>
+                            <span className="text-[11px] text-white/45">{u.precisa ? u.lugar : "Sin ubicación"}</span>
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  </motion.aside>
+                )}
+
+                {sinUbicacion.length > 0 && (
+                  <p className="mt-4 text-[11px] text-white/40">
+                    Sin barrio/ciudad reconocido en Notion: {sinUbicacion.map((x) => x.c.nombre).join(", ")}.
+                  </p>
+                )}
+              </>
+            )}
           </div>
         </div>
       </div>

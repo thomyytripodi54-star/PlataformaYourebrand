@@ -123,7 +123,7 @@ const NIVELES = [
   { id: "Insatisfecho", color: "#d30805", texto: "text-white" },
 ] as const;
 
-function Satisfaccion({ clientes }: { clientes: Cliente[] }) {
+function Satisfaccion({ clientes, casosPorCliente }: { clientes: Cliente[]; casosPorCliente: Record<string, number> }) {
   const grupos = NIVELES.map((n) => ({ ...n, clientes: clientes.filter((c) => c.satisfaccion === n.id) }));
   const sinDato = clientes.filter((c) => !c.satisfaccion);
   const total = clientes.length || 1;
@@ -184,7 +184,7 @@ function Satisfaccion({ clientes }: { clientes: Cliente[] }) {
                 {g.clientes.map((c) => (
                   <li key={c.id}>
                     <Link href={`/clientes/${c.id}`} className="flex items-center gap-2.5 rounded-lg px-1.5 py-1 hover:bg-surface">
-                      <Logo cliente={c} size={26} />
+                      <Logo cliente={c} size={26} casos={casosPorCliente[c.id] ?? 0} />
                       <span className="truncate text-sm">{c.nombre}</span>
                     </Link>
                   </li>
@@ -203,6 +203,8 @@ function Satisfaccion({ clientes }: { clientes: Cliente[] }) {
 /* ---------- Dashboard ---------- */
 export function Dashboard({ clientes, casos, vistaInicial }: { clientes: Cliente[]; casos: Caso[]; vistaInicial: Vista }) {
   const [vista, setVista] = useState<Vista>(vistaInicial);
+  const casosPorCliente: Record<string, number> = {};
+  for (const k of casos) if (k.cliente) casosPorCliente[k.cliente] = (casosPorCliente[k.cliente] ?? 0) + 1;
   const cambiar = (v: Vista) => {
     setVista(v);
     window.history.replaceState(null, "", v === "geografia" ? "/clientes/dashboard" : `/clientes/dashboard?vista=${v}`);
@@ -232,8 +234,8 @@ export function Dashboard({ clientes, casos, vistaInicial }: { clientes: Cliente
       <AnimatePresence mode="wait">
         <motion.div key={vista} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.25, ease }}>
           {vista === "estadisticas" && <Estadisticas clientes={clientes} casos={casos} />}
-          {vista === "satisfaccion" && <Satisfaccion clientes={clientes} />}
-          {vista === "geografia" && <MapaClientes clientes={clientes} embebido />}
+          {vista === "satisfaccion" && <Satisfaccion clientes={clientes} casosPorCliente={casosPorCliente} />}
+          {vista === "geografia" && <MapaClientes clientes={clientes} embebido casosPorCliente={casosPorCliente} />}
         </motion.div>
       </AnimatePresence>
     </div>

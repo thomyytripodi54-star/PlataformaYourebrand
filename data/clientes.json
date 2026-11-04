@@ -28,7 +28,10 @@
     "logo": null,
     "notionUrl": "https://app.notion.com/391029cc0dee8074b932c927393831f1",
     "satisfaccion": "Expectante",
-    "margen": 435120
+    "margen": 435120,
+    "ubicacion": [
+      "Madrid"
+    ]
   },
   {
     "id": "alejandra-ochoa-psicologa",
@@ -58,7 +61,10 @@
     "logo": null,
     "notionUrl": "https://app.notion.com/190029cc0dee80b7bcbcedcc8f8e14d7",
     "satisfaccion": "Contento",
-    "margen": 155400
+    "margen": 155400,
+    "ubicacion": [
+      "Madrid"
+    ]
   },
   {
     "id": "aq-capital",
@@ -89,7 +95,10 @@
     "logo": null,
     "notionUrl": "https://app.notion.com/3ba029cc0dee805c9615db996c429492",
     "satisfaccion": "Expectante",
-    "margen": 360750
+    "margen": 360750,
+    "ubicacion": [
+      "Vicente lopez"
+    ]
   },
   {
     "id": "askal-perros",
@@ -119,7 +128,10 @@
     "logo": null,
     "notionUrl": "https://app.notion.com/190029cc0dee8073bed0dffbbf6b4cd0",
     "satisfaccion": "Contento",
-    "margen": 210012
+    "margen": 210012,
+    "ubicacion": [
+      "Madrid"
+    ]
   },
   {
     "id": "astillero-geuna",
@@ -150,7 +162,10 @@
     "logo": null,
     "notionUrl": "https://app.notion.com/3e6029cc0dee80feb41ef0a634dd67f3",
     "satisfaccion": "Expectante",
-    "margen": 310000
+    "margen": 310000,
+    "ubicacion": [
+      "Escobar"
+    ]
   },
   {
     "id": "auralux",
@@ -182,7 +197,10 @@
     "logo": null,
     "notionUrl": "https://app.notion.com/3c9029cc0dee80bb87e8c1e1db9e5ea6",
     "satisfaccion": "Contento",
-    "margen": 525000
+    "margen": 525000,
+    "ubicacion": [
+      "Lomas de zamora"
+    ]
   },
   {
     "id": "bb-estudio",
@@ -215,7 +233,10 @@
     "logo": null,
     "notionUrl": "https://app.notion.com/2f4029cc0dee80578177c3e01933a014",
     "satisfaccion": "Contento",
-    "margen": 460650
+    "margen": 460650,
+    "ubicacion": [
+      "Villa urquiza"
+    ]
   },
   {
     "id": "biovelum",
@@ -247,7 +268,10 @@
     "logo": null,
     "notionUrl": "https://app.notion.com/3ed029cc0dee803bace5e33880b3420b",
     "satisfaccion": "Expectante",
-    "margen": 637000
+    "margen": 637000,
+    "ubicacion": [
+      "San isidro"
+    ]
   },
   {
     "id": "bis-eventos",
@@ -276,7 +300,10 @@
     "logo": null,
     "notionUrl": "https://app.notion.com/2fb029cc0dee80e58b5ce76021ddc7df",
     "satisfaccion": "Contento",
-    "margen": 327450
+    "margen": 327450,
+    "ubicacion": [
+      "Santa fe"
+    ]
   },
   {
     "id": "cafe-y-chocolate",
@@ -305,7 +332,10 @@
     "logo": null,
     "notionUrl": "https://app.notion.com/34a029cc0dee80338fefe245b1403a49",
     "satisfaccion": "Contento",
-    "margen": 327450
+    "margen": 327450,
+    "ubicacion": [
+      "Recoleta"
+    ]
   },
   {
     "id": "cuota-q",
@@ -337,7 +367,10 @@
     "logo": null,
     "notionUrl": "https://app.notion.com/325029cc0dee80d8b3decee3e8eb02ce",
     "satisfaccion": "Contento",
-    "margen": 471750
+    "margen": 471750,
+    "ubicacion": [
+      "CABA"
+    ]
   },
   {
     "id": "cupking",
@@ -364,7 +397,10 @@
     "logo": null,
     "notionUrl": "https://app.notion.com/3ed029cc0dee8019aa3fcca42d7a6c5f",
     "satisfaccion": "Expectante",
-    "margen": null
+    "margen": null,
+    "ubicacion": [
+      "San isidro"
+    ]
   },
   {
     "id": "english-now",
@@ -394,7 +430,10 @@
     "logo": null,
     "notionUrl": "https://app.notion.com/1d7029cc0dee808e8937e4a8dbccb33a",
     "satisfaccion": "Contento",
-    "margen": 327450
+    "margen": 327450,
+    "ubicacion": [
+      "CABA"
+    ]
   },
   {
     "id": "fedora-coffee",
@@ -425,7 +464,10 @@
     "logo": null,
     "notionUrl": "https://app.notion.com/364029cc0dee805d8bc7ec50483ee7d9",
     "satisfaccion": "Contento",
-    "margen": 580000
+    "margen": 580000,
+    "ubicacion": [
+      "Palermo"
+    ]
   },
   {
     "id": "ferriol",
@@ -456,7 +498,10 @@
     "logo": null,
     "notionUrl": "https://app.notion.com/3c6029cc0dee8027aa71d6e60ae708ea",
     "satisfaccion": "Expectante",
-    "margen": 347000
+    "margen": 347000,
+    "ubicacion": [
+      "Bernal"
+    ]
   },
   {
     "id": "fir24",
@@ -490,7 +535,10 @@
     "logo": null,
     "notionUrl": "https://app.notion.com/3ed029cc0dee80b5a153cf117b671edb",
     "satisfaccion": "Expectante",
-    "margen": 590000
+    "margen": 590000,
+    "ubicacion": [
+      "Moreno"
+    ]
   },
   {
     "id": "flyware",
@@ -522,7 +570,10 @@
     "logo": null,
     "notionUrl": "https://app.notion.com/3e9029cc0dee8024ab0fe072bc8c7c83",
     "satisfaccion": "Expectante",
-    "margen": 413000
+    "margen": 413000,
+    "ubicacion": [
+      "Washington"
+    ]
   },
   {
     "id": "fundacion-senales",
@@ -556,7 +607,10 @@
     "logo": null,
     "notionUrl": "https://app.notion.com/319029cc0dee8062a32ef65936eb241e",
     "satisfaccion": "Contento",
-    "margen": 555000
+    "margen": 555000,
+    "ubicacion": [
+      "Grand bourg"
+    ]
   },
   {
     "id": "gbs",
@@ -587,7 +641,10 @@
     "logo": null,
     "notionUrl": "https://app.notion.com/3c6029cc0dee80329ef3c691797c294b",
     "satisfaccion": "Expectante",
-    "margen": 542000
+    "margen": 542000,
+    "ubicacion": [
+      "Quilmes"
+    ]
   },
   {
     "id": "gema-salud-animal",
@@ -618,7 +675,10 @@
     "logo": null,
     "notionUrl": "https://app.notion.com/2f5029cc0dee80dd9cbeda1eecaf5819",
     "satisfaccion": "Contento",
-    "margen": 558330
+    "margen": 558330,
+    "ubicacion": [
+      "Salta"
+    ]
   },
   {
     "id": "gorrion",
@@ -649,7 +709,10 @@
     "logo": null,
     "notionUrl": "https://app.notion.com/3f9029cc0dee8075b8c2cfee52165c4f",
     "satisfaccion": "Expectante",
-    "margen": 200000
+    "margen": 200000,
+    "ubicacion": [
+      "Lanus"
+    ]
   },
   {
     "id": "hakuna-cafe",
@@ -682,7 +745,10 @@
     "logo": null,
     "notionUrl": "https://app.notion.com/406029cc0dee8075a859cc3ea941eb3d",
     "satisfaccion": "Expectante",
-    "margen": 486000
+    "margen": 486000,
+    "ubicacion": [
+      "Ramos mejia"
+    ]
   },
   {
     "id": "javier-urich",
@@ -711,7 +777,10 @@
     "logo": null,
     "notionUrl": "https://app.notion.com/2fb029cc0dee80f6bf18caa5bbe64485",
     "satisfaccion": "Contento",
-    "margen": 283050
+    "margen": 283050,
+    "ubicacion": [
+      "Caballito"
+    ]
   },
   {
     "id": "miramar-express",
@@ -743,7 +812,10 @@
     "logo": null,
     "notionUrl": "https://app.notion.com/3e6029cc0dee80028dd3cafce90d2448",
     "satisfaccion": "Contento",
-    "margen": 730000
+    "margen": 730000,
+    "ubicacion": [
+      "Palermo"
+    ]
   },
   {
     "id": "palace-gym",
@@ -774,7 +846,10 @@
     "logo": null,
     "notionUrl": "https://app.notion.com/3c6029cc0dee8028a922dc7a46f795d9",
     "satisfaccion": "Expectante",
-    "margen": 542000
+    "margen": 542000,
+    "ubicacion": [
+      "Quilmes"
+    ]
   },
   {
     "id": "pancitas-arriba",
@@ -804,7 +879,10 @@
     "logo": null,
     "notionUrl": "https://app.notion.com/3f1029cc0dee8054a840d679f5ab81f6",
     "satisfaccion": "Expectante",
-    "margen": 331000
+    "margen": 331000,
+    "ubicacion": [
+      "CABA"
+    ]
   },
   {
     "id": "rafaela-belen-speaker",
@@ -836,7 +914,10 @@
     "logo": null,
     "notionUrl": "https://app.notion.com/3d0029cc0dee800ba533d4d62836eabb",
     "satisfaccion": "Expectante",
-    "margen": 475000
+    "margen": 475000,
+    "ubicacion": [
+      "Tigre"
+    ]
   },
   {
     "id": "riva-divani",
@@ -866,7 +947,10 @@
     "logo": null,
     "notionUrl": "https://app.notion.com/406029cc0dee80fa9a0adcd15444d81f",
     "satisfaccion": "Expectante",
-    "margen": 370000
+    "margen": 370000,
+    "ubicacion": [
+      "Canning"
+    ]
   },
   {
     "id": "rolmer-cortinas",
@@ -896,7 +980,10 @@
     "logo": null,
     "notionUrl": "https://app.notion.com/1f3029cc0dee80688191ecc54d917d4d",
     "satisfaccion": "Expectante",
-    "margen": 327450
+    "margen": 327450,
+    "ubicacion": [
+      "Haedo"
+    ]
   },
   {
     "id": "sanos-salud",
@@ -927,7 +1014,10 @@
     "logo": null,
     "notionUrl": "https://app.notion.com/402029cc0dee80ec8578f8c30bde0a59",
     "satisfaccion": "Expectante",
-    "margen": 580000
+    "margen": 580000,
+    "ubicacion": [
+      "CABA"
+    ]
   },
   {
     "id": "soy-pacha",
@@ -959,7 +1049,10 @@
     "logo": null,
     "notionUrl": "https://app.notion.com/40c029cc0dee80d6a4f3c6fa4b99cdb2",
     "satisfaccion": "Expectante",
-    "margen": 580000
+    "margen": 580000,
+    "ubicacion": [
+      "CABA"
+    ]
   },
   {
     "id": "stumpy-coffee",
@@ -990,7 +1083,10 @@
     "logo": null,
     "notionUrl": "https://app.notion.com/391029cc0dee80b0a2bef3ab10561f84",
     "satisfaccion": "Expectante",
-    "margen": 389000
+    "margen": 389000,
+    "ubicacion": [
+      "Belgrano"
+    ]
   },
   {
     "id": "tamya-marroquineria",
@@ -1019,7 +1115,10 @@
     "logo": null,
     "notionUrl": "https://app.notion.com/238029cc0dee801ca20cd36f84287800",
     "satisfaccion": "Contento",
-    "margen": 283050
+    "margen": 283050,
+    "ubicacion": [
+      "Santa fe"
+    ]
   },
   {
     "id": "viva-training",
@@ -1050,6 +1149,9 @@
     "logo": null,
     "notionUrl": "https://app.notion.com/3f9029cc0dee801eb2e2f9f6309a03bf",
     "satisfaccion": "Expectante",
-    "margen": 880000
+    "margen": 880000,
+    "ubicacion": [
+      "Vicente lopez"
+    ]
   }
 ]
