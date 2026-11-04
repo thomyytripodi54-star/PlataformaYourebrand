@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 
 const areas = [
   { nombre: "Dirección", items: [{ href: "/clientes", label: "Clientes" }] },
-  { nombre: "RRHH", items: [] },
+  { nombre: "RRHH", items: [{ href: "/rrhh/organigrama", label: "Organigrama" }] },
   { nombre: "Creativa", items: [] },
   { nombre: "Operaciones", items: [] },
 ];
@@ -20,7 +20,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="antialiased">
         <div className="flex min-h-screen flex-col md:flex-row">
           <aside className="border-b border-zinc-200 bg-white px-5 py-4 md:w-56 md:border-b-0 md:border-r md:py-6">
-            <Link href="/" className="text-lg font-semibold tracking-tight">Yourebrand</Link>
+            <Link href="/" className="text-lg font-semibold tracking-tight">Yourebrand<span className="text-accent">.</span></Link>
             <nav className="mt-4 flex gap-6 overflow-x-auto md:mt-8 md:flex-col md:gap-5">
               {areas.map((a) => (
                 <div key={a.nombre} className="shrink-0">

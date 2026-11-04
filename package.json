@@ -10,6 +10,7 @@
     "logos": "node scripts/descargar-logos.mjs"
   },
   "dependencies": {
+    "motion": "^12.23.12",
     "next": "15.5.4",
     "react": "19.1.0",
     "react-dom": "19.1.0"

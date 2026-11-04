@@ -1,7 +1,22 @@
 @import "tailwindcss";
 
+/* Branding Yourebrand — cambiar acá para aplicar los colores oficiales */
+:root {
+  --brand-ink: #111014;
+  --brand-accent: #ff5a1f;
+  --brand-accent-soft: #fff0e9;
+  --brand-surface: #f6f5f2;
+}
+
+@theme inline {
+  --color-ink: var(--brand-ink);
+  --color-accent: var(--brand-accent);
+  --color-accent-soft: var(--brand-accent-soft);
+  --color-surface: var(--brand-surface);
+}
+
 body {
-  background: #f6f6f4;
-  color: #18181b;
+  background: var(--brand-surface);
+  color: var(--brand-ink);
   font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
 }
