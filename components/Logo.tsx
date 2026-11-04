@@ -1,6 +1,6 @@
 import type { Cliente } from "@/lib/clientes";
 
-const colores = ["bg-rose-100 text-rose-700", "bg-amber-100 text-amber-700", "bg-emerald-100 text-emerald-700", "bg-sky-100 text-sky-700", "bg-violet-100 text-violet-700", "bg-zinc-200 text-zinc-700"];
+const colores = ["bg-ink text-white", "bg-surface text-ink", "bg-[#d4d4d4] text-ink"];
 
 export function Logo({ cliente, size = 40 }: { cliente: Pick<Cliente, "nombre" | "logo">; size?: number }) {
   const style = { width: size, height: size };

@@ -57,7 +57,7 @@ export function ListaClientes({ clientes }: { clientes: Cliente[] }) {
                     ))}
                   </div>
                   <div className="hidden w-28 text-right text-sm tabular-nums sm:block">{formatPago(c.pagoMensual)}</div>
-                  <div className={`w-24 text-right text-xs tabular-nums ${alerta ? "font-semibold text-red-600" : "text-zinc-500"}`}>
+                  <div className={`w-24 text-right text-xs tabular-nums ${alerta ? "font-bold text-accent" : "text-zinc-500"}`}>
                     {formatFecha(c.vencimiento)}
                   </div>
                 </Link>

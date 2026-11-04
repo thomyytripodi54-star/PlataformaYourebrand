@@ -40,7 +40,7 @@ function Tarjeta({ p, onSelect, destacado = false }: { p: Persona; onSelect: (p:
       variants={item}
       layoutId={`card-${p.id}`}
       onClick={() => onSelect(p)}
-      whileHover={{ y: -3, boxShadow: "0 10px 30px -12px rgba(17,16,20,0.25)" }}
+      whileHover={{ y: -3, boxShadow: "0 10px 30px -12px rgba(39,38,38,0.3)" }}
       whileTap={{ scale: 0.98 }}
       className={`group relative flex w-full items-center gap-3 rounded-2xl border bg-white p-3 text-left transition-colors ${
         destacado ? "border-ink" : "border-zinc-200 hover:border-accent"
@@ -87,7 +87,7 @@ function Panel({ p, onClose }: { p: Persona; onClose: () => void }) {
           <Avatar p={p} size={72} claro />
           <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
             <h2 className="mt-4 text-xl font-semibold">{p.nombre}</h2>
-            <p className="mt-0.5 text-sm text-accent">{p.rol}</p>
+            <p className="mt-0.5 text-sm text-white/70">{p.rol}</p>
           </motion.div>
         </div>
 
@@ -147,7 +147,7 @@ function Panel({ p, onClose }: { p: Persona; onClose: () => void }) {
                         <span className="text-sm font-medium">{c.titulo}</span>
                         <span
                           className={`rounded-full px-2 py-0.5 text-[11px] font-semibold ${
-                            c.gravedad === "Leve" ? "bg-amber-100 text-amber-700" : "bg-red-100 text-red-700"
+                            c.gravedad === "Leve" ? "bg-surface text-ink" : "bg-accent text-white"
                           }`}
                         >
                           {c.gravedad}
@@ -161,7 +161,7 @@ function Panel({ p, onClose }: { p: Persona; onClose: () => void }) {
                 ))}
               </ul>
             ) : (
-              <p className="mt-2 text-sm text-zinc-400">Sin casos abiertos 🎉</p>
+              <p className="mt-2 text-sm text-zinc-400">Sin casos abiertos.</p>
             )}
           </motion.section>
         </motion.div>
@@ -202,7 +202,7 @@ export function Organigrama() {
     <div className="mx-auto max-w-7xl">
       <motion.header initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease }} className="mb-10">
         <p className="text-xs font-medium uppercase tracking-wider text-zinc-400">Recursos Humanos</p>
-        <h1 className="mt-1 text-3xl font-bold tracking-tight">
+        <h1 className="mt-1 text-3xl font-black uppercase tracking-tight">
           Organigrama<span className="text-accent">.</span>
         </h1>
         <p className="mt-1 text-sm text-zinc-500">
@@ -250,8 +250,8 @@ export function Organigrama() {
                 className="mb-3 rounded-2xl bg-ink px-4 py-3 text-white"
               >
                 <div className="flex items-center justify-between">
-                  <p className="text-sm font-semibold">{a.nombre}</p>
-                  <span className="rounded-full bg-accent px-2 py-0.5 text-[11px] font-bold">{personas.length}</span>
+                  <p className="text-sm font-bold">{a.nombre}<span className="text-accent">.</span></p>
+                  <span className="rounded-full bg-white/15 px-2 py-0.5 text-[11px] font-bold">{personas.length}</span>
                 </div>
                 <p className="mt-0.5 text-[11px] text-white/50">{a.descripcion}</p>
               </motion.div>
