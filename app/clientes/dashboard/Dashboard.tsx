@@ -12,9 +12,9 @@ export type Vista = "estadisticas" | "satisfaccion" | "geografia";
 const ease = [0.22, 1, 0.36, 1] as const;
 
 const TABS: { id: Vista; label: string }[] = [
-  { id: "estadisticas", label: "Estadísticas" },
-  { id: "satisfaccion", label: "Satisfacción" },
   { id: "geografia", label: "Geografía" },
+  { id: "satisfaccion", label: "Satisfacción" },
+  { id: "estadisticas", label: "Estadísticas" },
 ];
 
 const ars = (n: number) => new Intl.NumberFormat("es-AR", { style: "currency", currency: "ARS", maximumFractionDigits: 0 }).format(n);
@@ -205,7 +205,7 @@ export function Dashboard({ clientes, casos, vistaInicial }: { clientes: Cliente
   const [vista, setVista] = useState<Vista>(vistaInicial);
   const cambiar = (v: Vista) => {
     setVista(v);
-    window.history.replaceState(null, "", v === "estadisticas" ? "/clientes/dashboard" : `/clientes/dashboard?vista=${v}`);
+    window.history.replaceState(null, "", v === "geografia" ? "/clientes/dashboard" : `/clientes/dashboard?vista=${v}`);
   };
 
   return (
