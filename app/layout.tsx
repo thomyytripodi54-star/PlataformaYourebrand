@@ -4,7 +4,7 @@ import { Montserrat } from "next/font/google";
 import "./globals.css";
 import { logout } from "./login/actions";
 import { EstadoDatos } from "@/components/EstadoDatos";
-import { mesPendiente } from "@/lib/finanzas";
+import { pendienteActual } from "@/lib/er/datos";
 
 const montserrat = Montserrat({ subsets: ["latin"], weight: ["200", "400", "600", "700", "800", "900"], variable: "--font-montserrat" });
 
@@ -21,9 +21,9 @@ const areas = [
   { nombre: "Operaciones", items: [] },
 ];
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
   // Se calcula en el servidor en cada carga: no depende de que alguien entre a Finanzas.
-  const pendiente = mesPendiente();
+  const pendiente = await pendienteActual();
   return (
     <html lang="es">
       <body className={`${montserrat.variable} antialiased`}>

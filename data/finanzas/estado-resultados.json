@@ -48,7 +48,8 @@
   "objetivos": [],
   "mejoras": [],
   "ajustes": [],
-  "revisar": []
+  "revisar": [],
+  "fuenteUrl": "https://docs.google.com/spreadsheets/d/1cDu6BbGmY8HiFB2LBEHuq1ZmTt-iJ9cFvZcHc1JXKLE/edit#gid=336649997"
  },
  {
   "anio": 2026,
@@ -109,7 +110,8 @@
    "El CAC está demasiado alto, tenemos que ver cómo mejorarlo, porque no están entrando la cantidad de clientes esperada"
   ],
   "ajustes": [],
-  "revisar": []
+  "revisar": [],
+  "fuenteUrl": "https://docs.google.com/spreadsheets/d/1cDu6BbGmY8HiFB2LBEHuq1ZmTt-iJ9cFvZcHc1JXKLE/edit#gid=1331261377"
  },
  {
   "anio": 2026,
@@ -161,7 +163,8 @@
   "objetivos": [],
   "mejoras": [],
   "ajustes": [],
-  "revisar": []
+  "revisar": [],
+  "fuenteUrl": "https://docs.google.com/spreadsheets/d/1cDu6BbGmY8HiFB2LBEHuq1ZmTt-iJ9cFvZcHc1JXKLE/edit#gid=1336791681"
  },
  {
   "anio": 2026,
@@ -219,7 +222,8 @@
    "Mantener las utilidades y los ingresos en mayo"
   ],
   "ajustes": [],
-  "revisar": []
+  "revisar": [],
+  "fuenteUrl": "https://docs.google.com/spreadsheets/d/1cDu6BbGmY8HiFB2LBEHuq1ZmTt-iJ9cFvZcHc1JXKLE/edit#gid=1574221844"
  },
  {
   "anio": 2026,
@@ -284,7 +288,8 @@
    "Pensar en la agencia que convierte"
   ],
   "ajustes": [],
-  "revisar": []
+  "revisar": [],
+  "fuenteUrl": "https://docs.google.com/spreadsheets/d/1cDu6BbGmY8HiFB2LBEHuq1ZmTt-iJ9cFvZcHc1JXKLE/edit#gid=245620777"
  },
  {
   "anio": 2026,
@@ -341,7 +346,8 @@
    "Optimizar el presupuesto publicitario"
   ],
   "ajustes": [],
-  "revisar": []
+  "revisar": [],
+  "fuenteUrl": "https://docs.google.com/spreadsheets/d/1cDu6BbGmY8HiFB2LBEHuq1ZmTt-iJ9cFvZcHc1JXKLE/edit#gid=1301526054"
  },
  {
   "anio": 2026,
@@ -398,7 +404,8 @@
    "Expandir fuerte la captación y desarrollar setters"
   ],
   "ajustes": [],
-  "revisar": []
+  "revisar": [],
+  "fuenteUrl": "https://docs.google.com/spreadsheets/d/1cDu6BbGmY8HiFB2LBEHuq1ZmTt-iJ9cFvZcHc1JXKLE/edit#gid=445107571"
  },
  {
   "anio": 2026,
@@ -458,7 +465,8 @@
    "Preparar campaña de rebranding y contenido TEDx"
   ],
   "ajustes": [],
-  "revisar": []
+  "revisar": [],
+  "fuenteUrl": "https://docs.google.com/spreadsheets/d/1cDu6BbGmY8HiFB2LBEHuq1ZmTt-iJ9cFvZcHc1JXKLE/edit#gid=1396262686"
  },
  {
   "anio": 2026,
@@ -517,58 +525,7 @@
    "Seguir revisando campañas para no perder el foco"
   ],
   "ajustes": [],
-  "revisar": []
- },
- {
-  "anio": 2026,
-  "mes": 10,
-  "estado": "consolidado",
-  "fuente": "Google Sheets · Yourebrand Finanzas · 'Octubre 26'",
-  "dolar": 1551,
-  "dolarFuente": "Planilla (C3)",
-  "ingresos": {
-   "rrssMens": 15497900,
-   "rrssTrim": 3774000,
-   "rrssSems": 267960,
-   "rrssAnual": 295350,
-   "extras": 4122500
-  },
-  "costosOperativos": {
-   "communityManagers": 4299000,
-   "produccion": 1333000,
-   "desarrolloWeb": 1775000,
-   "publicidad": 2404000
-  },
-  "costosFijos": {
-   "campanas": 1280000,
-   "organico": 30000,
-   "sueldoMarketing": 192000,
-   "sueldosFijos": 1590000,
-   "suscripciones": 34000,
-   "sueldoThomy": 2317500
-  },
-  "extras": 576000,
-  "impuestos": 361800,
-  "fees": 0,
-  "recurrencias": {
-   "ars": 19311500,
-   "eurEnArs": 1087200
-  },
-  "contMarginalUsd": 8204.97,
-  "margenSinWebs": 0.609,
-  "clientes": 30,
-  "entradas": 8,
-  "bajas": 4,
-  "analisis": [
-   "(Borrador Claude) Mes récord: utilidad neta USD 5.007 (32,4%), +78% vs septiembre (dólar blue promedio 1.551)",
-   "Ingresos brutos USD 15.447 (+33% vs sep): 8 clientes nuevos y 4 webs (3,39M en extras); 4 bajas (Nueva Forma, Toletvm, GBS y Palace)",
-   "Margen operativo 59,0% (62,2% en sep): baja por la mezcla, las webs dejan ~48%. Sin webs da 60,9% y los CMs bajaron a 17,9% de los ingresos",
-   "Costos fijos 22,7% de los ingresos (31,7% en sep): los fijos se licuan con la facturación",
-   "Ajustes vs Excel: +785k del diferido de Rafaela que faltaba; cuotas de AQ, Cuota Q, Ale Ochoa y Askal a lo cobrado (-268k)"
-  ],
-  "objetivos": [],
-  "mejoras": [],
-  "ajustes": [],
-  "revisar": []
+  "revisar": [],
+  "fuenteUrl": "https://docs.google.com/spreadsheets/d/1cDu6BbGmY8HiFB2LBEHuq1ZmTt-iJ9cFvZcHc1JXKLE/edit#gid=2141068958"
  }
 ]
