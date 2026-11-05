@@ -41,4 +41,12 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
 - Hasta junio 2026 CM y Producción iban juntos (`produccion: null`).
 - Alerta: desde el día 1 del mes M, si M−1 no está consolidado queda **pendiente**; después del día 10 (`NEXT_PUBLIC_DIA_LIMITE_ER`) queda **atrasado**. Se calcula en el servidor con la hora de Buenos Aires.
 - Tests: `npm test` (números de octubre 2026 según la skill, cierre de los 10 meses, agregados por Q y alertas con fechas simuladas).
-- Consolidar un mes nuevo: hoy se hace con la skill `consolidar-estado-resultados` y se agrega el mes al JSON. La carga del Excel desde la plataforma es la próxima etapa.
+- **Consolidar desde la plataforma ("+")**: se sube el Excel (.xlsx con BALANCE) y el servidor ejecuta la skill:
+  - `lib/er/excel.ts` lee BALANCE igual que `er_mes.py` (bloques en la fila 23, fila `=SUM`, "Calculo diferido").
+  - `lib/er/motor.ts` es el port 1:1 de `er_mes.py`. El original está en `scripts/skill/er_mes.py` y `tests/motor-er.test.ts` verifica que ambos den exactamente lo mismo (líneas, totales, detalle y REVISAR).
+  - `lib/er/insumos.ts` trae de Notion la Nómina (roles), Clientes (abonos, planes, altas y bajas) y Vencimientos del mes, y el dólar blue del día (dolarapi.com, promedio compra/venta).
+  - Pantalla de revisión: cada ítem de REVISAR se resuelve (línea + confirmar) y el ER se recalcula al instante. No se puede confirmar con ítems pendientes ni con diferencia sin explicar contra el "Calculo diferido".
+  - Al confirmar se recalcula en el servidor y se guarda una **versión nueva** (historial y log) en Upstash Redis (privado).
+- **Configuración en Vercel**: Storage → *Upstash for Redis* → conectar al proyecto (crea `KV_REST_API_URL` y `KV_REST_API_TOKEN`). `NOTION_TOKEN` con acceso a Nómina, Clientes y "Vencimientos del mes".
+- **Prueba local sin Notion ni Redis**: `ER_FIXTURES=$PWD/tests/fixtures npm run dev` y subir un Excel generado con `npx tsx tests/fixtures/generar.ts balance.xlsx`.
+- **Octubre 2026 está vaciado temporalmente** para probar la consolidación; su versión importada está en `data/finanzas/respaldo-octubre-2026.json`.

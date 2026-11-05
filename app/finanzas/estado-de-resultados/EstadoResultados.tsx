@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, LayoutGroup, MotionConfig, animate, motion, useReducedMotion } from "motion/react";
 import { MESES, agregar, totales, trimestreDe, type Agregado, type MesER } from "@/lib/finanzas";
+import { Consolidar } from "./Consolidar";
 
 const ease = [0.22, 1, 0.36, 1] as const;
 type Moneda = "ARS" | "USD";
@@ -79,6 +80,37 @@ function TarjetaPendiente({ mes, anio, atrasado, onClick }: { mes: number; anio:
   );
 }
 
+/** "De cada $100 facturados": costos operativos, fijos, extras+impuestos y utilidad. */
+function Reparto({ m, alto = "h-2.5", conLeyenda = false }: { m: MesER; alto?: string; conLeyenda?: boolean }) {
+  const t = totales(m);
+  const partes = [
+    { k: "Costos operativos", v: t.costosOperativos, c: "#272626" },
+    { k: "Costos fijos", v: t.costosFijos, c: "#7d7d7d" },
+    { k: "Extras e impuestos", v: m.extras + m.impuestos + m.fees, c: "#d4d4d4" },
+    { k: "Utilidad neta", v: Math.max(0, t.utilidadNeta), c: "#d30805" },
+  ];
+  const total = partes.reduce((s, p) => s + p.v, 0) || 1;
+  return (
+    <div>
+      <div className={`flex ${alto} gap-[2px] overflow-hidden rounded-full`} role="img" aria-label="Reparto de los ingresos">
+        {partes.map((p) => (
+          <motion.span key={p.k} title={`${p.k}: ${fmtPct(p.v / (t.ingresosBrutos || 1))}`} style={{ background: p.c }} initial={{ flexGrow: 0 }} animate={{ flexGrow: p.v / total }} transition={{ duration: 0.6, ease }} />
+        ))}
+      </div>
+      {conLeyenda && (
+        <ul className="mt-2 grid grid-cols-2 gap-x-4 gap-y-1 text-xs sm:grid-cols-4">
+          {partes.map((p) => (
+            <li key={p.k} className="flex items-center gap-1.5 text-zinc-600">
+              <span className="h-2 w-2 shrink-0 rounded-full" style={{ background: p.c }} />
+              {p.k} <b className="ml-auto tabular-nums text-ink">{fmtPct(p.v / (t.ingresosBrutos || 1))}</b>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
+
 function TarjetaMes({ m, anterior, moneda, onClick, i }: { m: MesER; anterior?: MesER; moneda: Moneda; onClick: () => void; i: number }) {
   const t = totales(m);
   const ta = anterior ? totales(anterior) : null;
@@ -90,21 +122,32 @@ function TarjetaMes({ m, anterior, moneda, onClick, i }: { m: MesER; anterior?: 
       whileHover={{ y: -2 }}
       whileTap={{ scale: 0.98 }}
       onClick={onClick}
-      className="flex min-h-36 w-full flex-col rounded-2xl border border-zinc-200 bg-white p-4 text-left text-ink hover:border-ink sm:aspect-square"
+      className="flex w-full flex-col gap-3 rounded-2xl border border-zinc-200 bg-white p-4 text-left text-ink hover:border-ink"
     >
-      <p className="text-sm font-bold">
-        {MESES[m.mes - 1]}
-        <span className="text-accent">.</span>
-      </p>
-      <p className="mt-auto text-[11px] uppercase tracking-wider text-zinc-400">Utilidad neta</p>
-      <p className="text-2xl font-black tabular-nums text-accent">{moneda === "USD" ? fmtUSD(t.utilidadUsd) : fmtARS(t.utilidadNeta)}</p>
-      <div className="mt-1 flex items-center justify-between gap-2 text-xs text-zinc-500">
-        <span>{fmtPct(t.utilidadPct)} de ingresos</span>
-        <Variacion actual={moneda === "USD" ? t.utilidadUsd : t.utilidadNeta} anterior={ta ? (moneda === "USD" ? ta.utilidadUsd : ta.utilidadNeta) : null} />
+      <div className="flex items-center justify-between">
+        <p className="text-sm font-bold">
+          {MESES[m.mes - 1]}
+          <span className="text-accent">.</span>
+        </p>
+        <Variacion actual={t.utilidadUsd} anterior={ta?.utilidadUsd ?? null} />
       </div>
-      <p className="mt-2 text-xs text-zinc-500">
-        Margen op. <b className="text-ink">{fmtPct(t.margenPct)}</b> · {m.clientes} clientes
-      </p>
+      <div>
+        <p className="text-[10px] uppercase tracking-wider text-zinc-400">Utilidad neta · {fmtPct(t.utilidadPct)}</p>
+        <p className="text-2xl font-black tabular-nums text-accent">{moneda === "USD" ? fmtUSD(t.utilidadUsd) : fmtARS(t.utilidadNeta)}</p>
+      </div>
+      <Reparto m={m} />
+      <dl className="grid grid-cols-3 gap-2 border-t border-zinc-100 pt-3 text-center">
+        {[
+          ["Ingresos", moneda === "USD" ? fmtUSD(t.ingresosUsd).replace("USD ", "") : `${(t.ingresosBrutos / 1e6).toFixed(1).replace(".", ",")}M`],
+          ["Margen op.", fmtPct(t.margenPct)],
+          ["Clientes", String(m.clientes)],
+        ].map(([k, v]) => (
+          <div key={k}>
+            <dd className="text-sm font-bold tabular-nums">{v}</dd>
+            <dt className="text-[10px] uppercase tracking-wider text-zinc-400">{k}</dt>
+          </div>
+        ))}
+      </dl>
     </motion.button>
   );
 }
@@ -128,7 +171,86 @@ function Fila({ label, ars, m, anterior, moneda, nivel = 0, invertir = false, si
   );
 }
 
+/** Resumen del mes: lo que importa de un vistazo. */
+function Resumen({ m, anterior, moneda }: { m: MesER; anterior?: MesER; moneda: Moneda }) {
+  const t = totales(m);
+  const ta = anterior ? totales(anterior) : null;
+  // Mayores cambios contra el mes anterior (en ARS)
+  const lineas: [string, number, number | undefined, boolean][] = [
+    ["Ingresos RRSS mensual", m.ingresos.rrssMens, anterior?.ingresos.rrssMens, false],
+    ["Ingresos diferidos", m.ingresos.rrssTrim + m.ingresos.rrssSems + m.ingresos.rrssAnual, anterior ? anterior.ingresos.rrssTrim + anterior.ingresos.rrssSems + anterior.ingresos.rrssAnual : undefined, false],
+    ["Ingresos extras", m.ingresos.extras, anterior?.ingresos.extras, false],
+    ["Costos operativos", t.costosOperativos, ta?.costosOperativos, true],
+    ["Costos fijos", t.costosFijos, ta?.costosFijos, true],
+    ["Extras", m.extras, anterior?.extras, true],
+  ];
+  const cambios = lineas
+    .filter(([, , a]) => a !== undefined)
+    .map(([k, v, a, inv]) => ({ k, v, d: v - (a as number), inv }))
+    .sort((x, y) => Math.abs(y.d) - Math.abs(x.d))
+    .slice(0, 3);
+  const f = (ars: number) => (moneda === "USD" ? fmtUSD(t.usd(ars)) : fmtARS(ars));
+  return (
+    <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3, ease }} className="space-y-6">
+      <section>
+        <h3 className="text-sm font-black uppercase tracking-tight">
+          De cada $100 facturados<span className="text-accent">.</span>
+        </h3>
+        <div className="mt-3">
+          <Reparto m={m} alto="h-4" conLeyenda />
+        </div>
+      </section>
+      {cambios.length > 0 && (
+        <section>
+          <h3 className="text-sm font-black uppercase tracking-tight">
+            Qué cambió vs {MESES[anterior!.mes - 1].toLowerCase()}
+            <span className="text-accent">.</span>
+          </h3>
+          <ul className="mt-2 divide-y divide-zinc-100">
+            {cambios.map((c) => {
+              const bueno = c.inv ? c.d < 0 : c.d > 0;
+              return (
+                <li key={c.k} className="flex items-center justify-between py-2 text-sm">
+                  <span className="text-zinc-600">{c.k}</span>
+                  <span className={`font-bold tabular-nums ${bueno ? "text-emerald-600" : "text-red-600"}`}>
+                    {c.d >= 0 ? "+" : "−"}
+                    {f(Math.abs(c.d)).replace("-", "")}
+                  </span>
+                </li>
+              );
+            })}
+          </ul>
+        </section>
+      )}
+      <section className="grid grid-cols-3 gap-2 rounded-xl bg-surface p-3 text-center">
+        {[["Clientes", m.clientes], ["Entradas", m.entradas], ["Bajas", m.bajas]].map(([k, v]) => (
+          <div key={k as string}>
+            <p className="text-xl font-black tabular-nums">{v}</p>
+            <p className="text-[10px] uppercase tracking-wider text-zinc-400">{k}</p>
+          </div>
+        ))}
+      </section>
+      {m.analisis.length > 0 && (
+        <section>
+          <h3 className="text-sm font-black uppercase tracking-tight">
+            Análisis<span className="text-accent">.</span>
+          </h3>
+          <ul className="mt-2 space-y-1.5">
+            {m.analisis.slice(0, 3).map((x) => (
+              <li key={x} className="flex gap-2 text-sm text-zinc-700">
+                <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-accent" />
+                <span>{x.replace("(Borrador Claude)", "").trim()}</span>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+    </motion.div>
+  );
+}
+
 function DetalleMes({ m, anterior, moneda, setMoneda, onClose }: { m: MesER; anterior?: MesER; moneda: Moneda; setMoneda: (x: Moneda) => void; onClose: () => void }) {
+  const [completo, setCompleto] = useState(false);
   const t = totales(m);
   const ta = anterior ? totales(anterior) : null;
   const a = anterior;
@@ -191,6 +313,19 @@ function DetalleMes({ m, anterior, moneda, setMoneda, onClose }: { m: MesER; ant
             ))}
           </div>
 
+          {!completo && <Resumen m={m} anterior={anterior} moneda={moneda} />}
+          <div className="flex flex-wrap gap-2">
+            <button onClick={() => setCompleto(!completo)} className="rounded-full bg-ink px-4 py-2 text-xs font-bold text-white hover:bg-black">
+              {completo ? "← Volver al resumen" : "Ver detalle completo"}
+            </button>
+            {m.fuenteUrl && (
+              <a href={m.fuenteUrl} target="_blank" rel="noreferrer" className="rounded-full border border-zinc-300 px-4 py-2 text-xs font-bold hover:border-ink">
+                Ver en Google Sheets ↗
+              </a>
+            )}
+          </div>
+          {completo && (
+            <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3, ease }} className="space-y-6">
           {/* ER */}
           <table className="w-full">
             <thead>
@@ -334,6 +469,8 @@ function DetalleMes({ m, anterior, moneda, setMoneda, onClose }: { m: MesER; ant
               <h3 className="font-bold">Ajustes contra el Excel</h3>
               <ul className="mt-1 list-disc pl-5 text-zinc-600">{m.ajustes.map((x) => <li key={x}>{x}</li>)}</ul>
             </section>
+          )}
+            </motion.div>
           )}
           <p className="text-[11px] text-zinc-400">Fuente: {m.fuente}</p>
         </div>
@@ -484,7 +621,8 @@ export function EstadoResultados({ meses, pendiente }: { meses: MesER[]; pendien
   const [moneda, setMoneda] = useState<Moneda>("USD");
   const [qAbierto, setQAbierto] = useState<number | null>(null);
   const [mesAbierto, setMesAbierto] = useState<MesER | null>(null);
-  const [modal, setModal] = useState(false);
+  // El mes a consolidar se fija al abrir el modal (al guardar, el "próximo" cambia).
+  const [modal, setModal] = useState<{ anio: number; mes: number } | null>(null);
 
   const delAnio = meses.filter((m) => m.anio === anio).sort((a, b) => a.mes - b.mes);
   const ag = agregar(delAnio);
@@ -495,14 +633,16 @@ export function EstadoResultados({ meses, pendiente }: { meses: MesER[]; pendien
     const k = (e: KeyboardEvent) => {
       if (e.key !== "Escape") return;
       if (mesAbierto) setMesAbierto(null);
-      else if (modal) setModal(false);
+      else if (modal) setModal(null);
       else setQAbierto(null);
     };
     window.addEventListener("keydown", k);
     return () => window.removeEventListener("keydown", k);
   }, [mesAbierto, modal]);
 
-  const anteriorDe = (m: MesER) => meses.find((x) => (m.mes === 1 ? x.anio === m.anio - 1 && x.mes === 12 : x.anio === m.anio && x.mes === m.mes - 1));
+  const ultimo = [...meses].sort((a, b) => a.anio - b.anio || a.mes - b.mes).at(-1);
+  const objetivo = pendiente ?? (ultimo ? (ultimo.mes === 12 ? { anio: ultimo.anio + 1, mes: 1 } : { anio: ultimo.anio, mes: ultimo.mes + 1 }) : null);
+  const anteriorDe = (m: Pick<MesER, "anio" | "mes">) => meses.find((x) => (m.mes === 1 ? x.anio === m.anio - 1 && x.mes === 12 : x.anio === m.anio && x.mes === m.mes - 1));
 
   return (
     <MotionConfig reducedMotion="user">
@@ -519,6 +659,17 @@ export function EstadoResultados({ meses, pendiente }: { meses: MesER[]; pendien
             </h1>
           </div>
           <div className="ml-auto flex items-center gap-2">
+            {objetivo && (
+              <motion.button
+                onClick={() => objetivo && setModal(objetivo)}
+                whileHover={{ y: -1 }}
+                whileTap={{ scale: 0.97 }}
+                className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-bold text-white ${pendiente ? "bg-accent" : "bg-ink"}`}
+                title={`Consolidar ${MESES[objetivo.mes - 1]} ${objetivo.anio}`}
+              >
+                <span className="text-lg leading-none">+</span> Consolidar {MESES[objetivo.mes - 1].toLowerCase()}
+              </motion.button>
+            )}
             <select value={anio} onChange={(e) => { setAnio(Number(e.target.value)); setQAbierto(null); }} className="rounded-full border border-zinc-200 bg-white px-3 py-1.5 text-sm font-bold">
               {anios.map((a) => <option key={a}>{a}</option>)}
             </select>
@@ -578,7 +729,7 @@ export function EstadoResultados({ meses, pendiente }: { meses: MesER[]; pendien
                   moneda={moneda}
                   onClose={() => setQAbierto(null)}
                   onMes={setMesAbierto}
-                  onPendiente={() => setModal(true)}
+                  onPendiente={() => pendiente && setModal({ anio: pendiente.anio, mes: pendiente.mes })}
                   anteriorDe={anteriorDe}
                 />
               )}
@@ -597,28 +748,13 @@ export function EstadoResultados({ meses, pendiente }: { meses: MesER[]; pendien
       </AnimatePresence>
 
       <AnimatePresence>
-        {modal && pendiente && (
-          <>
-            <motion.div className="fixed inset-0 z-40 bg-ink/40" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setModal(false)} />
-            <motion.div
-              initial={{ opacity: 0, scale: 0.96, y: 10 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.96 }}
-              transition={{ duration: 0.25, ease }}
-              className="fixed left-1/2 top-1/2 z-50 w-[min(92vw,30rem)] -translate-x-1/2 -translate-y-1/2 rounded-3xl bg-white p-6 shadow-2xl"
-            >
-              <h2 className="text-xl font-black uppercase tracking-tight">
-                Consolidar {MESES[pendiente.mes - 1]}
-                <span className="text-accent">.</span>
-              </h2>
-              <p className="mt-2 text-sm text-zinc-600">
-                La carga del Excel desde la plataforma es la próxima etapa. Por ahora, pasale el Excel con la hoja <b>BALANCE</b> a Claude para consolidar el mes con la skill. Cuando quede cargado, esta tarjeta pasa a consolidada y la alerta se apaga sola.
-              </p>
-              <button onClick={() => setModal(false)} className="mt-5 rounded-full bg-ink px-4 py-2 text-sm font-bold text-white">
-                Entendido
-              </button>
-            </motion.div>
-          </>
+        {modal && (
+          <Consolidar
+            anio={modal.anio}
+            mes={modal.mes}
+            clientesMesAnterior={anteriorDe(modal)?.clientes ?? null}
+            onClose={() => setModal(null)}
+          />
         )}
       </AnimatePresence>
     </MotionConfig>

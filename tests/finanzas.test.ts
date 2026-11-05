@@ -1,6 +1,10 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { agregar, meses, mesPendiente, totales, type MesER } from "@/lib/finanzas";
+import { agregar, meses as base, mesPendiente, totales, type MesER } from "@/lib/finanzas";
+import octubre from "@/data/finanzas/respaldo-octubre-2026.json";
+
+// Octubre está vaciado para la prueba de consolidación; acá se usa su respaldo.
+const meses = [...base, octubre as MesER];
 
 test("octubre 2026 da los números de la skill", () => {
   const oct = meses.find((m) => m.anio === 2026 && m.mes === 10)!;

@@ -8,6 +8,7 @@ export type MesER = {
   mes: number; // 1-12
   estado: EstadoMes;
   fuente: string;
+  fuenteUrl?: string;
   dolar: number;
   dolarFuente: string;
   ingresos: { rrssMens: number; rrssTrim: number; rrssSems: number; rrssAnual: number; extras: number };
