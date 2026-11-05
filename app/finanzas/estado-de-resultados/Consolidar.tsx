@@ -56,21 +56,37 @@ export function Consolidar({ anio, mes, clientesMesAnterior, onClose }: { anio: 
   const ejecutar = () => {
     if (!archivo) return;
     setError(null);
-    const fd = new FormData();
-    fd.set("archivo", archivo);
-    fd.set("anio", String(anio));
-    fd.set("mes", String(mes));
     iniciar(async () => {
-      const r = await prepararBorrador(fd);
-      if (r.ok) setBorrador(r.data);
-      else setError(r.error);
+      try {
+        if (!archivo.name.toLowerCase().endsWith(".xlsx")) throw new Error("Subí el Excel de Yourebrand en formato .xlsx.");
+        // El Excel se lee acá, en el navegador: al servidor solo viaja el bloque del mes y los 13 anteriores.
+        const { abrirBalance, leerInsumos } = await import("@/lib/er/excel");
+        const ws = await abrirBalance(await archivo.arrayBuffer());
+        let insumos;
+        try {
+          insumos = leerInsumos(ws, mes, anio, anio);
+        } catch {
+          insumos = leerInsumos(ws, mes, anio, anio + 1); // el Excel ya tiene meses del año siguiente
+        }
+        const r = await prepararBorrador({ anio, mes, archivo: archivo.name, ...insumos });
+        if (r.ok) setBorrador(r.data);
+        else setError(r.error);
+      } catch (e) {
+        setError(e instanceof Error ? e.message : "No se pudo procesar el archivo. Probá de nuevo.");
+      }
     });
   };
   const confirmar = () => {
     if (!borrador) return;
     setError(null);
     iniciar(async () => {
-      const r = await confirmarMes(borrador, ajustes, res, expl);
+      let r: Awaited<ReturnType<typeof confirmarMes>>;
+      try {
+        r = await confirmarMes(borrador, ajustes, res, expl);
+      } catch (e) {
+        setError(`No se pudo guardar (${e instanceof Error ? e.message : "error del servidor"}). El mes sigue en borrador: probá de nuevo.`);
+        return;
+      }
       if (r.ok) {
         setListo(r.data.version);
         setTimeout(() => {
