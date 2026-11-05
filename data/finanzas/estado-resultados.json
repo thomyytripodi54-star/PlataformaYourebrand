@@ -1,0 +1,574 @@
+[
+ {
+  "anio": 2026,
+  "mes": 1,
+  "estado": "consolidado",
+  "fuente": "Google Sheets · Yourebrand Finanzas · 'Enero 26'",
+  "dolar": 1440,
+  "dolarFuente": "Planilla (C3)",
+  "ingresos": {
+   "rrssMens": 12435000,
+   "rrssTrim": 1449000,
+   "rrssSems": 219000,
+   "rrssAnual": 0,
+   "extras": 0
+  },
+  "costosOperativos": {
+   "communityManagers": 3082000,
+   "produccion": null,
+   "desarrolloWeb": 437500,
+   "publicidad": 1815000
+  },
+  "costosFijos": {
+   "campanas": 1384000,
+   "organico": 277000,
+   "sueldoMarketing": 847000,
+   "sueldosFijos": 1637000,
+   "suscripciones": 80000,
+   "sueldoThomy": 2250000
+  },
+  "extras": 0,
+  "impuestos": 193000,
+  "fees": 0,
+  "recurrencias": {
+   "ars": 10321000,
+   "eurEnArs": 3401580
+  },
+  "contMarginalUsd": null,
+  "margenSinWebs": null,
+  "clientes": 29,
+  "entradas": 4,
+  "bajas": 6,
+  "analisis": [
+   "Las utilidades netas crecieron más de la expectativa, llegamos a los 2 dígitos",
+   "Nos faltaron clientes nuevos pero mantuvimos bien las utilidades",
+   "La proporción de clientes AA bajó, eso explica la caída en los márgenes operativos",
+   "Las utilidades netas fueron las proyectadas, aunque esperábamos un mayor nivel de Ing B"
+  ],
+  "objetivos": [],
+  "mejoras": [],
+  "ajustes": [],
+  "revisar": []
+ },
+ {
+  "anio": 2026,
+  "mes": 2,
+  "estado": "consolidado",
+  "fuente": "Google Sheets · Yourebrand Finanzas · 'Febrero 26'",
+  "dolar": 1420,
+  "dolarFuente": "Planilla (C3)",
+  "ingresos": {
+   "rrssMens": 10828000,
+   "rrssTrim": 1922700,
+   "rrssSems": 0,
+   "rrssAnual": 295350,
+   "extras": 269000
+  },
+  "costosOperativos": {
+   "communityManagers": 2944000,
+   "produccion": null,
+   "desarrolloWeb": 17000,
+   "publicidad": 1452000
+  },
+  "costosFijos": {
+   "campanas": 2433000,
+   "organico": 185000,
+   "sueldoMarketing": 817000,
+   "sueldosFijos": 1673000,
+   "suscripciones": 50000,
+   "sueldoThomy": 2250000
+  },
+  "extras": 632500,
+  "impuestos": 261000,
+  "fees": 0,
+  "recurrencias": {
+   "ars": 10126000,
+   "eurEnArs": 4425100
+  },
+  "contMarginalUsd": null,
+  "margenSinWebs": null,
+  "clientes": 31,
+  "entradas": 7,
+  "bajas": 5,
+  "analisis": [
+   "Mejoramos demasiado el margen bruto, es algo positivo, dado que estamos recirculando los clientes y nos estamos quedando con más clientes AA",
+   "Se nos fueron menos clientes de lo esperado, pero se puede mejorar, tuvimos ineficiencias operativas fuertes que cubrir",
+   "Las utilidades netas cayeron, pero es entendible ya que tuvimos 2 factores importantes, un incremento fuerte en campañas y vacaciones"
+  ],
+  "objetivos": [
+   "Incorporación de nuevo publicista",
+   "Incorporación de Gems en el equipo",
+   "Eliminamos clientes segmento C y reducimos B",
+   "Modificamos la oferta UGC + VIDEOS + Plataforma de gestión",
+   "Grabación on site",
+   "Penetración de mercado internacional"
+  ],
+  "mejoras": [
+   "Hubo mucha saturación de Thomy",
+   "Nos faltó conseguir clientes AA, crecimos solo 1 cliente neto AA, nos empeora el ingreso bruto",
+   "El CAC está demasiado alto, tenemos que ver cómo mejorarlo, porque no están entrando la cantidad de clientes esperada"
+  ],
+  "ajustes": [],
+  "revisar": []
+ },
+ {
+  "anio": 2026,
+  "mes": 3,
+  "estado": "consolidado",
+  "fuente": "Google Sheets · Yourebrand Finanzas · 'Marzo 26'",
+  "dolar": 1410,
+  "dolarFuente": "Planilla (C3)",
+  "ingresos": {
+   "rrssMens": 11187000,
+   "rrssTrim": 997650,
+   "rrssSems": 215040,
+   "rrssAnual": 268800,
+   "extras": 0
+  },
+  "costosOperativos": {
+   "communityManagers": 3032000,
+   "produccion": null,
+   "desarrolloWeb": 0,
+   "publicidad": 1331000
+  },
+  "costosFijos": {
+   "campanas": 2445000,
+   "organico": 311000,
+   "sueldoMarketing": 823000,
+   "sueldosFijos": 1673000,
+   "suscripciones": 50000,
+   "sueldoThomy": 2115000
+  },
+  "extras": 260000,
+  "impuestos": 164800,
+  "fees": 0,
+  "recurrencias": {
+   "ars": 10126000,
+   "eurEnArs": 4425100
+  },
+  "contMarginalUsd": null,
+  "margenSinWebs": null,
+  "clientes": 30,
+  "entradas": 7,
+  "bajas": 8,
+  "analisis": [
+   "Pocas utilidades netas, atribuidas a menos ingresos brutos",
+   "El margen operativo fue óptimo",
+   "Los costos fijos se comportaron similares al mes anterior (altos)",
+   "Las tasas de renovación fueron muy bajas, en un escenario como el mes anterior hubiéramos tenido mejores márgenes",
+   "De cara al mes que viene vamos a reducir inversión publicitaria, para aumentar márgenes"
+  ],
+  "objetivos": [],
+  "mejoras": [],
+  "ajustes": [],
+  "revisar": []
+ },
+ {
+  "anio": 2026,
+  "mes": 4,
+  "estado": "consolidado",
+  "fuente": "Google Sheets · Yourebrand Finanzas · 'Abril 26'",
+  "dolar": 1400,
+  "dolarFuente": "Planilla (C3)",
+  "ingresos": {
+   "rrssMens": 11506000,
+   "rrssTrim": 1373000,
+   "rrssSems": 215040,
+   "rrssAnual": 268800,
+   "extras": 493000
+  },
+  "costosOperativos": {
+   "communityManagers": 3155000,
+   "produccion": null,
+   "desarrolloWeb": 140000,
+   "publicidad": 1500000
+  },
+  "costosFijos": {
+   "campanas": 1905000,
+   "organico": 230000,
+   "sueldoMarketing": 830000,
+   "sueldosFijos": 1746000,
+   "suscripciones": 70000,
+   "sueldoThomy": 2100000
+  },
+  "extras": 83333,
+  "impuestos": 292000,
+  "fees": 0,
+  "recurrencias": {
+   "ars": 10800000,
+   "eurEnArs": 3430600
+  },
+  "contMarginalUsd": null,
+  "margenSinWebs": null,
+  "clientes": 30,
+  "entradas": 4,
+  "bajas": 3,
+  "analisis": [
+   "Fuimos más eficientes: mejor optimización de costos fijos y menos desperdicios (parte se debe a que bajamos inversión publicitaria por impuestos)",
+   "Tasa de renovaciones muy altas, lo que nos dio un buen revenue pese a tener pocos clientes nuevos",
+   "Seguimos teniendo problemas con el CAC, tenemos que intentar captar más, los resultados hubieran sido mejores"
+  ],
+  "objetivos": [
+   "Sistema de calificación de clientes",
+   "Incorporación de plataforma operativa para mejora de calidad",
+   "Mejora del sistema operativo (incorporamos plataforma, reuniones mixtas, entre otros)",
+   "Mejora de portfolio y revisión del sistema de ventas"
+  ],
+  "mejoras": [
+   "Mejorar el CAC, a través de incursión en otras plataformas como LinkedIn",
+   "Mantener las utilidades y los ingresos en mayo"
+  ],
+  "ajustes": [],
+  "revisar": []
+ },
+ {
+  "anio": 2026,
+  "mes": 5,
+  "estado": "consolidado",
+  "fuente": "Google Sheets · Yourebrand Finanzas · 'Mayo 26'",
+  "dolar": 1415,
+  "dolarFuente": "Planilla (C3)",
+  "ingresos": {
+   "rrssMens": 9633000,
+   "rrssTrim": 1313333,
+   "rrssSems": 267960,
+   "rrssAnual": 268800,
+   "extras": 871500
+  },
+  "costosOperativos": {
+   "communityManagers": 2700000,
+   "produccion": null,
+   "desarrolloWeb": 140000,
+   "publicidad": 1490000
+  },
+  "costosFijos": {
+   "campanas": 1609000,
+   "organico": 355000,
+   "sueldoMarketing": 770000,
+   "sueldosFijos": 1746000,
+   "suscripciones": 80000,
+   "sueldoThomy": 2100000
+  },
+  "extras": 309833,
+  "impuestos": 126000,
+  "fees": 0,
+  "recurrencias": {
+   "ars": 10427000,
+   "eurEnArs": 2754000
+  },
+  "contMarginalUsd": null,
+  "margenSinWebs": null,
+  "clientes": 27,
+  "entradas": 4,
+  "bajas": 7,
+  "analisis": [
+   "Las utilidades fueron positivas, aguantaron el rebote del mes pasado, pudimos reducir nuestros costos fijos",
+   "Cayeron mucho las renovaciones, en promedio nos mantenemos bien pero tenemos que mirar el mes que viene",
+   "Bajamos un poco el CAC, pero la inversión fue menor, con lo cual no tuvimos el volumen de clientes que deseamos",
+   "De cara al mes que viene se espera un mejor resultado, ya que reducimos 2 costos fijos de puestos reemplazables, ahorrando unos $467.000 mensuales",
+   "Empezamos algo nuevo, penetrar en UGC y fidelizar visitando clientes + Meet Alfred plantea buen panorama, aunque aún no está reflejado en los números",
+   "Los ingresos por extras mejoraron mucho: estamos haciendo que clientes nos paguen más (ej. videos de Cuota Q y de Fedora, o este mes jornada de grabación)"
+  ],
+  "objetivos": [
+   "Programas de fidelización (visitas a clientes)",
+   "Incorporación de área UGC (ej. Fedora y Fundación Señales)",
+   "Implementación de prospección por LinkedIn para mejorar el CAC (primeros acercamientos, ej. UMSA)",
+   "Mejora en la calidad de contenido"
+  ],
+  "mejoras": [
+   "Mejorar costos por lead de campañas (España nos quedó alto, muy bajo de resultados)",
+   "Perdimos muchos clientes. Principales insights: economía, tiempos, disconformidad (los disconformes fueron los Perfil C)",
+   "Ampliar a países donde la macro no perjudique, como México o España",
+   "Potenciar servicios en auge como grabación de contenido UGC; quizá armar campañas para captar y potenciar más eso",
+   "Ir midiendo resultados de Meet Alfred",
+   "Pensar en la agencia que convierte"
+  ],
+  "ajustes": [],
+  "revisar": []
+ },
+ {
+  "anio": 2026,
+  "mes": 6,
+  "estado": "consolidado",
+  "fuente": "Google Sheets · Yourebrand Finanzas · 'Junio 26'",
+  "dolar": 1450,
+  "dolarFuente": "Planilla (C3)",
+  "ingresos": {
+   "rrssMens": 7875000,
+   "rrssTrim": 1340000,
+   "rrssSems": 288000,
+   "rrssAnual": 288000,
+   "extras": 1446000
+  },
+  "costosOperativos": {
+   "communityManagers": 2856000,
+   "produccion": null,
+   "desarrolloWeb": 140000,
+   "publicidad": 1430000
+  },
+  "costosFijos": {
+   "campanas": 2434000,
+   "organico": 400000,
+   "sueldoMarketing": 782500,
+   "sueldosFijos": 1746000,
+   "suscripciones": 80000,
+   "sueldoThomy": 2175000
+  },
+  "extras": 559333,
+  "impuestos": 278000,
+  "fees": 0,
+  "recurrencias": {
+   "ars": 10600000,
+   "eurEnArs": 3321000
+  },
+  "contMarginalUsd": null,
+  "margenSinWebs": null,
+  "clientes": 27,
+  "entradas": 0,
+  "bajas": 3,
+  "analisis": [
+   "Los ingresos brutos fueron relativamente bajos",
+   "Notamos un incremento en los ingresos extras debido a la incorporación de nuevos servicios",
+   "Tuvimos gastos extraordinarios que podrían haber sido evitados (ej. gastos en campañas)"
+  ],
+  "objetivos": [
+   "Incorporamos nuevos servicios de grabación presencial, encontramos el diferencial y algo integral",
+   "Mejoramos la retención, estamos pudiendo mejorar eso"
+  ],
+  "mejoras": [
+   "Mejorar la captación, incorporar gráficas nuevas y anuncios nuevos",
+   "Acortar los gastos innecesarios",
+   "Optimizar el presupuesto publicitario"
+  ],
+  "ajustes": [],
+  "revisar": []
+ },
+ {
+  "anio": 2026,
+  "mes": 7,
+  "estado": "consolidado",
+  "fuente": "Google Sheets · Yourebrand Finanzas · 'Julio 26'",
+  "dolar": 1500,
+  "dolarFuente": "Planilla (C3)",
+  "ingresos": {
+   "rrssMens": 10549000,
+   "rrssTrim": 1340000,
+   "rrssSems": 288000,
+   "rrssAnual": 288000,
+   "extras": 764000
+  },
+  "costosOperativos": {
+   "communityManagers": 2555000,
+   "produccion": 732000,
+   "desarrolloWeb": 140000,
+   "publicidad": 1690000
+  },
+  "costosFijos": {
+   "campanas": 1129000,
+   "organico": 120000,
+   "sueldoMarketing": 300000,
+   "sueldosFijos": 1482000,
+   "suscripciones": 90000,
+   "sueldoThomy": 2250000
+  },
+  "extras": 100000,
+  "impuestos": 188000,
+  "fees": 0,
+  "recurrencias": {
+   "ars": 10984000,
+   "eurEnArs": 2948400
+  },
+  "contMarginalUsd": null,
+  "margenSinWebs": null,
+  "clientes": 27,
+  "entradas": 4,
+  "bajas": 1,
+  "analisis": [
+   "Mes muy positivo, el mes con mayores renovaciones en la historia y la mayor utilidad neta, adquiriendo clientes nuevos y manteniendo los actuales"
+  ],
+  "objetivos": [
+   "Incursionar y probar servicio de grabación presencial (validado)",
+   "Reducir costos fijos, sacando estructura grande y optimizando campañas",
+   "Alineados con los objetivos de retención",
+   "CAC de 200 USD, muy alineado a lo planteado"
+  ],
+  "mejoras": [
+   "Cayó un poco el ticket promedio, está subiendo el dólar, tenemos que plantear un ajuste de cara al mes que viene",
+   "Aumentar inversión en campañas publicitarias para estar alineados",
+   "Expandir fuerte la captación y desarrollar setters"
+  ],
+  "ajustes": [],
+  "revisar": []
+ },
+ {
+  "anio": 2026,
+  "mes": 8,
+  "estado": "consolidado",
+  "fuente": "Google Sheets · Yourebrand Finanzas · 'Agosto 26'",
+  "dolar": 1500,
+  "dolarFuente": "Planilla (C3)",
+  "ingresos": {
+   "rrssMens": 11816000,
+   "rrssTrim": 2122000,
+   "rrssSems": 288000,
+   "rrssAnual": 288000,
+   "extras": 1126000
+  },
+  "costosOperativos": {
+   "communityManagers": 3350000,
+   "produccion": 942000,
+   "desarrolloWeb": 0,
+   "publicidad": 1560000
+  },
+  "costosFijos": {
+   "campanas": 1366000,
+   "organico": 121000,
+   "sueldoMarketing": 300000,
+   "sueldosFijos": 1482000,
+   "suscripciones": 100000,
+   "sueldoThomy": 2250000
+  },
+  "extras": 210000,
+  "impuestos": 400000,
+  "fees": 0,
+  "recurrencias": {
+   "ars": 14449000,
+   "eurEnArs": 1820000
+  },
+  "contMarginalUsd": null,
+  "margenSinWebs": null,
+  "clientes": 26,
+  "entradas": 7,
+  "bajas": 8,
+  "analisis": [
+   "Cayeron bastante las renovaciones, pero los clientes que se fueron no entraban dentro de nuestro estereotipo de cliente ideal",
+   "Los costos fijos reaccionaron muy bien al incremento en facturación, licuamos mucho mejor"
+  ],
+  "objetivos": [
+   "Ajuste planteado",
+   "Incorporación de clientes nuevos y subimos mucho el ticket promedio con las jornadas de grabación",
+   "Expansión de captación aumentada (al punto del desborde)",
+   "Incorporamos agente armador de propuesta mucho más pro",
+   "Rebranding YB + web en proceso",
+   "Campañas super rentables"
+  ],
+  "mejoras": [
+   "Mejora en personal, encontrar propuesta o algo que nos haga mejorar la calidad del equipo",
+   "Sistema de contratación efectiva",
+   "Preparar campaña de rebranding y contenido TEDx"
+  ],
+  "ajustes": [],
+  "revisar": []
+ },
+ {
+  "anio": 2026,
+  "mes": 9,
+  "estado": "consolidado",
+  "fuente": "Google Sheets · Yourebrand Finanzas · 'Septiembre 26'",
+  "dolar": 1520,
+  "dolarFuente": "Planilla (C3)",
+  "ingresos": {
+   "rrssMens": 12569000,
+   "rrssTrim": 2952000,
+   "rrssSems": 318600,
+   "rrssAnual": 318600,
+   "extras": 1460000
+  },
+  "costosOperativos": {
+   "communityManagers": 3725000,
+   "produccion": 840000,
+   "desarrolloWeb": 375000,
+   "publicidad": 1720000
+  },
+  "costosFijos": {
+   "campanas": 1195000,
+   "organico": 110000,
+   "sueldoMarketing": 256000,
+   "sueldosFijos": 1735000,
+   "suscripciones": 0,
+   "sueldoThomy": 2280000
+  },
+  "extras": 662000,
+  "impuestos": 448000,
+  "fees": 0,
+  "recurrencias": {
+   "ars": 17422000,
+   "eurEnArs": 1916460
+  },
+  "contMarginalUsd": null,
+  "margenSinWebs": null,
+  "clientes": 30,
+  "entradas": 7,
+  "bajas": 8,
+  "analisis": [
+   "Las renovaciones fueron muy positivas, y la entrada de clientes fue sostenida y de alta calidad",
+   "Mayores utilidades netas registradas de la historia"
+  ],
+  "objetivos": [
+   "Contratamos 4 community managers nuevas",
+   "Encontramos sistema de mejora de calidad con jefa creativa y PM",
+   "Campaña de rebranding y charla TEDx exitosa"
+  ],
+  "mejoras": [
+   "Requerimos delegar mejor tareas operativas para Thomas",
+   "Desarrollar aún más marca personal, abrir agenda para charlas, eventos, etc.",
+   "Desarrollar roles de jefa creativa y PM + establecer plan de implementación y viabilidad de nuevo organigrama",
+   "Terminar de rebrandear todo y web",
+   "Seguir revisando campañas para no perder el foco"
+  ],
+  "ajustes": [],
+  "revisar": []
+ },
+ {
+  "anio": 2026,
+  "mes": 10,
+  "estado": "consolidado",
+  "fuente": "Google Sheets · Yourebrand Finanzas · 'Octubre 26'",
+  "dolar": 1551,
+  "dolarFuente": "Planilla (C3)",
+  "ingresos": {
+   "rrssMens": 15497900,
+   "rrssTrim": 3774000,
+   "rrssSems": 267960,
+   "rrssAnual": 295350,
+   "extras": 4122500
+  },
+  "costosOperativos": {
+   "communityManagers": 4299000,
+   "produccion": 1333000,
+   "desarrolloWeb": 1775000,
+   "publicidad": 2404000
+  },
+  "costosFijos": {
+   "campanas": 1280000,
+   "organico": 30000,
+   "sueldoMarketing": 192000,
+   "sueldosFijos": 1590000,
+   "suscripciones": 34000,
+   "sueldoThomy": 2317500
+  },
+  "extras": 576000,
+  "impuestos": 361800,
+  "fees": 0,
+  "recurrencias": {
+   "ars": 19311500,
+   "eurEnArs": 1087200
+  },
+  "contMarginalUsd": 8204.97,
+  "margenSinWebs": 0.609,
+  "clientes": 30,
+  "entradas": 8,
+  "bajas": 4,
+  "analisis": [
+   "(Borrador Claude) Mes récord: utilidad neta USD 5.007 (32,4%), +78% vs septiembre (dólar blue promedio 1.551)",
+   "Ingresos brutos USD 15.447 (+33% vs sep): 8 clientes nuevos y 4 webs (3,39M en extras); 4 bajas (Nueva Forma, Toletvm, GBS y Palace)",
+   "Margen operativo 59,0% (62,2% en sep): baja por la mezcla, las webs dejan ~48%. Sin webs da 60,9% y los CMs bajaron a 17,9% de los ingresos",
+   "Costos fijos 22,7% de los ingresos (31,7% en sep): los fijos se licuan con la facturación",
+   "Ajustes vs Excel: +785k del diferido de Rafaela que faltaba; cuotas de AQ, Cuota Q, Ale Ochoa y Askal a lo cobrado (-268k)"
+  ],
+  "objetivos": [],
+  "mejoras": [],
+  "ajustes": [],
+  "revisar": []
+ }
+]
