@@ -4,6 +4,7 @@ import { Montserrat } from "next/font/google";
 import "./globals.css";
 import { logout } from "./login/actions";
 import { EstadoDatos } from "@/components/EstadoDatos";
+import { mesPendiente } from "@/lib/finanzas";
 
 const montserrat = Montserrat({ subsets: ["latin"], weight: ["200", "400", "600", "700", "800", "900"], variable: "--font-montserrat" });
 
@@ -15,11 +16,14 @@ export const metadata: Metadata = {
 const areas = [
   { nombre: "Dirección", items: [{ href: "/clientes/dashboard", label: "Dashboard de clientes" }] },
   { nombre: "RRHH", items: [{ href: "/rrhh/organigrama", label: "Organigrama" }, { href: "/rrhh/casos", label: "Casos abiertos" }, { href: "/rrhh/comentarios", label: "Comentarios" }] },
+  { nombre: "Finanzas", items: [{ href: "/finanzas/estado-de-resultados", label: "Estado de Resultados", alerta: true }] },
   { nombre: "Creativa", items: [] },
   { nombre: "Operaciones", items: [] },
 ];
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
+  // Se calcula en el servidor en cada carga: no depende de que alguien entre a Finanzas.
+  const pendiente = mesPendiente();
   return (
     <html lang="es">
       <body className={`${montserrat.variable} antialiased`}>
@@ -32,11 +36,17 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <nav className="mt-4 flex gap-6 overflow-x-auto md:mt-8 md:flex-col md:gap-5">
               {areas.map((a) => (
                 <div key={a.nombre} className="shrink-0">
-                  <p className="text-[11px] font-medium uppercase tracking-wider text-zinc-400">{a.nombre}</p>
+                  <p className="flex items-center gap-1.5 text-[11px] font-medium uppercase tracking-wider text-zinc-400">
+                    {a.nombre}
+                    {a.nombre === "Finanzas" && pendiente && <span className="h-2 w-2 rounded-full bg-accent" aria-label="Consolidación pendiente" />}
+                  </p>
                   {a.items.length ? (
                     a.items.map((i) => (
-                      <Link key={i.href} href={i.href} className="mt-1 block text-sm font-semibold text-black hover:text-accent">
+                      <Link key={i.href} href={i.href} className="mt-1 flex items-center gap-1.5 text-sm font-semibold text-black hover:text-accent">
                         {i.label}
+                        {"alerta" in i && i.alerta && pendiente && (
+                          <span className={`rounded-full bg-accent px-1.5 text-[10px] font-bold leading-4 text-white ${pendiente.atrasado ? "animate-pulse" : ""}`}>1</span>
+                        )}
                       </Link>
                     ))
                   ) : (

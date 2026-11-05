@@ -34,3 +34,11 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+## Finanzas › Estado de Resultados
+- Datos: `data/finanzas/estado-resultados.json`, un registro por mes consolidado (líneas del ER en ARS, dólar usado, recurrencias, clientes/entradas/bajas, análisis). 2026 (enero–octubre) se importó de Google Sheets "Yourebrand Finanzas" y se validó que cada mes cierre exacto contra la planilla.
+- Los totales, %, USD, trimestres y año se calculan en `lib/finanzas.ts`; no se cargan a mano.
+- Hasta junio 2026 CM y Producción iban juntos (`produccion: null`).
+- Alerta: desde el día 1 del mes M, si M−1 no está consolidado queda **pendiente**; después del día 10 (`NEXT_PUBLIC_DIA_LIMITE_ER`) queda **atrasado**. Se calcula en el servidor con la hora de Buenos Aires.
+- Tests: `npm test` (números de octubre 2026 según la skill, cierre de los 10 meses, agregados por Q y alertas con fechas simuladas).
+- Consolidar un mes nuevo: hoy se hace con la skill `consolidar-estado-resultados` y se agrega el mes al JSON. La carga del Excel desde la plataforma es la próxima etapa.

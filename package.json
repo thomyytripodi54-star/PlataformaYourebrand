@@ -9,7 +9,8 @@
     "lint": "eslint",
     "logos": "node scripts/descargar-logos.mjs",
     "prebuild": "node scripts/copiar-worker-mapa.mjs",
-    "predev": "node scripts/copiar-worker-mapa.mjs"
+    "predev": "node scripts/copiar-worker-mapa.mjs",
+    "test": "tsx --test tests/*.test.ts"
   },
   "dependencies": {
     "cobe": "^2.0.1",
@@ -29,6 +30,7 @@
     "eslint": "^9",
     "eslint-config-next": "^16.4.5",
     "tailwindcss": "^4",
+    "tsx": "^4.19.2",
     "typescript": "^5"
   }
 }
