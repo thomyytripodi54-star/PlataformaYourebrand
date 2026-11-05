@@ -12,5 +12,10 @@ export async function todosLosMeses(): Promise<MesER[]> {
 }
 
 export async function pendienteActual() {
-  return mesPendiente(await todosLosMeses());
+  try {
+    return mesPendiente(await todosLosMeses());
+  } catch (e) {
+    console.error("[finanzas] No se pudo calcular el mes pendiente:", e);
+    return mesPendiente(base);
+  }
 }
