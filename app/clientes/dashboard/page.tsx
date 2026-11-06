@@ -2,7 +2,8 @@ import { getDatos } from "@/lib/datos";
 import { pendientesFollowUp } from "@/lib/followup";
 import { Dashboard, type Vista } from "./Dashboard";
 
-export const revalidate = 60;
+// Lee el follow up en vivo (Redis): se arma en cada visita; los datos de Notion siguen en caché.
+export const dynamic = "force-dynamic";
 export const metadata = { title: "Dashboard de clientes · Yourebrand" };
 
 const VISTAS: Vista[] = ["estadisticas", "satisfaccion", "geografia"];

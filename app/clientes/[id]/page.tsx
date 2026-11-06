@@ -7,12 +7,8 @@ import { getCalendario, getComentariosCliente, getDatos } from "@/lib/datos";
 import { FollowUpCliente } from "@/components/FollowUpCliente";
 import { estado as estadoFollowUp, followUps } from "@/lib/followup";
 
-export const revalidate = 60;
-
-// Las fichas se guardan en caché (ISR) desde la primera visita: las siguientes cargan al instante.
-export async function generateStaticParams() {
-  return [];
-}
+// Lee el follow up en vivo (Redis): se arma en cada visita; los datos de Notion siguen en caché.
+export const dynamic = "force-dynamic";
 
 // Planes que no llevan calendario de contenido (p. ej. Gorrion: solo desarrollo web).
 const PLANES_SIN_CONTENIDO = new Set(["Web", "Plan google", "SEO y Articulos"]);

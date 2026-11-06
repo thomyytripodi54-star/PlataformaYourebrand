@@ -5,7 +5,8 @@ import { ubicar } from "@/lib/geo";
 import { Inicio, type AreaInicio, type Notificaciones, type PuntoInicio } from "@/components/Inicio";
 import { AREAS } from "@/lib/areas";
 
-export const revalidate = 60;
+// Lee el follow up en vivo (Redis): se arma en cada visita; los datos de Notion siguen en caché.
+export const dynamic = "force-dynamic";
 
 export default async function Home() {
   const [{ clientes, casos }, pendiente, fu, { comentarios }] = await Promise.all([getDatos(), pendienteActual(), pendientesFollowUp(), getComentarios()]);
