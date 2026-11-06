@@ -66,8 +66,11 @@ body {
   transition: transform 0.2s, border-color 0.2s;
 }
 .yb-marcador-logo img { height: 100%; width: 100%; object-fit: cover; }
+.yb-marcador.sat-contento .yb-marcador-logo { border-color: #22c55e; }
+.yb-marcador.sat-expectante .yb-marcador-logo { border-color: #facc15; }
+.yb-marcador.sat-insatisfecho .yb-marcador-logo { border-color: #ef4444; }
 .yb-marcador:hover .yb-marcador-logo,
-.yb-marcador.activo .yb-marcador-logo { transform: scale(1.25); border-color: var(--yb-red); }
+.yb-marcador.activo .yb-marcador-logo { transform: scale(1.25); box-shadow: 0 0 0 3px rgb(39 38 38 / 0.35), 0 6px 18px -6px rgb(0 0 0 / 0.6); }
 .yb-marcador-alerta {
   position: absolute;
   right: -4px;
