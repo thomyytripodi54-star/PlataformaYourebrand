@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Montserrat } from "next/font/google";
 import "./globals.css";
 import { logout } from "./login/actions";
+import { Asistente } from "@/components/Asistente";
 import { BarraArea } from "@/components/BarraArea";
 import { EstadoDatos } from "@/components/EstadoDatos";
 import { pendienteActual } from "@/lib/er/datos";
@@ -31,6 +32,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           }
         />
         <main className="tema px-4 py-6 md:px-10 md:py-8">{children}</main>
+        <Asistente />
       </body>
     </html>
   );

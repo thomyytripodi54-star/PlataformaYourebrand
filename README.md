@@ -6,6 +6,21 @@ Plataforma interna de la agencia: un inicio con el mapa de clientes y una entrad
 - **Desarrollo:** `npm run dev` · **Tests:** `npm test` · **Lint:** `npm run lint`.
 - **Variables (Vercel):** `NOTION_TOKEN`, `NOTION_WEBHOOK_SECRET`, `AUTH_USER`, `AUTH_PASSWORD`, `AUTH_SECRET` y la base Upstash Redis conectada al proyecto (`KV_REST_API_URL`, `KV_REST_API_TOKEN`).
 
+## Asistente de dirección
+
+Círculo en la esquina inferior derecha (todas las pantallas). Responde consultas y aconseja con los datos de la agencia; **es de solo lectura** (no tiene herramientas: no puede modificar la plataforma, Notion ni la planilla).
+
+- **Qué sabe** (`lib/asistente/contexto.ts`):
+  - Estado de resultados de la plataforma.
+  - Planilla "Yourebrand Finanzas": Resumen INV publicitaria, INV publicitaria por campaña, Métricas Agencia 2026 y OBJETIVOS 2026.
+  - Funnel de venta de Notion (reuniones, contrataciones, campaña de origen y pagos).
+  - Clientes, organigrama, casos, comentarios recientes y follow ups.
+  - No le llegan teléfonos ni emails.
+- **Modelo:** `claude-sonnet-5-5` (variable opcional `ASISTENTE_MODELO` para cambiarlo, por ejemplo a `claude-opus-5-5`). Razonamiento adaptativo, esfuerzo medio, respaldo automático si el modelo declina y caché de prompt para los datos.
+- **Variables:**
+  - `ANTHROPIC_API_KEY` (obligatoria).
+  - `GOOGLE_SERVICE_ACCOUNT_JSON` (opcional): JSON de una cuenta de servicio de Google con la planilla compartida como lector. Sin ella, se usa la copia de `data/asistente/planilla.json`.
+
 ## Datos y caché
 
 - **Notion** se lee por la API (`lib/notion.ts`) con reintentos si Notion limita los pedidos (429) o falla (5xx). Si aun así falla, se usa la última lectura buena; la copia local de `data/` es el último recurso.
