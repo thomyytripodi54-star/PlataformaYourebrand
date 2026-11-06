@@ -150,6 +150,30 @@ export async function getComentarios(): Promise<DatosComentarios> {
   }
 }
 
+/** Comentarios de un solo cliente: un pedido a Notion en vez de recorrer todos los clientes. */
+const comentariosClienteCache = unstable_cache(
+  async (id: string, notionUrl: string) => {
+    const pid = idDeUrl(notionUrl);
+    if (!pid) return [];
+    const crudos = await listarComentarios(pid);
+    const out = await Promise.all(crudos.map((k) => mapComentario(k, { id, notionUrl })));
+    return out.filter((k) => k.texto).sort((a, b) => b.fecha.localeCompare(a.fecha));
+  },
+  ["comentarios-cliente"],
+  { revalidate: 120, tags: [TAG_NOTION] },
+);
+
+export async function getComentariosCliente(id: string, notionUrl: string): Promise<DatosComentarios> {
+  if (!process.env.NOTION_TOKEN) return { comentarios: [], motivo: "Falta conectar Notion (NOTION_TOKEN) para leer los comentarios." };
+  try {
+    return { comentarios: await comentariosClienteCache(id, notionUrl) };
+  } catch (e) {
+    console.error("[notion] No se pudieron leer los comentarios del cliente:", e);
+    const m = String(e instanceof Error ? e.message : e);
+    return { comentarios: [], motivo: m.includes("403") ? "La integración no tiene permiso para leer comentarios en Notion." : `Error al leer comentarios: ${m.slice(0, 160)}` };
+  }
+}
+
 /* ---------- Calendario de contenido por cliente ---------- */
 export type DatosCalendario = { publicaciones: Publicacion[]; tieneCalendario: boolean; motivo?: string };
 
