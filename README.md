@@ -8,7 +8,10 @@ Plataforma interna de la agencia: un inicio con el mapa de clientes y una entrad
 
 ## Asistente de dirección
 
-Círculo en la esquina inferior derecha (todas las pantallas). Responde consultas y aconseja con los datos de la agencia; **es de solo lectura** (no tiene herramientas: no puede modificar la plataforma, Notion ni la planilla).
+Círculo en la esquina inferior derecha (todas las pantallas). Funciona de dos maneras:
+
+- **Sin clave de API (lo que se usa hoy, sin costo extra):** abre un proyecto de claude.ai que lee en vivo la planilla y Notion con los conectores de la cuenta. Desde el círculo se abre el proyecto (`CLAUDE_PROYECTO_URL`), se lleva la pregunta copiada y se copian o descargan los datos que solo están en la plataforma (`/api/asistente/contexto`). Armado e instrucciones del proyecto: `docs/asistente-proyecto-claude.md`.
+- **Con `ANTHROPIC_API_KEY`:** chat integrado en la plataforma (se cobra por uso). Responde consultas y aconseja con los datos de la agencia; **es de solo lectura** (no tiene herramientas: no puede modificar la plataforma, Notion ni la planilla).
 
 - **Qué sabe** (`lib/asistente/contexto.ts`):
   - Estado de resultados de la plataforma.

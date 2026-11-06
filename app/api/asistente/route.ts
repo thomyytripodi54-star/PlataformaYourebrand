@@ -53,7 +53,12 @@ function validar(cuerpo: unknown): MensajeChat[] | string {
 export async function GET() {
   if (!(await sesionValida((await cookies()).get(COOKIE)?.value))) return new Response("No autorizado", { status: 401 });
   const p = await leerPlanilla();
-  return Response.json({ listo: !!process.env.ANTHROPIC_API_KEY, planilla: { origen: p.origen, actualizado: p.actualizado, error: p.error, cuenta: p.cuenta } });
+  return Response.json({
+    listo: !!process.env.ANTHROPIC_API_KEY,
+    // Sin clave de API, el asistente se usa desde un proyecto de claude.ai (incluido en el plan de Claude).
+    proyecto: process.env.CLAUDE_PROYECTO_URL || null,
+    planilla: { origen: p.origen, actualizado: p.actualizado, error: p.error, cuenta: p.cuenta },
+  });
 }
 
 export async function POST(req: Request) {

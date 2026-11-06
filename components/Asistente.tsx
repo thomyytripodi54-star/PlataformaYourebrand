@@ -9,7 +9,107 @@ import remarkGfm from "remark-gfm";
 const ease = [0.22, 1, 0.36, 1] as const;
 const CLAVE = "yb-asistente";
 type Mensaje = { rol: "user" | "assistant"; texto: string };
-type Estado = { listo: boolean; planilla: { origen: "en vivo" | "copia"; actualizado: string; error?: string; cuenta?: string } };
+type Estado = { listo: boolean; proyecto: string | null; planilla: { origen: "en vivo" | "copia"; actualizado: string; error?: string; cuenta?: string } };
+
+const PROYECTOS = "https://claude.ai/projects";
+
+/**
+ * Sin clave de API: el asistente es un proyecto de claude.ai (incluido en el plan de Claude, sin costo extra).
+ * Desde acá se abre el proyecto, se lleva la pregunta copiada y, si hace falta, los datos que solo están en la plataforma.
+ */
+function ModoProyecto({ proyecto }: { proyecto: string | null }) {
+  const [pregunta, setPregunta] = useState("");
+  const [aviso, setAviso] = useState<string | null>(null);
+  const url = proyecto || PROYECTOS;
+  const avisar = (t: string) => {
+    setAviso(t);
+    setTimeout(() => setAviso(null), 4000);
+  };
+  const copiar = async (t: string) => {
+    try {
+      await navigator.clipboard.writeText(t);
+      return true;
+    } catch {
+      return false;
+    }
+  };
+  const preguntarEnClaude = async () => {
+    const q = pregunta.trim();
+    if (!q) return window.open(url, "_blank", "noopener");
+    const ok = await copiar(q);
+    window.open(url, "_blank", "noopener");
+    avisar(ok ? "Pregunta copiada: pegala en el chat del proyecto (Ctrl+V / ⌘V)." : "Abrí el proyecto y escribí la pregunta ahí.");
+    setPregunta("");
+  };
+  const copiarDatos = async () => {
+    avisar("Preparando los datos…");
+    try {
+      const r = await fetch("/api/asistente/contexto");
+      if (!r.ok) throw new Error();
+      avisar((await copiar(await r.text())) ? "Datos copiados: pegalos en el chat junto con tu pregunta." : "No se pudo copiar: usá «Descargar».");
+    } catch {
+      avisar("No se pudieron preparar los datos. Probá de nuevo.");
+    }
+  };
+  return (
+    <div className="flex h-full flex-col justify-end text-[13px]">
+      <p className="text-sm text-white/70">
+        Tu asistente vive en un <b className="text-white">proyecto de Claude</b>: las consultas entran en tu plan, sin costo extra. Ahí Claude lee en vivo la planilla de Finanzas y Notion con tus
+        conectores.
+      </p>
+      <a href={url} target="_blank" rel="noreferrer" className="mt-4 flex items-center justify-between rounded-2xl bg-white px-4 py-3 font-bold text-[#121111] transition-colors hover:bg-white/85">
+        {proyecto ? "Abrir el proyecto en Claude" : "Ir a mis proyectos de Claude"} <span>↗</span>
+      </a>
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          preguntarEnClaude();
+        }}
+        className="mt-3 flex items-end gap-2"
+      >
+        <textarea
+          value={pregunta}
+          onChange={(e) => setPregunta(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" && !e.shiftKey) {
+              e.preventDefault();
+              preguntarEnClaude();
+            }
+          }}
+          rows={2}
+          placeholder="Escribí la pregunta y la llevo copiada al proyecto…"
+          className="min-h-[52px] flex-1 resize-none rounded-2xl bg-white/[0.07] px-3.5 py-2.5 text-white placeholder-white/35 outline-none focus:bg-white/[0.1]"
+        />
+        <button
+          type="submit"
+          disabled={!pregunta.trim()}
+          className="h-[52px] shrink-0 rounded-2xl border border-white/20 px-3.5 text-xs font-bold text-white/85 hover:border-white/50 disabled:opacity-30"
+        >
+          Preguntar ↗
+        </button>
+      </form>
+      <div className="mt-4 rounded-2xl border border-white/10 p-3.5">
+        <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-white/45">Datos de la plataforma</p>
+        <p className="mt-1 text-[12px] leading-snug text-white/55">Follow ups, meses consolidados acá y un resumen de todo lo demás. Pegalos en la charla cuando los necesite.</p>
+        <div className="mt-2.5 flex gap-2">
+          <button onClick={copiarDatos} className="rounded-full bg-white/10 px-3.5 py-1.5 text-xs font-semibold hover:bg-white/20">
+            Copiar datos
+          </button>
+          <a href="/api/asistente/contexto?descargar=1" className="rounded-full px-3.5 py-1.5 text-xs font-semibold text-white/60 hover:bg-white/10 hover:text-white">
+            Descargar (.md)
+          </a>
+        </div>
+      </div>
+      <AnimatePresence>
+        {aviso && (
+          <motion.p initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="mt-3 text-[12px] text-white/75">
+            {aviso}
+          </motion.p>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
 
 /** De dónde lee el asistente: se ve al abrir el chat, para saber si la planilla está en vivo. */
 function Fuentes({ estado }: { estado: Estado | null }) {
@@ -186,7 +286,9 @@ export function Asistente() {
                 <p className="text-base font-black leading-none tracking-tight">
                   Asistente<span className="text-[#d30805]">.</span>
                 </p>
-                <p className="mt-1 text-[11px] text-white/45">Consultas y consejos con los datos de la agencia · solo lectura</p>
+                <p className="mt-1 text-[11px] text-white/45">
+                  {estado && !estado.listo ? "Tu proyecto de Claude con los datos de la agencia" : "Consultas y consejos con los datos de la agencia · solo lectura"}
+                </p>
               </div>
               {mensajes.length > 0 && (
                 <button
@@ -205,14 +307,20 @@ export function Asistente() {
             </header>
 
             <div ref={lista} className="min-h-0 flex-1 space-y-4 overflow-y-auto px-5 py-4 text-[13px] leading-relaxed">
-              {mensajes.length === 0 ? (
+              {estado && !estado.listo && mensajes.length === 0 ? (
+                <ModoProyecto proyecto={estado.proyecto} />
+              ) : mensajes.length === 0 ? (
                 <div className="flex h-full flex-col justify-end">
                   <p className="text-sm text-white/60">
                     Preguntame sobre el estado de resultados, publicidad y ventas, clientes, equipo u objetivos. Te respondo con los números de la plataforma, Notion y la planilla de finanzas.
                   </p>
                   <div className="mt-4 flex flex-col gap-2">
                     {SUGERENCIAS.map((s) => (
-                      <button key={s} onClick={() => preguntar(s)} className="rounded-2xl border border-white/10 bg-white/[0.04] px-3.5 py-2.5 text-left text-[13px] text-white/80 transition-colors hover:border-white/25 hover:bg-white/[0.08] hover:text-white">
+                      <button
+                        key={s}
+                        onClick={() => preguntar(s)}
+                        className="rounded-2xl border border-white/10 bg-white/[0.04] px-3.5 py-2.5 text-left text-[13px] text-white/80 transition-colors hover:border-white/25 hover:bg-white/[0.08] hover:text-white"
+                      >
                         {s}
                       </button>
                     ))}
@@ -240,38 +348,48 @@ export function Asistente() {
               )}
             </div>
 
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                preguntar(texto);
-              }}
-              className="flex items-end gap-2 border-t border-white/10 p-3"
-            >
-              <textarea
-                ref={entrada}
-                value={texto}
-                onChange={(e) => setTexto(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" && !e.shiftKey) {
-                    e.preventDefault();
-                    preguntar(texto);
-                  }
+            {(!estado || estado.listo || mensajes.length > 0) && (
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  preguntar(texto);
                 }}
-                rows={1}
-                maxLength={8000}
-                placeholder="Escribí tu consulta…"
-                className="max-h-32 min-h-[42px] flex-1 resize-none rounded-2xl bg-white/[0.07] px-3.5 py-2.5 text-[13px] text-white placeholder-white/35 outline-none focus:bg-white/[0.1]"
-              />
-              {respondiendo ? (
-                <button type="button" onClick={() => corte.current?.abort()} className="h-[42px] shrink-0 rounded-2xl border border-white/20 px-3.5 text-xs font-bold text-white/80 hover:border-white/50">
-                  Detener
-                </button>
-              ) : (
-                <button type="submit" disabled={!texto.trim()} className="h-[42px] shrink-0 rounded-2xl bg-white px-4 text-xs font-bold text-[#121111] transition-colors hover:bg-white/85 disabled:opacity-30">
-                  Enviar
-                </button>
-              )}
-            </form>
+                className="flex items-end gap-2 border-t border-white/10 p-3"
+              >
+                <textarea
+                  ref={entrada}
+                  value={texto}
+                  onChange={(e) => setTexto(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && !e.shiftKey) {
+                      e.preventDefault();
+                      preguntar(texto);
+                    }
+                  }}
+                  rows={1}
+                  maxLength={8000}
+                  placeholder="Escribí tu consulta…"
+                  className="max-h-32 min-h-[42px] flex-1 resize-none rounded-2xl bg-white/[0.07] px-3.5 py-2.5 text-[13px] text-white placeholder-white/35 outline-none focus:bg-white/[0.1]"
+                />
+                {respondiendo ? (
+                  <button
+                    type="button"
+                    onClick={() => corte.current?.abort()}
+                    className="h-[42px] shrink-0 rounded-2xl border border-white/20 px-3.5 text-xs font-bold text-white/80 hover:border-white/50"
+                  >
+                    Detener
+                  </button>
+                ) : (
+                  <button
+                    type="submit"
+                    disabled={!texto.trim()}
+                    className="h-[42px] shrink-0 rounded-2xl bg-white px-4 text-xs font-bold text-[#121111] transition-colors hover:bg-white/85 disabled:opacity-30"
+                  >
+                    Enviar
+                  </button>
+                )}
+              </form>
+            )}
           </motion.section>
         )}
       </AnimatePresence>
