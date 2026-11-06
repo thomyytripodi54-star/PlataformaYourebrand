@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { AnimatePresence, motion } from "motion/react";
-import { definirFollowUp, marcarRevisado } from "@/app/clientes/actions";
+import { definirFollowUp, marcarRevisado, registrarUltimo } from "@/app/clientes/actions";
 
 const ease = [0.22, 1, 0.36, 1] as const;
 const OPCIONES = [
@@ -56,8 +56,19 @@ export function FollowUpCliente({ id, estado }: { id: string; estado: FollowUpVi
               <p className="text-2xl font-black tracking-tight">
                 {estado.vencido ? (estado.dias === 0 ? "Toca hoy" : `Atrasado ${-estado.dias} ${-estado.dias === 1 ? "día" : "días"}`) : `En ${estado.dias} ${estado.dias === 1 ? "día" : "días"}`}
               </p>
-              <p className="mt-0.5 text-xs text-zinc-500">
-                Último: {fecha(estado.ultimo)} · Próximo: {fecha(estado.proximo)}
+              <p className="mt-0.5 flex flex-wrap items-center gap-1 text-xs text-zinc-500">
+                Último:
+                <label className="relative cursor-pointer underline decoration-white/20 underline-offset-2 hover:text-white" title="Cambiar la fecha del último follow up">
+                  {fecha(estado.ultimo)}
+                  <input
+                    type="date"
+                    max={new Date().toLocaleDateString("en-CA", { timeZone: "America/Argentina/Buenos_Aires" })}
+                    defaultValue={new Date(estado.ultimo).toLocaleDateString("en-CA", { timeZone: "America/Argentina/Buenos_Aires" })}
+                    onChange={(e) => e.target.value && correr(() => registrarUltimo(id, e.target.value))}
+                    className="absolute inset-0 cursor-pointer opacity-0 [color-scheme:dark]"
+                  />
+                </label>
+                · Próximo: {fecha(estado.proximo)}
               </p>
             </div>
             <button

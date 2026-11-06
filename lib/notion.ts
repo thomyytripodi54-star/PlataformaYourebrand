@@ -12,13 +12,26 @@ export const DS = {
 /* eslint-disable @typescript-eslint/no-explicit-any */
 type Page = { id: string; url: string; created_time: string; properties: Record<string, any> };
 
+/** fetch a Notion con reintentos: respeta el límite de la API (429) y reintenta errores 5xx. */
+async function notionFetch(url: string, init: RequestInit): Promise<Response> {
+  for (let intento = 0; ; intento++) {
+    const r = await fetch(url, { ...init, cache: "no-store" });
+    if ((r.status === 429 || r.status >= 500) && intento < 4) {
+      const espera = Number(r.headers.get("retry-after")) * 1000 || 400 * 2 ** intento;
+      await new Promise((ok) => setTimeout(ok, Math.min(espera, 5000)));
+      continue;
+    }
+    return r;
+  }
+}
+
 export async function queryDataSource(id: string, filter?: unknown): Promise<Page[]> {
   const token = process.env.NOTION_TOKEN;
   if (!token) throw new Error("Falta NOTION_TOKEN");
   const pages: Page[] = [];
   let cursor: string | undefined;
   do {
-    const r = await fetch(`https://api.notion.com/v1/data_sources/${id}/query`, {
+    const r = await notionFetch(`https://api.notion.com/v1/data_sources/${id}/query`, {
       method: "POST",
       headers: { Authorization: `Bearer ${token}`, "Notion-Version": "2025-09-03", "Content-Type": "application/json" },
       body: JSON.stringify({ page_size: 100, start_cursor: cursor, ...(filter ? { filter } : {}) }),
@@ -174,7 +187,7 @@ export type Comentario = {
 };
 
 async function notionGet(path: string) {
-  const r = await fetch(`https://api.notion.com/v1/${path}`, {
+  const r = await notionFetch(`https://api.notion.com/v1/${path}`, {
     headers: { Authorization: `Bearer ${process.env.NOTION_TOKEN}`, "Notion-Version": "2025-09-03" },
     cache: "no-store",
   });
@@ -239,7 +252,7 @@ export type Publicacion = {
 };
 
 async function notionPost(path: string, body: unknown) {
-  const r = await fetch(`https://api.notion.com/v1/${path}`, {
+  const r = await notionFetch(`https://api.notion.com/v1/${path}`, {
     method: "POST",
     headers: { Authorization: `Bearer ${process.env.NOTION_TOKEN}`, "Notion-Version": "2025-09-03", "Content-Type": "application/json" },
     body: JSON.stringify(body),
