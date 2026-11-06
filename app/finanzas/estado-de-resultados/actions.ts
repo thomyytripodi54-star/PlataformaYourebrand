@@ -1,10 +1,10 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { cookies } from "next/headers";
 import { COOKIE, sesionValida } from "@/lib/auth";
 import { totales, type MesER } from "@/lib/finanzas";
-import { guardarVersion } from "@/lib/er/almacen";
+import { guardarVersion, TAG_ER } from "@/lib/er/almacen";
 import { todosLosMeses } from "@/lib/er/datos";
 import { clientesDesdeNotion, clientesParaMotor, dolarBlue, metricasDelMes, rolesDesdeNotion, type MetricasMes } from "@/lib/er/insumos";
 import { calcularER, type Ajustes, type Bloque, type ClienteNotion } from "@/lib/er/motor";
@@ -70,7 +70,7 @@ export async function confirmarMes(b: Borrador, ajustes: Ajustes, resoluciones: 
     const problema = validarConfirmacion(er, resoluciones, explicaciones);
     if (problema) return { ok: false, error: problema };
 
-    const meses = await todosLosMeses();
+    const meses = await todosLosMeses({ fresco: true });
     const anterior = meses.find((m) => (b.mes === 1 ? m.anio === b.anio - 1 && m.mes === 12 : m.anio === b.anio && m.mes === b.mes - 1));
     const mesER: MesER = armarMes(b, er, ajustes, resoluciones, explicaciones, anterior);
     const t = totales(mesER);
@@ -81,6 +81,7 @@ export async function confirmarMes(b: Borrador, ajustes: Ajustes, resoluciones: 
       archivo: b.archivo,
       resultado: `Utilidad neta ${Math.round(t.utilidadNeta)} ARS (${(t.utilidadPct * 100).toFixed(2)}%)`,
     });
+    revalidateTag(TAG_ER, { expire: 0 });
     revalidatePath("/", "layout");
     return { ok: true, data: { version: reg.version } };
   } catch (e) {

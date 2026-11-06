@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { Suspense, use, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "motion/react";
 import * as maplibregl from "maplibre-gl";
@@ -12,8 +12,8 @@ export type PuntoInicio = { lat: number; lng: number };
 export type Notificaciones = {
   followUp: { id: string; nombre: string; dias: number }[];
   casos: { titulo: string; cliente: string | null; gravedad: string; fecha: string }[];
-  comentarios: { id: string; cliente: string; autor: string; texto: string; fecha: string }[];
 };
+export type ComentarioAviso = { id: string; cliente: string; autor: string; texto: string; fecha: string };
 export type AreaInicio = { nombre: string; detalle: string; href: string | null; alerta?: boolean };
 
 const ease = [0.22, 1, 0.36, 1] as const;
@@ -36,7 +36,19 @@ function columna(p: PuntoInicio, lado: number, h: number): GeoJSON.Feature {
   return { type: "Feature", properties: { h }, geometry: { type: "Polygon", coordinates: [c] } };
 }
 
-export function Inicio({ puntos, areas, nombre, notificaciones }: { puntos: PuntoInicio[]; areas: AreaInicio[]; nombre?: string; notificaciones: Notificaciones }) {
+export function Inicio({
+  puntos,
+  areas,
+  nombre,
+  notificaciones,
+  comentarios,
+}: {
+  puntos: PuntoInicio[];
+  areas: AreaInicio[];
+  nombre?: string;
+  notificaciones: Notificaciones;
+  comentarios: Promise<ComentarioAviso[]>;
+}) {
   const router = useRouter();
   const contenedor = useRef<HTMLDivElement>(null);
   const mapa = useRef<maplibregl.Map | null>(null);
@@ -221,7 +233,9 @@ export function Inicio({ puntos, areas, nombre, notificaciones }: { puntos: Punt
             transition={{ duration: rapido ? 0.6 : 1, delay: rapido ? 0.15 : 3.4, ease }}
             className="absolute bottom-8 right-10 top-8 hidden w-[380px] md:block"
           >
-            <PanelNotificaciones n={notificaciones} />
+            <Suspense fallback={<PanelNotificaciones n={notificaciones} comentarios={null} />}>
+              <PanelConComentarios n={notificaciones} promesa={comentarios} />
+            </Suspense>
           </motion.aside>
         )}
       </AnimatePresence>
@@ -339,17 +353,35 @@ function Item({ href, titulo, sub, extra }: { href: string; titulo: string; sub:
   );
 }
 
-function PanelNotificaciones({ n }: { n: Notificaciones }) {
-  // Los comentarios leídos se marcan en este navegador desde RRHH › Comentarios.
-  const [leidos, setLeidos] = useState<Set<string> | null>(null);
-  useEffect(() => {
+// Comentarios leídos: se marcan en este navegador desde RRHH › Comentarios.
+function suscribirLeidos(cb: () => void) {
+  window.addEventListener("storage", cb);
+  return () => window.removeEventListener("storage", cb);
+}
+function leidosRaw() {
+  try {
+    return localStorage.getItem(CLAVE_LEIDOS) ?? "[]";
+  } catch {
+    return "[]";
+  }
+}
+
+function PanelConComentarios({ n, promesa }: { n: Notificaciones; promesa: Promise<ComentarioAviso[]> }) {
+  return <PanelNotificaciones n={n} comentarios={use(promesa)} />;
+}
+
+/** `comentarios` en null: todavía cargando (se muestra "…" en ese grupo). */
+function PanelNotificaciones({ n, comentarios: todos }: { n: Notificaciones; comentarios: ComentarioAviso[] | null }) {
+  const raw = useSyncExternalStore(suscribirLeidos, leidosRaw, () => null);
+  const leidos = useMemo(() => {
+    if (raw === null) return null;
     try {
-      setLeidos(new Set(JSON.parse(localStorage.getItem(CLAVE_LEIDOS) ?? "[]") as string[]));
+      return new Set(JSON.parse(raw) as string[]);
     } catch {
-      setLeidos(new Set());
+      return new Set<string>();
     }
-  }, []);
-  const comentarios = leidos ? n.comentarios.filter((c) => !leidos.has(c.id)) : [];
+  }, [raw]);
+  const comentarios = leidos && todos ? todos.filter((c) => !leidos.has(c.id)) : [];
   const total = n.followUp.length + n.casos.length + comentarios.length;
 
   return (
@@ -383,7 +415,7 @@ function PanelNotificaciones({ n }: { n: Notificaciones }) {
             />
           ))}
         </Grupo>
-        <Grupo titulo="Comentarios nuevos" cantidad={comentarios.length} href="/rrhh/comentarios" vacio={leidos ? "No hay comentarios sin leer." : "…"}>
+        <Grupo titulo="Comentarios nuevos" cantidad={comentarios.length} href="/rrhh/comentarios" vacio={leidos && todos ? "No hay comentarios sin leer." : "…"}>
           {comentarios.slice(0, 6).map((c) => (
             <Item key={c.id} href="/rrhh/comentarios" titulo={c.cliente} sub={`${c.autor}: ${c.texto}`} />
           ))}

@@ -41,6 +41,7 @@ function Miniatura({ p, alto }: { p: Publicacion; alto: number }) {
       src={img.url}
       alt=""
       loading="lazy"
+      decoding="async"
       style={{ height: alto }}
       className="w-full rounded-md bg-surface object-cover"
       onError={(e) => (e.currentTarget.style.display = "none")}
@@ -113,7 +114,7 @@ function Detalle({ p, onClose }: { p: Publicacion; onClose: () => void }) {
                   <a key={i} href={a.url} target="_blank" rel="noreferrer" className="block overflow-hidden rounded-lg border border-zinc-200 hover:border-ink">
                     {a.imagen ? (
                       // eslint-disable-next-line @next/next/no-img-element
-                      <img src={a.url} alt={a.nombre} className="aspect-square w-full object-cover" />
+                      <img src={a.url} alt={a.nombre} loading="lazy" decoding="async" className="aspect-square w-full object-cover" />
                     ) : (
                       <span className="flex aspect-square items-center justify-center p-2 text-center text-xs text-zinc-500">📎 {a.nombre}</span>
                     )}
