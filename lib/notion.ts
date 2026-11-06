@@ -280,23 +280,23 @@ export async function mapearCalendarios(idsClientes: Set<string>): Promise<Map<s
     cursor = j.has_more ? j.next_cursor : undefined;
   } while (cursor);
 
-  const cachePadre = new Map<string, any>();
-  const padreDe = async (p: any): Promise<any> => {
-    if (!p) return null;
+  // Se guarda la promesa (no el valor) para que dos calendarios que comparten padre no lo pidan dos veces en paralelo.
+  const cachePadre = new Map<string, Promise<any>>();
+  const padreDe = (p: any): Promise<any> => {
+    if (!p) return Promise.resolve(null);
     const id = p.page_id ?? p.block_id ?? p.database_id ?? null;
-    if (!id) return null;
+    if (!id) return Promise.resolve(null);
     const k = `${p.type}:${id}`;
     if (!cachePadre.has(k)) {
       const ruta = p.type === "page_id" ? `pages/${id}` : p.type === "block_id" ? `blocks/${id}` : `databases/${id}`;
-      cachePadre.set(k, (await notionGet(ruta).catch(() => null))?.parent ?? null);
+      cachePadre.set(k, notionGet(ruta).then((j) => j?.parent ?? null, () => null));
     }
-    return cachePadre.get(k);
+    return cachePadre.get(k)!;
   };
 
   const resultado = new Map<string, { ds: string; db: string | null; editado: string }>();
-  for (const f of fuentes) {
-    const titulo = (f.title ?? []).map((t: any) => t.plain_text).join("");
-    if (!/calendario mensual/i.test(titulo) || f.in_trash || f.archived) continue;
+  const calendarios = fuentes.filter((f) => /calendario mensual/i.test((f.title ?? []).map((t: any) => t.plain_text).join("")) && !f.in_trash && !f.archived);
+  const ubicar = async (f: any) => {
     let p = f.database_parent ?? (await padreDe(f.parent));
     for (let salto = 0; p && salto < 8; salto++) {
       const id = (p.page_id ?? p.block_id ?? "").replace(/-/g, "");
@@ -308,7 +308,15 @@ export async function mapearCalendarios(idsClientes: Set<string>): Promise<Map<s
       if (p.type === "workspace") break;
       p = await padreDe(p);
     }
-  }
+  };
+  // 3 calendarios a la vez (el límite de Notion es ~3 pedidos por segundo; los 429 se reintentan).
+  // Antes iban de a uno y la búsqueda completa podía tardar más de 30 segundos.
+  let siguiente = 0;
+  await Promise.all(
+    Array.from({ length: 3 }, async () => {
+      while (siguiente < calendarios.length) await ubicar(calendarios[siguiente++]);
+    }),
+  );
   return new Map([...resultado].map(([k, v]) => [k, { ds: v.ds, db: v.db }]));
 }
 

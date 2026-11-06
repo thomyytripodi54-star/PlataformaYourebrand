@@ -1,9 +1,11 @@
+import { Suspense } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { CalendarioCliente } from "@/components/CalendarioCliente";
 import { Logo } from "@/components/Logo";
 import { formatFecha, formatPago } from "@/lib/clientes";
 import { getCalendario, getComentariosCliente, getDatos } from "@/lib/datos";
+import type { Comentario } from "@/lib/notion";
 import { FollowUpCliente } from "@/components/FollowUpCliente";
 import { estado as estadoFollowUp, followUps } from "@/lib/followup";
 
@@ -34,10 +36,8 @@ export default async function FichaCliente({ params }: { params: Promise<{ id: s
   const casos = datos.casos.filter((k) => k.cliente === c.id);
   const nombreDe = new Map(datos.equipo.map((p) => [p.id, p.nombre]));
   const sinContenido = c.planes.length > 0 && c.planes.every((p) => PLANES_SIN_CONTENIDO.has(p));
-  // Calendario, comentarios y follow up se piden en paralelo (antes iban uno detrás de otro).
-  const [fus, com, cal] = await Promise.all([followUps(), getComentariosCliente(c.id, c.notionUrl), sinContenido ? null : getCalendario(c.notionUrl)]);
-  const fu = fus[c.id];
-  const comentarios = com.comentarios;
+  // Solo el follow up (Redis, rápido) frena la ficha; comentarios y calendario se completan apenas llegan de Notion.
+  const fu = (await followUps())[c.id];
 
   const contacto: [string, React.ReactNode][] = [
     ["Contacto", c.contacto ?? "—"],
@@ -137,39 +137,9 @@ export default async function FichaCliente({ params }: { params: Promise<{ id: s
         )}
       </section>
 
-      <section className="mt-6 rounded-3xl border border-zinc-200 bg-white p-4 md:p-6">
-        <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-          <h2 className="flex items-center gap-2 text-xl font-black uppercase tracking-tight">
-            Comentarios<span className="punto -ml-2 text-accent">.</span>
-            {comentarios.length > 0 && <span className="rounded-full bg-surface px-2 text-xs font-bold">{comentarios.length}</span>}
-          </h2>
-          <a href={c.notionUrl} target="_blank" rel="noreferrer" className="rounded-full border border-zinc-200 px-3 py-1.5 text-xs font-semibold hover:border-ink">
-            Abrir cliente en Notion ↗
-          </a>
-        </div>
-        {com.motivo ? (
-          <p className="text-sm text-zinc-500">{com.motivo}</p>
-        ) : comentarios.length ? (
-          <ul className="space-y-2">
-            {comentarios.map((k) => (
-              <li key={k.id} className="rounded-2xl border border-zinc-200 p-3">
-                <div className="flex flex-wrap items-center justify-between gap-2 text-[11px] text-zinc-400">
-                  <span>
-                    <span className="font-bold text-zinc-600">{k.autor}</span> ·{" "}
-                    {new Date(k.fecha).toLocaleString("es-AR", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit", timeZone: "America/Argentina/Buenos_Aires" })}
-                  </span>
-                  <a href={k.notionUrl} target="_blank" rel="noreferrer" className="hover:text-ink">
-                    Ver en Notion ↗
-                  </a>
-                </div>
-                <p className="mt-1 whitespace-pre-line text-sm">{k.texto}</p>
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p className="text-sm text-zinc-500">Todavía no hay comentarios sobre este cliente en Notion.</p>
-        )}
-      </section>
+      <Suspense fallback={<SeccionComentarios c={c} />}>
+        <ComentariosDelCliente c={c} />
+      </Suspense>
 
       <section className="mt-6 rounded-3xl border border-zinc-200 bg-white p-4 md:p-6">
         <h2 className="mb-4 text-xl font-black uppercase tracking-tight">
@@ -179,16 +149,70 @@ export default async function FichaCliente({ params }: { params: Promise<{ id: s
           <p className="rounded-2xl bg-surface p-6 text-center text-sm text-zinc-500">
             Este cliente tiene contratado <b className="text-ink">{c.planes.join(", ")}</b>, sin gestión de contenido: no lleva calendario.
           </p>
-        ) : cal?.motivo ? (
-          <p className="rounded-2xl bg-accent-soft/60 p-6 text-center text-sm">{cal.motivo}</p>
-        ) : !cal?.tieneCalendario ? (
-          <p className="rounded-2xl bg-surface p-6 text-center text-sm text-zinc-500">
-            No encontramos un “Calendario mensual” dentro de la página de este cliente en Notion.
-          </p>
         ) : (
-          <CalendarioCliente publicaciones={cal.publicaciones} />
+          <Suspense fallback={<Cargando />}>
+            <CalendarioDelCliente notionUrl={c.notionUrl} />
+          </Suspense>
         )}
       </section>
     </div>
   );
+}
+
+function Cargando() {
+  return <p className="animate-pulse rounded-2xl bg-surface p-6 text-center text-sm text-zinc-500">Cargando…</p>;
+}
+
+/** Sección de comentarios; sin `comentarios` muestra el estado de carga. */
+function SeccionComentarios({ c, comentarios, motivo }: { c: { notionUrl: string }; comentarios?: Comentario[]; motivo?: string }) {
+  return (
+    <section className="mt-6 rounded-3xl border border-zinc-200 bg-white p-4 md:p-6">
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+        <h2 className="flex items-center gap-2 text-xl font-black uppercase tracking-tight">
+          Comentarios<span className="punto -ml-2 text-accent">.</span>
+          {comentarios && comentarios.length > 0 && <span className="rounded-full bg-surface px-2 text-xs font-bold">{comentarios.length}</span>}
+        </h2>
+        <a href={c.notionUrl} target="_blank" rel="noreferrer" className="rounded-full border border-zinc-200 px-3 py-1.5 text-xs font-semibold hover:border-ink">
+          Abrir cliente en Notion ↗
+        </a>
+      </div>
+      {!comentarios ? (
+        <Cargando />
+      ) : motivo ? (
+        <p className="text-sm text-zinc-500">{motivo}</p>
+      ) : comentarios.length ? (
+        <ul className="space-y-2">
+          {comentarios.map((k) => (
+            <li key={k.id} className="rounded-2xl border border-zinc-200 p-3">
+              <div className="flex flex-wrap items-center justify-between gap-2 text-[11px] text-zinc-400">
+                <span>
+                  <span className="font-bold text-zinc-600">{k.autor}</span> ·{" "}
+                  {new Date(k.fecha).toLocaleString("es-AR", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit", timeZone: "America/Argentina/Buenos_Aires" })}
+                </span>
+                <a href={k.notionUrl} target="_blank" rel="noreferrer" className="hover:text-ink">
+                  Ver en Notion ↗
+                </a>
+              </div>
+              <p className="mt-1 whitespace-pre-line text-sm">{k.texto}</p>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p className="text-sm text-zinc-500">Todavía no hay comentarios sobre este cliente en Notion.</p>
+      )}
+    </section>
+  );
+}
+
+async function ComentariosDelCliente({ c }: { c: { id: string; notionUrl: string } }) {
+  const { comentarios, motivo } = await getComentariosCliente(c.id, c.notionUrl);
+  return <SeccionComentarios c={c} comentarios={comentarios} motivo={motivo} />;
+}
+
+async function CalendarioDelCliente({ notionUrl }: { notionUrl: string }) {
+  const cal = await getCalendario(notionUrl);
+  if (cal.motivo) return <p className="rounded-2xl bg-accent-soft/60 p-6 text-center text-sm">{cal.motivo}</p>;
+  if (!cal.tieneCalendario)
+    return <p className="rounded-2xl bg-surface p-6 text-center text-sm text-zinc-500">No encontramos un “Calendario mensual” dentro de la página de este cliente en Notion.</p>;
+  return <CalendarioCliente publicaciones={cal.publicaciones} />;
 }
