@@ -296,7 +296,7 @@ export function MapaClientes({
     return m;
   }, [casos]);
   const casosPorCliente = Object.fromEntries(Object.entries(casosDe).map(([k, v]) => [k, v.length]));
-  const [pais, setPais] = useState<string | null>(null);
+  const [pais, setPais] = useState<string | null>("Argentina");
   const [todaArgentina, setTodaArgentina] = useState(false);
   const [sel, setSel] = useState<string | null>(null);
 
