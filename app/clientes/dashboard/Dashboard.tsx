@@ -1,5 +1,6 @@
 "use client";
 
+import type { FollowUpVista } from "@/components/FollowUpCliente";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, animate, motion } from "motion/react";
@@ -288,7 +289,7 @@ function Buscador({ clientes, casosPorCliente, onMapa }: { clientes: Cliente[]; 
 }
 
 /* ---------- Dashboard ---------- */
-export function Dashboard({ clientes: clientesProp, casos, vistaInicial, followUp = [] }: { clientes: Cliente[]; casos: Caso[]; vistaInicial: Vista; followUp?: string[] }) {
+export function Dashboard({ clientes: clientesProp, casos, vistaInicial, followUp = [], estadosFollowUp = {} }: { clientes: Cliente[]; casos: Caso[]; vistaInicial: Vista; followUp?: string[]; estadosFollowUp?: Record<string, FollowUpVista> }) {
   // Orden de entrada (fecha "Desde"), no alfabético
   const clientes = [...clientesProp].sort(porEntrada);
   const [vista, setVista] = useState<Vista>(vistaInicial);
@@ -333,6 +334,7 @@ export function Dashboard({ clientes: clientesProp, casos, vistaInicial, followU
         embebido
         pantallaCompleta
         followUp={followUp}
+        estadosFollowUp={estadosFollowUp}
         cabecera={
           <div className="mb-6 space-y-3 text-ink">
             {pestanas(true)}

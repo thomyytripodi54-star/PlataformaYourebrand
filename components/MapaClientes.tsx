@@ -5,6 +5,7 @@ import Link from "next/link";
 import createGlobe from "cobe";
 import { useEffect, useImperativeHandle, useMemo, useRef, useState } from "react";
 import { AnimatePresence, animate, motion, useMotionValue, useSpring, useTransform } from "motion/react";
+import { FollowUpMini, type FollowUpVista } from "@/components/FollowUpCliente";
 import { Logo } from "@/components/Logo";
 import { porEntrada, type Cliente } from "@/lib/clientes";
 import type { Caso } from "@/lib/equipo";
@@ -216,7 +217,7 @@ function TarjetaCliente({ c, i, casos, lugar, activo, onSeleccionar, fu }: { c: 
   );
 }
 
-function FichaMapa({ c, lugar, casos, onClose }: { c: Cliente; lugar?: string; casos: Caso[]; onClose: () => void }) {
+function FichaMapa({ c, lugar, casos, onClose, fu }: { c: Cliente; lugar?: string; casos: Caso[]; onClose: () => void; fu: FollowUpVista }) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 24, scale: 0.97 }}
@@ -258,6 +259,7 @@ function FichaMapa({ c, lugar, casos, onClose }: { c: Cliente; lugar?: string; c
       ) : (
         <p className="mt-1 text-sm text-zinc-500">Sin casos abiertos.</p>
       )}
+      <FollowUpMini id={c.id} estado={fu} />
       <Link href={`/clientes/${c.id}`} className="mt-3 inline-block text-xs font-bold hover:text-accent">
         Ver ficha completa →
       </Link>
@@ -288,8 +290,10 @@ export function MapaClientes({
   pantallaCompleta = false,
   cabecera,
   followUp = [],
+  estadosFollowUp = {},
 }: {
   followUp?: string[];
+  estadosFollowUp?: Record<string, FollowUpVista>;
   clientes: Cliente[];
   embebido?: boolean;
   pantallaCompleta?: boolean;
@@ -306,6 +310,21 @@ export function MapaClientes({
   const [pais, setPais] = useState<string | null>("Argentina");
   const [todaArgentina, setTodaArgentina] = useState(false);
   const [sel, setSel] = useState<string | null>(null);
+  // El vuelo de entrada al mapa solo se hace al llegar desde el inicio (Dirección); al volver de una ficha abre directo.
+  const [animado] = useState(() => {
+    try {
+      return typeof window !== "undefined" && sessionStorage.getItem("yb-entrada-direccion") === "1";
+    } catch {
+      return false;
+    }
+  });
+  useEffect(() => {
+    try {
+      sessionStorage.removeItem("yb-entrada-direccion");
+    } catch {}
+  }, []);
+  // Cambiar de país sí anima el vuelo.
+  const [cambioPais, setCambioPais] = useState(false);
 
   const paises = useMemo(() => {
     const m = new Map<string, number>();
@@ -314,6 +333,7 @@ export function MapaClientes({
   }, [clientes]);
 
   const elegirPais = (p: string | null) => {
+    setCambioPais(true);
     setPais(p);
     setTodaArgentina(false);
     setSel(null);
@@ -374,7 +394,7 @@ export function MapaClientes({
                   transition={{ duration: 0.7, ease }}
                   className={pantallaCompleta ? "absolute inset-0" : "relative h-[460px] overflow-hidden rounded-3xl border border-white/10 lg:h-[640px]"}
                 >
-                  <MapaZoom key={pais} puntos={puntos} encuadre={encuadre} seleccionado={sel} onSeleccionar={setSel} />
+                  <MapaZoom key={pais} animado={animado || cambioPais} puntos={puntos} encuadre={encuadre} seleccionado={sel} onSeleccionar={setSel} />
                   <AnimatePresence>
                     {sel && clientes.find((c) => c.id === sel) && (
                       <FichaMapa
@@ -383,6 +403,7 @@ export function MapaClientes({
                         lugar={ubicados.find((x) => x.c.id === sel)?.u.lugar}
                         casos={casosDe[sel] ?? []}
                         onClose={() => setSel(null)}
+                        fu={estadosFollowUp[sel] ?? null}
                       />
                     )}
                   </AnimatePresence>
@@ -540,15 +561,12 @@ export function MapaClientes({
     return (
       <div className="sin-tema fixed inset-x-0 bottom-0 top-14 z-30 flex flex-col bg-ink text-white lg:flex-row">
         <div className="relative min-h-[55vh] flex-1 overflow-hidden">{bloqueMapa}</div>
-        <motion.aside
-          initial={{ x: 60, opacity: 0 }}
-          animate={{ x: 0, opacity: 1 }}
-          transition={{ duration: 0.8, delay: 0.5, ease }}
+        <aside
           className="w-full shrink-0 overflow-y-auto border-l border-white/10 px-5 py-6 lg:w-[460px]"
         >
           {cabecera}
           {bloquePanel}
-        </motion.aside>
+        </aside>
       </div>
     );
 

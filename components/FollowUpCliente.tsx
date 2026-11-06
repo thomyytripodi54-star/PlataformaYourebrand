@@ -16,7 +16,8 @@ const fecha = (iso: string) => new Date(iso).toLocaleDateString("es-AR", { day: 
 
 export type FollowUpVista = { cada: number; ultimo: string; proximo: string; vencido: boolean; dias: number } | null;
 
-export function FollowUpCliente({ id, estado: inicial }: { id: string; estado: FollowUpVista }) {
+/** Estado de follow up con cambios instantáneos (se guardan en segundo plano y vuelven atrás si fallan). */
+function useFollowUp(inicial: FollowUpVista) {
   // El cambio se muestra al instante y se guarda en segundo plano; si falla, vuelve atrás.
   const [estado, setEstado] = useState<FollowUpVista>(inicial);
   const [, iniciar] = useTransition();
@@ -50,6 +51,11 @@ export function FollowUpCliente({ id, estado: inicial }: { id: string; estado: F
   const ahora = () => new Date().toISOString();
   const con = (cada: number, ultimo: string): FollowUpVista => calcular({ cada, ultimo });
 
+  return { estado, error, correr, ahora, con };
+}
+
+export function FollowUpCliente({ id, estado: inicial }: { id: string; estado: FollowUpVista }) {
+  const { estado, error, correr, ahora, con } = useFollowUp(inicial);
   return (
     <section className={`rounded-2xl border bg-white p-4 transition-colors ${estado?.vencido ? "border-white/40" : "border-zinc-200"}`}>
       <div className="flex flex-wrap items-center justify-between gap-3">
@@ -63,7 +69,7 @@ export function FollowUpCliente({ id, estado: inicial }: { id: string; estado: F
             return (
               <button
                 key={o.dias}
-                onClick={() => !activo && correr(o.dias ? con(o.dias, estado?.cada === o.dias ? estado.ultimo : ahora()) : null, () => definirFollowUp(id, o.dias || null))}
+                onClick={() => !activo && correr(o.dias ? con(o.dias, estado?.ultimo ?? ahora()) : null, () => definirFollowUp(id, o.dias || null))}
                 className="relative rounded-full px-3 py-1.5 text-xs font-semibold disabled:opacity-60"
               >
                 {activo && <motion.span layoutId={`fu-${id}`} className="absolute inset-0 rounded-full bg-white/15" transition={{ type: "spring", stiffness: 400, damping: 34 }} />}
@@ -111,5 +117,50 @@ export function FollowUpCliente({ id, estado: inicial }: { id: string; estado: F
       </AnimatePresence>
       {error && <p className="mt-2 text-xs text-accent">{error}</p>}
     </section>
+  );
+}
+
+/** Versión compacta para la ficha del mapa (fondo claro): días que faltan y frecuencia. */
+export function FollowUpMini({ id, estado: inicial }: { id: string; estado: FollowUpVista }) {
+  const { estado, error, correr, ahora, con } = useFollowUp(inicial);
+  return (
+    <div className="mt-3 rounded-xl border border-zinc-200 p-3">
+      <div className="flex items-center justify-between gap-2">
+        <p className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-zinc-400">
+          Follow up
+          {estado?.vencido && <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-accent" />}
+        </p>
+        {estado && (
+          <button onClick={() => correr(con(estado.cada, ahora()), () => marcarRevisado(id))} className="rounded-full bg-ink px-2.5 py-1 text-[10px] font-bold text-white hover:bg-accent">
+            ✓ Revisado
+          </button>
+        )}
+      </div>
+      <p className="mt-1 text-sm font-black tracking-tight">
+        {!estado
+          ? "Sin follow up"
+          : estado.vencido
+            ? estado.dias === 0
+              ? "Toca hoy"
+              : `Atrasado ${-estado.dias} ${-estado.dias === 1 ? "día" : "días"}`
+            : `Faltan ${estado.dias} ${estado.dias === 1 ? "día" : "días"}`}
+        {estado && <span className="ml-1.5 text-[11px] font-normal text-zinc-500">· próximo {fecha(estado.proximo)}</span>}
+      </p>
+      <div className="mt-2 flex flex-wrap gap-1">
+        {[...OPCIONES, { dias: 0, label: "No" }].map((o) => {
+          const activo = (estado?.cada ?? 0) === o.dias;
+          return (
+            <button
+              key={o.dias}
+              onClick={() => !activo && correr(o.dias ? con(o.dias, estado?.ultimo ?? ahora()) : null, () => definirFollowUp(id, o.dias || null))}
+              className={`rounded-full px-2.5 py-1 text-[11px] font-semibold transition-colors ${activo ? "bg-ink text-white" : "bg-surface text-zinc-500 hover:text-ink"}`}
+            >
+              {o.label}
+            </button>
+          );
+        })}
+      </div>
+      {error && <p className="mt-1.5 text-[11px] text-accent">{error}</p>}
+    </div>
   );
 }

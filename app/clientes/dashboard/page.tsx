@@ -1,5 +1,5 @@
 import { getDatos } from "@/lib/datos";
-import { pendientesFollowUp } from "@/lib/followup";
+import { estado, followUps } from "@/lib/followup";
 import { Dashboard, type Vista } from "./Dashboard";
 
 // Lee el follow up en vivo (Redis): se arma en cada visita; los datos de Notion siguen en caché.
@@ -10,12 +10,14 @@ const VISTAS: Vista[] = ["estadisticas", "satisfaccion", "geografia"];
 
 export default async function DashboardPage({ searchParams }: { searchParams: Promise<{ vista?: string }> }) {
   const { vista } = await searchParams;
-  const [{ clientes, casos }, fu] = await Promise.all([getDatos(), pendientesFollowUp()]);
+  const [{ clientes, casos }, fus] = await Promise.all([getDatos(), followUps()]);
+  const estados = Object.fromEntries(Object.entries(fus).map(([id, f]) => [id, estado(f)]));
   return (
     <Dashboard
       clientes={clientes.filter((c) => c.estado === "Activo")}
       casos={casos}
-      followUp={fu.map((x) => x.id)}
+      followUp={Object.keys(estados).filter((id) => estados[id].vencido)}
+      estadosFollowUp={estados}
       vistaInicial={VISTAS.includes(vista as Vista) ? (vista as Vista) : "geografia"}
     />
   );
