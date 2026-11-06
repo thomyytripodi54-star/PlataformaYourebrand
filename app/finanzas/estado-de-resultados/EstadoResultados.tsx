@@ -384,7 +384,7 @@ function DetalleMes({ m, anterior, moneda, setMoneda, onClose }: { m: MesER; ant
               )}
             </p>
             <div className="mt-2 flex gap-4 text-[11px] text-zinc-500">
-              <span className="flex items-center gap-1.5"><span className="h-2 w-3 rounded-sm bg-ink" />{MESES[m.mes - 1]}</span>
+              <span className="flex items-center gap-1.5"><span className="h-2 w-3 rounded-sm bg-white/70" />{MESES[m.mes - 1]}</span>
               {a && <span className="flex items-center gap-1.5"><span className="h-2 w-3 rounded-sm bg-[#a9a8a8]" />{MESES[a.mes - 1]}</span>}
             </div>
             <ul className="mt-3 space-y-2.5">
@@ -392,7 +392,7 @@ function DetalleMes({ m, anterior, moneda, setMoneda, onClose }: { m: MesER; ant
                 <li key={x.k} className="grid grid-cols-[8.5rem_1fr_3.5rem] items-center gap-3" title={`${x.k}: ${fmtPct(x.p)}${x.pa !== null ? ` (antes ${fmtPct(x.pa)})` : ""}`}>
                   <span className="truncate text-xs text-zinc-600">{x.k}</span>
                   <span className="space-y-[2px]">
-                    <motion.span className="block h-3 rounded-r-[4px] bg-ink" initial={{ width: 0 }} animate={{ width: `${(x.p / maxP) * 100}%` }} transition={{ delay: 0.1 + i * 0.05, duration: 0.4, ease }} />
+                    <motion.span className="block h-3 rounded-r-[4px] bg-white/70" initial={{ width: 0 }} animate={{ width: `${(x.p / maxP) * 100}%` }} transition={{ delay: 0.1 + i * 0.05, duration: 0.4, ease }} />
                     {x.pa !== null && (
                       <motion.span className="block h-2 rounded-r-[4px] bg-[#a9a8a8]" initial={{ width: 0 }} animate={{ width: `${(x.pa / maxP) * 100}%` }} transition={{ delay: 0.15 + i * 0.05, duration: 0.4, ease }} />
                     )}

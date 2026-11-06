@@ -535,7 +535,7 @@ export function MapaClientes({
 
   if (pantallaCompleta)
     return (
-      <div className="fixed inset-x-0 bottom-0 top-14 z-30 flex flex-col bg-ink text-white lg:flex-row">
+      <div className="sin-tema fixed inset-x-0 bottom-0 top-14 z-30 flex flex-col bg-ink text-white lg:flex-row">
         <div className="relative min-h-[55vh] flex-1 overflow-hidden">{bloqueMapa}</div>
         <motion.aside
           initial={{ x: 60, opacity: 0 }}
@@ -550,7 +550,7 @@ export function MapaClientes({
     );
 
   return (
-    <div className={embebido ? "rounded-3xl bg-ink px-4 py-6 text-white md:px-8 md:py-8" : "-mx-4 -my-6 min-h-screen bg-ink px-4 py-8 text-white md:-mx-10 md:-my-8 md:px-10"}>
+    <div className={"sin-tema " + (embebido ? "rounded-3xl bg-ink px-4 py-6 text-white md:px-8 md:py-8" : "-mx-4 -my-6 min-h-screen bg-ink px-4 py-8 text-white md:-mx-10 md:-my-8 md:px-10")}>
       <div className="mx-auto max-w-7xl">
         <div className="grid grid-cols-1 items-start gap-10 lg:grid-cols-[1.15fr_1fr]">
           <div className="lg:sticky lg:top-8">

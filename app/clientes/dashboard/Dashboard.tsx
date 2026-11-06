@@ -100,7 +100,7 @@ function Estadisticas({ clientes, casos }: { clientes: Cliente[]; casos: Caso[] 
                   <span className={`truncate text-xs ${activo ? "font-bold" : "text-zinc-600"}`}>{c.nombre}</span>
                   <span className="relative h-4">
                     <motion.span
-                      className={`absolute inset-y-0 left-0 rounded-r-[4px] ${activo ? "bg-accent" : "bg-ink"}`}
+                      className={`absolute inset-y-0 left-0 rounded-r-[4px] ${activo ? "bg-accent" : "bg-white/70"}`}
                       initial={{ width: 0 }}
                       animate={{ width: `${(c.margen! / max) * 100}%` }}
                       transition={{ delay: 0.45 + i * 0.025, duration: 0.7, ease }}

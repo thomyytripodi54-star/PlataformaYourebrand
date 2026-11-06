@@ -17,9 +17,9 @@ export function BarraArea({ pendiente, extra }: { pendiente: boolean; extra?: Re
       initial={{ opacity: 0, y: -12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6, ease }}
-      className="sticky top-0 z-40 flex h-14 items-center gap-4 border-b border-zinc-200 bg-white/90 px-4 backdrop-blur md:gap-6 md:px-8"
+      className="sticky top-0 z-40 flex h-14 items-center gap-4 border-b border-white/10 bg-[#121111]/75 px-4 text-white backdrop-blur-xl md:gap-6 md:px-8"
     >
-      <Link href="/" className="group flex shrink-0 items-center gap-2 rounded-full bg-ink px-3.5 py-1.5 text-xs font-bold text-white hover:bg-accent">
+      <Link href="/" className="group flex shrink-0 items-center gap-2 rounded-full bg-white px-3.5 py-1.5 text-xs font-bold text-ink transition-colors hover:bg-accent hover:text-white">
         <span className="transition-transform group-hover:-translate-x-0.5">←</span> Inicio
       </Link>
       <p className="shrink-0 text-lg font-black tracking-tight">
@@ -32,8 +32,8 @@ export function BarraArea({ pendiente, extra }: { pendiente: boolean; extra?: Re
             const activo = path === s.href || path.startsWith(s.href + "/");
             return (
               <Link key={s.href} href={s.href} className="relative shrink-0 rounded-full px-3.5 py-1.5 text-sm font-semibold">
-                {activo && <motion.span layoutId="seccion-activa" className="absolute inset-0 rounded-full bg-surface" transition={{ type: "spring", stiffness: 400, damping: 34 }} />}
-                <span className={`relative ${activo ? "text-ink" : "text-zinc-500 hover:text-ink"}`}>{s.label}</span>
+                {activo && <motion.span layoutId="seccion-activa" className="absolute inset-0 rounded-full bg-white/10" transition={{ type: "spring", stiffness: 400, damping: 34 }} />}
+                <span className={`relative ${activo ? "text-white" : "text-white/50 hover:text-white"}`}>{s.label}</span>
               </Link>
             );
           })}

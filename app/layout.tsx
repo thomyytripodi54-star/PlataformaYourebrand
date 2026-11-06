@@ -18,19 +18,19 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const pendiente = await pendienteActual();
   return (
     <html lang="es">
-      <body className={`${montserrat.variable} antialiased`}>
+      <body className={`${montserrat.variable} tema-fondo antialiased`}>
         <BarraArea
           pendiente={!!pendiente}
           extra={
             <>
               <EstadoDatos />
               <form action={logout}>
-                <button className="text-xs text-zinc-400 hover:text-accent">Salir</button>
+                <button className="text-xs text-white/45 hover:text-accent">Salir</button>
               </form>
             </>
           }
         />
-        <main className="px-4 py-6 md:px-10 md:py-8">{children}</main>
+        <main className="tema px-4 py-6 md:px-10 md:py-8">{children}</main>
       </body>
     </html>
   );

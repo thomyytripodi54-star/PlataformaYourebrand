@@ -36,6 +36,14 @@ export function Inicio({ puntos, areas, nombre }: { puntos: PuntoInicio[]; areas
   const contenedor = useRef<HTMLDivElement>(null);
   const mapa = useRef<maplibregl.Map | null>(null);
   const [listo, setListo] = useState(false);
+  // La intro completa solo la primera vez de la sesión; al volver al menú aparece casi al instante.
+  const [rapido] = useState(() => {
+    try {
+      return typeof window !== "undefined" && sessionStorage.getItem("yb-intro") === "1";
+    } catch {
+      return false;
+    }
+  });
   const [saliendo, setSaliendo] = useState<AreaInicio | null>(null);
   const [velo, setVelo] = useState(false);
   const fuera = useRef(false);
@@ -99,16 +107,25 @@ export function Inicio({ puntos, areas, nombre }: { puntos: PuntoInicio[]; areas
         type: "FeatureCollection",
         features: puntos.map((p) => ({ type: "Feature", properties: {}, geometry: { type: "Point", coordinates: [p.lng, p.lat] } })),
       });
+      if (rapido) {
+        m.setPaintProperty("argentina", "fill-extrusion-height-transition", { duration: 0, delay: 0 });
+        m.setPaintProperty("provincias-borde", "line-opacity-transition", { duration: 300, delay: 0 });
+      }
+      try {
+        sessionStorage.setItem("yb-intro", "1");
+      } catch {}
       m.setPaintProperty("argentina", "fill-extrusion-height", 22000);
       m.setPaintProperty("provincias-borde", "line-opacity", 0.6);
       setListo(true);
 
       // Entrada de cámara: desde el mundo hasta Argentina en perspectiva.
-      m.flyTo({ center: CENTRO_AR, zoom: 3.6, pitch: 58, bearing: -18, padding: { top: 0, left: 0, right: 0, bottom: m.getContainer().clientHeight * 0.38 }, duration: 4200, curve: 1.2, essential: true });
+      const camara = { center: CENTRO_AR, zoom: 3.6, pitch: 58, bearing: -18, padding: { top: 0, left: 0, right: 0, bottom: m.getContainer().clientHeight * 0.38 } };
+      if (rapido) m.jumpTo(camara);
+      else m.flyTo({ center: CENTRO_AR, zoom: 3.6, pitch: 58, bearing: -18, padding: { top: 0, left: 0, right: 0, bottom: m.getContainer().clientHeight * 0.38 }, duration: 4200, curve: 1.2, essential: true });
 
       // Columnas que crecen escalonadas + pulso del halo + órbita lenta de cámara.
       const altos = puntos.map((_, i) => 70000 + ((i * 7919) % 9) * 9000);
-      const inicio = performance.now();
+      const inicio = performance.now() - (rapido ? 5000 : 0);
       const fuente = m.getSource("columnas") as maplibregl.GeoJSONSource;
       let crecidas = false;
       const loop = (ahora: number) => {
@@ -174,7 +191,7 @@ export function Inicio({ puntos, areas, nombre }: { puntos: PuntoInicio[]; areas
             initial={{ opacity: 0, y: -16 }}
             animate={{ opacity: listo ? 1 : 0, y: listo ? 0 : -16 }}
             exit={{ opacity: 0, y: -24, transition: { duration: 0.5 } }}
-            transition={{ duration: 1, delay: 0.4, ease }}
+            transition={{ duration: rapido ? 0.5 : 1, delay: rapido ? 0 : 0.4, ease }}
             className="absolute left-6 top-6 md:left-10 md:top-8"
           >
             <p className="text-2xl font-black tracking-tight md:text-3xl">
@@ -192,7 +209,7 @@ export function Inicio({ puntos, areas, nombre }: { puntos: PuntoInicio[]; areas
               <motion.p
                 initial={{ opacity: 0, y: 24 }}
                 animate={{ opacity: listo ? 1 : 0, y: listo ? 0 : 24 }}
-                transition={{ duration: 1.1, delay: 2.6, ease }}
+                transition={{ duration: rapido ? 0.6 : 1.1, delay: rapido ? 0.05 : 2.6, ease }}
                 className="mb-5 text-3xl font-extralight tracking-tight md:text-5xl"
               >
                 {nombre ? <>Hola, <span className="font-black">{nombre}</span>.</> : "Bienvenido."}{" "}
@@ -219,7 +236,7 @@ export function Inicio({ puntos, areas, nombre }: { puntos: PuntoInicio[]; areas
                       ? { opacity: 0, y: -40, scale: 1.15, rotateX: 0, filter: "blur(4px)", transition: { duration: 0.9, delay: 0.25, ease } }
                       : { opacity: 0, y: 80, rotateX: 40, filter: "blur(10px)", transition: { duration: 0.6, delay: i * 0.04, ease } }
                     : listo
-                      ? { opacity: 1, y: 0, rotateX: 0, filter: "blur(0px)", transition: { duration: 1, delay: 3 + i * 0.11, ease } }
+                      ? { opacity: 1, y: 0, rotateX: 0, filter: "blur(0px)", transition: { duration: rapido ? 0.6 : 1, delay: rapido ? 0.1 + i * 0.05 : 3 + i * 0.11, ease } }
                       : {}
                 }
                 whileHover={a.href && !saliendo ? { y: -8, rotateX: 8, scale: 1.03, transition: { duration: 0.35, ease } } : undefined}

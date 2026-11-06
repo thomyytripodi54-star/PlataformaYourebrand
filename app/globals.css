@@ -22,8 +22,8 @@
 }
 
 body {
-  background: var(--yb-white);
-  color: var(--yb-black);
+  background: #121111;
+  color: #fff;
   font-family: var(--font-montserrat), sans-serif;
 }
 
@@ -108,3 +108,36 @@ body {
   from { opacity: 0; transform: translateY(-18px) scale(0.6); }
   to { opacity: 1; transform: none; }
 }
+
+/* ---------- Tema oscuro de la plataforma (mismo lenguaje visual que el inicio) ----------
+   Reasigna los colores claros de las pantallas a superficies grafito con bordes translúcidos.
+   Lo que ya está diseñado en oscuro (mapa de clientes) se excluye con .sin-tema. */
+.tema-fondo {
+  background:
+    radial-gradient(ellipse 80% 60% at 70% -10%, rgb(211 8 5 / 0.07), transparent 60%),
+    radial-gradient(ellipse 70% 50% at 0% 110%, rgb(255 255 255 / 0.04), transparent 60%),
+    #121111;
+  background-attachment: fixed;
+}
+.tema :is(.bg-white, .hover\:bg-white:hover):not(.sin-tema, .sin-tema *) { background-color: #1d1c1c; }
+.tema :is(.bg-surface, .hover\:bg-surface:hover):not(.sin-tema, .sin-tema *) { background-color: #2a2828; }
+.tema .bg-ink:not(.sin-tema, .sin-tema *) { background-color: rgb(255 255 255 / 0.13); }
+.tema .bg-zinc-200:not(.sin-tema, .sin-tema *) { background-color: rgb(255 255 255 / 0.14); }
+.tema .bg-zinc-300:not(.sin-tema, .sin-tema *) { background-color: rgb(255 255 255 / 0.22); }
+.tema .bg-accent-soft:not(.sin-tema, .sin-tema *) { background-color: rgb(211 8 5 / 0.22); }
+.tema .border-zinc-100:not(.sin-tema, .sin-tema *),
+.tema .divide-zinc-100:not(.sin-tema, .sin-tema *) > * { border-color: rgb(255 255 255 / 0.07); }
+.tema .border-zinc-200:not(.sin-tema, .sin-tema *) { border-color: rgb(255 255 255 / 0.1); }
+.tema .border-zinc-300:not(.sin-tema, .sin-tema *) { border-color: rgb(255 255 255 / 0.18); }
+.tema :is(.border-ink, .hover\:border-ink:hover, .focus\:border-ink:focus):not(.sin-tema, .sin-tema *) { border-color: rgb(255 255 255 / 0.4); }
+.tema :is(.text-ink, .text-black, .hover\:text-ink:hover):not(.sin-tema, .sin-tema *) { color: #fff; }
+.tema .text-zinc-700:not(.sin-tema, .sin-tema *) { color: rgb(255 255 255 / 0.78); }
+.tema .text-zinc-600:not(.sin-tema, .sin-tema *) { color: rgb(255 255 255 / 0.66); }
+.tema .text-zinc-500:not(.sin-tema, .sin-tema *) { color: rgb(255 255 255 / 0.55); }
+.tema .text-zinc-400:not(.sin-tema, .sin-tema *) { color: rgb(255 255 255 / 0.42); }
+.tema .text-zinc-300:not(.sin-tema, .sin-tema *) { color: rgb(255 255 255 / 0.28); }
+.tema .ring-white:not(.sin-tema, .sin-tema *) { --tw-ring-color: #121111; }
+.tema input::placeholder { color: rgb(255 255 255 / 0.35); }
+.tema .text-ink\/70:not(.sin-tema, .sin-tema *) { color: rgb(255 255 255 / 0.75); }
+.tema .text-ink\/60:not(.sin-tema, .sin-tema *) { color: rgb(255 255 255 / 0.65); }
+.tema .text-emerald-600:not(.sin-tema, .sin-tema *) { color: #34d399; }
