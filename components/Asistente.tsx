@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "motion/react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { Microfono } from "@/components/Microfono";
 
 const ease = [0.22, 1, 0.36, 1] as const;
 const CLAVE = "yb-asistente";
@@ -65,7 +66,7 @@ function ModoProyecto({ proyecto }: { proyecto: string | null }) {
           e.preventDefault();
           preguntarEnClaude();
         }}
-        className="mt-3 flex items-end gap-2"
+        className="mt-3 flex flex-wrap items-end gap-2"
       >
         <textarea
           value={pregunta}
@@ -77,9 +78,10 @@ function ModoProyecto({ proyecto }: { proyecto: string | null }) {
             }
           }}
           rows={2}
-          placeholder="Escribí la pregunta y la llevo copiada al proyecto…"
-          className="min-h-[52px] flex-1 resize-none rounded-2xl bg-white/[0.07] px-3.5 py-2.5 text-white placeholder-white/35 outline-none focus:bg-white/[0.1]"
+          placeholder="Escribí o dictá la pregunta y la llevo copiada al proyecto…"
+          className="min-h-[52px] min-w-0 flex-1 resize-none rounded-2xl bg-white/[0.07] px-3.5 py-2.5 text-white placeholder-white/35 outline-none focus:bg-white/[0.1]"
         />
+        <Microfono valor={pregunta} onCambio={setPregunta} className="h-[52px] w-[46px]" />
         <button
           type="submit"
           disabled={!pregunta.trim()}
@@ -354,7 +356,7 @@ export function Asistente() {
                   e.preventDefault();
                   preguntar(texto);
                 }}
-                className="flex items-end gap-2 border-t border-white/10 p-3"
+                className="flex flex-wrap items-end gap-2 border-t border-white/10 p-3"
               >
                 <textarea
                   ref={entrada}
@@ -368,9 +370,10 @@ export function Asistente() {
                   }}
                   rows={1}
                   maxLength={8000}
-                  placeholder="Escribí tu consulta…"
-                  className="max-h-32 min-h-[42px] flex-1 resize-none rounded-2xl bg-white/[0.07] px-3.5 py-2.5 text-[13px] text-white placeholder-white/35 outline-none focus:bg-white/[0.1]"
+                  placeholder="Escribí o dictá tu consulta…"
+                  className="max-h-32 min-h-[42px] min-w-0 flex-1 resize-none rounded-2xl bg-white/[0.07] px-3.5 py-2.5 text-[13px] text-white placeholder-white/35 outline-none focus:bg-white/[0.1]"
                 />
+                <Microfono valor={texto} onCambio={setTexto} className="h-[42px] w-[42px]" />
                 {respondiendo ? (
                   <button
                     type="button"
