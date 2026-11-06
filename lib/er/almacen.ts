@@ -6,8 +6,16 @@ import type { MesER } from "@/lib/finanzas";
  * Vercel → Storage → Upstash for Redis crea KV_REST_API_URL y KV_REST_API_TOKEN.
  * Cada consolidación guarda una versión nueva en el historial; nunca se pisa sin confirmar.
  */
-const URL_ = process.env.KV_REST_API_URL ?? process.env.UPSTASH_REDIS_REST_URL;
-const TOKEN = process.env.KV_REST_API_TOKEN ?? process.env.UPSTASH_REDIS_REST_TOKEN;
+// Vercel permite elegir un prefijo al conectar la base (KV_, STORAGE_, UPSTASH_…): se busca con cualquier prefijo.
+function envQueTermina(...sufijos: string[]) {
+  for (const suf of sufijos) {
+    const k = Object.keys(process.env).find((n) => n === suf || n.endsWith("_" + suf));
+    if (k && process.env[k]) return process.env[k];
+  }
+  return undefined;
+}
+const URL_ = envQueTermina("KV_REST_API_URL", "REDIS_REST_URL", "REST_API_URL");
+const TOKEN = envQueTermina("KV_REST_API_TOKEN", "REDIS_REST_TOKEN", "REST_API_TOKEN");
 export const almacenConfigurado = () => !!(URL_ && TOKEN) || !!process.env.ER_FIXTURES;
 
 // Modo de prueba local: memoria del proceso (nunca activo en Vercel).
@@ -31,7 +39,7 @@ async function enMemoria(cmd: (string | number)[]): Promise<unknown> {
 
 async function redis<T = unknown>(...cmd: (string | number)[]): Promise<T> {
   if (process.env.ER_FIXTURES) return (await enMemoria(cmd)) as T;
-  if (!URL_ || !TOKEN) throw new Error("Falta configurar el almacenamiento: en Vercel → Storage, creá «Upstash for Redis» y conectalo al proyecto.");
+  if (!URL_ || !TOKEN) throw new Error("La plataforma no encuentra la base Upstash Redis. Revisá que esté conectada al proyecto (Storage → la base → Projects) y hacé Redeploy para que tome sus variables.");
   const r = await fetch(URL_, { method: "POST", headers: { Authorization: `Bearer ${TOKEN}` }, body: JSON.stringify(cmd), cache: "no-store" });
   const j = await r.json();
   if (!r.ok || j.error) throw new Error(`Almacenamiento: ${j.error ?? r.status}`);
