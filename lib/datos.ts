@@ -1,5 +1,6 @@
 import "server-only";
 import { unstable_cache } from "next/cache";
+import { after } from "next/server";
 import { cache } from "react";
 import clientesLocal from "@/data/clientes.json";
 import equipoLocal from "@/data/equipo.json";
@@ -178,16 +179,46 @@ export async function getComentariosCliente(id: string, notionUrl: string): Prom
 /* ---------- Calendario de contenido por cliente ---------- */
 export type DatosCalendario = { publicaciones: Publicacion[]; tieneCalendario: boolean; motivo?: string };
 
+type MapaCalendarios = Record<string, { ds: string; db: string | null }>;
+const CLAVE_MAPA = "calendarios:mapa";
+const conRedis = () => almacenConfigurado() && !process.env.ER_FIXTURES;
+
 const mapaCalendarios = unstable_cache(
-  async () => {
+  async (): Promise<MapaCalendarios> => {
     const { clientes } = await getDatos();
     const ids = new Set(clientes.map((c) => idDeUrl(c.notionUrl)).filter((x): x is string => !!x));
-    return Object.fromEntries(await mapearCalendarios(ids));
+    const mapa = Object.fromEntries(await mapearCalendarios(ids));
+    // Copia en Redis: si la caché está vacía (p. ej. después de un deploy) la ficha la usa al instante.
+    if (conRedis()) await redis("SET", CLAVE_MAPA, JSON.stringify(mapa)).catch(() => {});
+    return mapa;
   },
   ["mapa-calendarios-v2"],
   // Búsqueda cara (recorre los calendarios y sus páginas padre): se refresca en segundo plano cada hora.
   { revalidate: 3600, tags: [TAG_MAPA_CALENDARIOS] },
 );
+
+const mapaGuardado = unstable_cache(
+  async (): Promise<MapaCalendarios | null> => {
+    const v = await redis<string | null>("GET", CLAVE_MAPA);
+    return v ? (JSON.parse(v) as MapaCalendarios) : null;
+  },
+  ["mapa-calendarios-guardado"],
+  { revalidate: 300, tags: [TAG_MAPA_CALENDARIOS] },
+);
+
+/** Calendario del cliente sin hacer esperar la búsqueda completa: usa la última búsqueda guardada y la actualiza en segundo plano. */
+async function calendarioDelCliente(paginaId: string) {
+  const guardado = conRedis() ? await mapaGuardado().catch(() => null) : null;
+  if (guardado?.[paginaId]) {
+    after(async () => {
+      try {
+        await mapaCalendarios();
+      } catch {}
+    });
+    return guardado[paginaId];
+  }
+  return (await mapaCalendarios())[paginaId];
+}
 
 /** Publicaciones de un calendario. Se etiqueta con el id de la fuente y de la base para que el webhook lo invalide justo. */
 // Los links de imágenes de Notion vencen a la hora: la clave cambia cada 45 minutos para no servir nunca imágenes vencidas.
@@ -202,7 +233,7 @@ export async function getCalendario(notionUrl: string): Promise<DatosCalendario>
   if (!process.env.NOTION_TOKEN) return { publicaciones: [], tieneCalendario: false, motivo: "Falta conectar Notion (NOTION_TOKEN) para ver el calendario." };
   try {
     const id = idDeUrl(notionUrl);
-    const cal = id ? (await mapaCalendarios())[id] : undefined;
+    const cal = id ? await calendarioDelCliente(id) : undefined;
     if (!cal) return { publicaciones: [], tieneCalendario: false };
     return { publicaciones: await calendarioDe(cal), tieneCalendario: true };
   } catch (e) {
