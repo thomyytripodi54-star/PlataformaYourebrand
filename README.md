@@ -13,6 +13,7 @@ Círculo en la esquina inferior derecha (todas las pantallas). Responde consulta
 - **Qué sabe** (`lib/asistente/contexto.ts`):
   - Estado de resultados de la plataforma.
   - Planilla "Yourebrand Finanzas": Resumen INV publicitaria, INV publicitaria por campaña, Métricas Agencia 2026 y OBJETIVOS 2026.
+  - La pestaña de cada mes ("Octubre 26") y de cada trimestre ("Metricas Agencia Q3 2026"), con objetivos, estado y progreso. En vivo se detectan solas; en la copia están octubre 2026 y los 4 trimestres de 2026.
   - Funnel de venta de Notion (reuniones, contrataciones, campaña de origen y pagos).
   - Clientes, organigrama, casos, comentarios recientes y follow ups.
   - No le llegan teléfonos ni emails.

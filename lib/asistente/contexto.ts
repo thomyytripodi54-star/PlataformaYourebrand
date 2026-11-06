@@ -186,6 +186,14 @@ ${ultimos.map((k) => `- ${k.fecha.slice(0, 10)} · ${nombreCliente.get(k.cliente
     `# Datos de Yourebrand (origen de Notion: ${datos.origen === "notion" ? "en vivo" : "copia local"})`,
     estadoDeResultados(meses),
     `## Planilla "Yourebrand Finanzas" (${planilla.origen === "en vivo" ? "leída en vivo" : `copia del ${planilla.actualizado}`}): publicidad, métricas y objetivos\n${planillaComoTexto(planilla.tablas)}`,
+    `## Pestañas de cada mes y de cada trimestre (planilla): estado de resultados, objetivos, análisis y progreso
+${
+  planilla.origen === "copia"
+    ? "Copia parcial: octubre 2026 y los 4 trimestres de 2026. Enero a septiembre 2026 están arriba, en el estado de resultados de la plataforma (con análisis, objetivos cumplidos y puntos de mejora de cada mes). Los meses de 2025 solo se ven con la planilla en vivo.\n\n"
+    : ""
+}${Object.entries(planilla.pestanas)
+      .map(([t, txt]) => `### ${t}\n${txt}`)
+      .join("\n\n")}`,
     funnelDeVenta(ventas.reuniones, ventas.motivo),
     seccionClientes,
     seccionEquipo,
