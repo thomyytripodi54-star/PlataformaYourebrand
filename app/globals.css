@@ -141,3 +141,5 @@ body {
 .tema .text-ink\/70:not(.sin-tema, .sin-tema *) { color: rgb(255 255 255 / 0.75); }
 .tema .text-ink\/60:not(.sin-tema, .sin-tema *) { color: rgb(255 255 255 / 0.65); }
 .tema .text-emerald-600:not(.sin-tema, .sin-tema *) { color: #34d399; }
+/* Cifras y textos en blanco, más sobrio; el rojo queda para el punto de marca y las alertas. */
+.tema .text-accent:not(.punto, .sin-tema, .sin-tema *) { color: #fff; }

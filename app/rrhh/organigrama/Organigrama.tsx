@@ -220,7 +220,7 @@ function Area({ id, delay, nota, onSelect, extra = [] }: { id: keyof typeof AREA
         className="mb-3 rounded-2xl bg-ink px-4 py-3 text-white"
       >
         <div className="flex items-center justify-between gap-2">
-          <p className="text-sm font-bold">{a.nombre}<span className="text-accent">.</span></p>
+          <p className="text-sm font-bold">{a.nombre}<span className="punto text-accent">.</span></p>
           <span className="rounded-full bg-white/15 px-2 py-0.5 text-[11px] font-bold">{personas.length}</span>
         </div>
         <p className="mt-0.5 text-[11px] text-white/50">{a.descripcion}{nota ? ` · ${nota}` : ""}</p>
@@ -263,7 +263,7 @@ export function Organigrama({ equipo, clientes }: { equipo: Persona[]; clientes:
         <div>
           <p className="text-xs font-medium uppercase tracking-wider text-zinc-400">Recursos Humanos</p>
           <h1 className="mt-1 text-3xl font-black uppercase tracking-tight">
-            Organigrama<span className="text-accent">.</span>
+            Organigrama<span className="punto text-accent">.</span>
           </h1>
           <p className="mt-1 text-sm text-zinc-500">{equipo.length} personas · tocá a alguien para ver sus datos</p>
         </div>

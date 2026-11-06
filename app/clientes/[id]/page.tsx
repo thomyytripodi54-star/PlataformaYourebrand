@@ -62,7 +62,7 @@ export default async function FichaCliente({ params }: { params: Promise<{ id: s
         <div className="min-w-0">
           <h1 className="text-3xl font-black tracking-tight">
             {c.nombre}
-            <span className="text-accent">.</span>
+            <span className="punto text-accent">.</span>
           </h1>
           <p className="mt-0.5 text-sm text-zinc-500">{c.rubros.join(" · ") || "—"}</p>
         </div>
@@ -129,7 +129,7 @@ export default async function FichaCliente({ params }: { params: Promise<{ id: s
 
       <section className="mt-6 rounded-3xl border border-zinc-200 bg-white p-4 md:p-6">
         <h2 className="mb-4 text-xl font-black uppercase tracking-tight">
-          Calendario de contenido<span className="text-accent">.</span>
+          Calendario de contenido<span className="punto text-accent">.</span>
         </h2>
         {sinContenido ? (
           <p className="rounded-2xl bg-surface p-6 text-center text-sm text-zinc-500">

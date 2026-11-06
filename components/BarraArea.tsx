@@ -24,7 +24,7 @@ export function BarraArea({ pendiente, extra }: { pendiente: boolean; extra?: Re
       </Link>
       <p className="shrink-0 text-lg font-black tracking-tight">
         {area?.nombre ?? "Yourebrand"}
-        <span className="text-accent">.</span>
+        <span className="punto text-accent">.</span>
       </p>
       {area && area.secciones.length > 1 && (
         <nav className="flex min-w-0 gap-1 overflow-x-auto">

@@ -229,7 +229,7 @@ function FichaMapa({ c, lugar, casos, onClose }: { c: Cliente; lugar?: string; c
         <div className="min-w-0 flex-1">
           <p className="truncate font-bold">
             {c.nombre}
-            <span className="text-accent">.</span>
+            <span className="punto text-accent">.</span>
           </p>
           <p className="text-xs text-zinc-500">{lugar ?? c.pais}</p>
         </div>
@@ -412,7 +412,7 @@ export function MapaClientes({
             {!embebido && (
               <motion.header initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, ease }} className="mb-6">
                 <h1 className="text-3xl font-black uppercase tracking-tight md:text-4xl">
-                  Mapa de clientes<span className="text-accent">.</span>
+                  Mapa de clientes<span className="punto text-accent">.</span>
                 </h1>
               </motion.header>
             )}
@@ -497,7 +497,7 @@ export function MapaClientes({
                   <motion.aside initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3, ease }} className="mt-6 rounded-2xl border border-white/10 p-4">
                     <div className="flex items-center justify-between gap-2">
                       <p className="text-sm font-bold">
-                        Interior del país<span className="text-accent">.</span> <span className="font-normal text-white/50">{interior.length}</span>
+                        Interior del país<span className="punto text-accent">.</span> <span className="font-normal text-white/50">{interior.length}</span>
                       </p>
                       <button onClick={() => setTodaArgentina(true)} className="rounded-full bg-white px-3 py-1.5 text-xs font-bold text-ink hover:bg-accent hover:text-white">
                         Ver toda Argentina →

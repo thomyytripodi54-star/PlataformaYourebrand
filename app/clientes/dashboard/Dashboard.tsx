@@ -89,7 +89,7 @@ function Estadisticas({ clientes, casos }: { clientes: Cliente[]; casos: Caso[] 
         transition={{ delay: 0.35, duration: 0.5, ease }}
         className="mt-6 rounded-2xl border border-zinc-200 bg-white p-5"
       >
-        <h2 className="text-sm font-bold uppercase tracking-wider">Ingresos netos por cliente<span className="text-accent">.</span></h2>
+        <h2 className="text-sm font-bold uppercase tracking-wider">Ingresos netos por cliente<span className="punto text-accent">.</span></h2>
         <p className="mt-0.5 text-xs text-zinc-500">Margen de contribución mensual en ARS, de mayor a menor.</p>
         <ul className="mt-4 space-y-1.5">
           {ranking.map((c, i) => {
@@ -177,7 +177,7 @@ function Satisfaccion({ clientes, casosPorCliente }: { clientes: Cliente[]; caso
           >
             <h3 className="flex items-center gap-2 text-sm font-bold">
               <span className="h-2.5 w-2.5 rounded-full" style={{ background: g.color }} />
-              <span>{g.id}<span className="text-accent">.</span></span>
+              <span>{g.id}<span className="punto text-accent">.</span></span>
               <span className="ml-auto text-xs font-normal text-zinc-400">{g.clientes.length}</span>
             </h3>
             {g.clientes.length ? (
@@ -346,7 +346,7 @@ export function Dashboard({ clientes: clientesProp, casos, vistaInicial }: { cli
       <motion.header initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease }} className="mb-6">
         <p className="text-xs font-medium uppercase tracking-wider text-zinc-400">Dirección</p>
         <h1 className="mt-1 text-3xl font-black uppercase tracking-tight">
-          Dashboard de clientes<span className="text-accent">.</span>
+          Dashboard de clientes<span className="punto text-accent">.</span>
         </h1>
         <p className="mt-1 text-sm text-zinc-500">{clientes.length} clientes activos</p>
       </motion.header>

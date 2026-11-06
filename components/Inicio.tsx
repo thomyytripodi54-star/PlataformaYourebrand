@@ -195,7 +195,7 @@ export function Inicio({ puntos, areas, nombre }: { puntos: PuntoInicio[]; areas
             className="absolute left-6 top-6 md:left-10 md:top-8"
           >
             <p className="text-2xl font-black tracking-tight md:text-3xl">
-              Yourebrand<span className="text-accent">.</span>
+              Yourebrand<span className="punto text-accent">.</span>
             </p>
             <p className="mt-1 text-[11px] font-extralight text-white/60">Agencia Full service de marketing digital.</p>
           </motion.header>
@@ -254,7 +254,7 @@ export function Inicio({ puntos, areas, nombre }: { puntos: PuntoInicio[]; areas
                 <span>
                   <span className="block text-xl font-black tracking-tight md:text-2xl">
                     {a.nombre}
-                    <span className="text-accent">.</span>
+                    <span className="punto text-accent">.</span>
                   </span>
                   <span className="mt-1 block text-xs text-white/50">{a.href ? a.detalle : "Próximamente"}</span>
                 </span>

@@ -222,7 +222,7 @@ export function CalendarioCliente({ publicaciones }: { publicaciones: Publicacio
         </div>
         <h3 className="text-lg font-black capitalize tracking-tight">
           {titulo}
-          <span className="text-accent">.</span>
+          <span className="punto text-accent">.</span>
           <span className="ml-2 text-xs font-normal normal-case text-zinc-400">{enRango} publicaciones</span>
         </h3>
         <div className="ml-auto inline-flex rounded-full bg-surface p-1">
