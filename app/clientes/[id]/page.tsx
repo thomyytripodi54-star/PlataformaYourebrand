@@ -3,11 +3,12 @@ import { notFound } from "next/navigation";
 import { CalendarioCliente } from "@/components/CalendarioCliente";
 import { Logo } from "@/components/Logo";
 import { formatFecha, formatPago } from "@/lib/clientes";
-import { getCalendario, getComentarios, getDatos } from "@/lib/datos";
+import { getCalendario, getComentariosCliente, getDatos } from "@/lib/datos";
 import { FollowUpCliente } from "@/components/FollowUpCliente";
 import { estado as estadoFollowUp, followUps } from "@/lib/followup";
 
-export const revalidate = 60;
+// Lee el follow up en vivo (Redis): se arma en cada visita; los datos de Notion siguen en caché.
+export const dynamic = "force-dynamic";
 
 // Planes que no llevan calendario de contenido (p. ej. Gorrion: solo desarrollo web).
 const PLANES_SIN_CONTENIDO = new Set(["Web", "Plan google", "SEO y Articulos"]);
@@ -31,12 +32,12 @@ export default async function FichaCliente({ params }: { params: Promise<{ id: s
   const c = datos.clientes.find((x) => x.id === id);
   if (!c) notFound();
   const casos = datos.casos.filter((k) => k.cliente === c.id);
-  const [fus, com] = await Promise.all([followUps(), getComentarios()]);
-  const fu = fus[c.id];
-  const comentarios = com.comentarios.filter((k) => k.cliente === c.id).sort((a, b) => b.fecha.localeCompare(a.fecha));
   const nombreDe = new Map(datos.equipo.map((p) => [p.id, p.nombre]));
   const sinContenido = c.planes.length > 0 && c.planes.every((p) => PLANES_SIN_CONTENIDO.has(p));
-  const cal = sinContenido ? null : await getCalendario(c.notionUrl);
+  // Calendario, comentarios y follow up se piden en paralelo (antes iban uno detrás de otro).
+  const [fus, com, cal] = await Promise.all([followUps(), getComentariosCliente(c.id, c.notionUrl), sinContenido ? null : getCalendario(c.notionUrl)]);
+  const fu = fus[c.id];
+  const comentarios = com.comentarios;
 
   const contacto: [string, React.ReactNode][] = [
     ["Contacto", c.contacto ?? "—"],

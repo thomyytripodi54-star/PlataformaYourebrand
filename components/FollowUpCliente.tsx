@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
+import { estado as calcular } from "@/lib/followup-calculo";
 import { AnimatePresence, motion } from "motion/react";
 import { definirFollowUp, marcarRevisado, registrarUltimo } from "@/app/clientes/actions";
 
@@ -15,14 +16,39 @@ const fecha = (iso: string) => new Date(iso).toLocaleDateString("es-AR", { day: 
 
 export type FollowUpVista = { cada: number; ultimo: string; proximo: string; vencido: boolean; dias: number } | null;
 
-export function FollowUpCliente({ id, estado }: { id: string; estado: FollowUpVista }) {
-  const [pendiente, iniciar] = useTransition();
+export function FollowUpCliente({ id, estado: inicial }: { id: string; estado: FollowUpVista }) {
+  // El cambio se muestra al instante y se guarda en segundo plano; si falla, vuelve atrás.
+  const [estado, setEstado] = useState<FollowUpVista>(inicial);
+  const [, iniciar] = useTransition();
   const [error, setError] = useState<string | null>(null);
-  const correr = (fn: () => Promise<{ error?: string }>) =>
+  const confirmado = useRef(inicial);
+  // Si el servidor manda datos nuevos, pasan a ser los vigentes.
+  const [previo, setPrevio] = useState(inicial);
+  if (previo !== inicial) {
+    setPrevio(inicial);
+    setEstado(inicial);
+  }
+  useEffect(() => {
+    confirmado.current = inicial;
+  }, [inicial]);
+  const correr = (nuevo: FollowUpVista, fn: () => Promise<{ error?: string }>) => {
+    setEstado(nuevo);
+    setError(null);
     iniciar(async () => {
-      const r = await fn();
-      setError(r.error ?? null);
+      try {
+        const r = await fn();
+        if (r.error) {
+          setEstado(confirmado.current);
+          setError(r.error);
+        } else confirmado.current = nuevo;
+      } catch {
+        setEstado(confirmado.current);
+        setError("No se pudo guardar. Probá de nuevo.");
+      }
     });
+  };
+  const ahora = () => new Date().toISOString();
+  const con = (cada: number, ultimo: string): FollowUpVista => calcular({ cada, ultimo });
 
   return (
     <section className={`rounded-2xl border bg-white p-4 transition-colors ${estado?.vencido ? "border-white/40" : "border-zinc-200"}`}>
@@ -37,8 +63,7 @@ export function FollowUpCliente({ id, estado }: { id: string; estado: FollowUpVi
             return (
               <button
                 key={o.dias}
-                disabled={pendiente}
-                onClick={() => !activo && correr(() => definirFollowUp(id, o.dias || null))}
+                onClick={() => !activo && correr(o.dias ? con(o.dias, estado?.cada === o.dias ? estado.ultimo : ahora()) : null, () => definirFollowUp(id, o.dias || null))}
                 className="relative rounded-full px-3 py-1.5 text-xs font-semibold disabled:opacity-60"
               >
                 {activo && <motion.span layoutId={`fu-${id}`} className="absolute inset-0 rounded-full bg-white/15" transition={{ type: "spring", stiffness: 400, damping: 34 }} />}
@@ -64,7 +89,7 @@ export function FollowUpCliente({ id, estado }: { id: string; estado: FollowUpVi
                     type="date"
                     max={new Date().toLocaleDateString("en-CA", { timeZone: "America/Argentina/Buenos_Aires" })}
                     defaultValue={new Date(estado.ultimo).toLocaleDateString("en-CA", { timeZone: "America/Argentina/Buenos_Aires" })}
-                    onChange={(e) => e.target.value && correr(() => registrarUltimo(id, e.target.value))}
+                    onChange={(e) => e.target.value && correr(con(estado.cada, new Date(e.target.value + "T12:00:00-03:00").toISOString()), () => registrarUltimo(id, e.target.value))}
                     className="absolute inset-0 cursor-pointer opacity-0 [color-scheme:dark]"
                   />
                 </label>
@@ -72,11 +97,10 @@ export function FollowUpCliente({ id, estado }: { id: string; estado: FollowUpVi
               </p>
             </div>
             <button
-              disabled={pendiente}
-              onClick={() => correr(() => marcarRevisado(id))}
+              onClick={() => correr(con(estado.cada, ahora()), () => marcarRevisado(id))}
               className={`rounded-full px-4 py-2 text-xs font-bold transition-colors disabled:opacity-60 ${estado.vencido ? "bg-white/95 text-[#121111] hover:bg-white/80" : "border border-white/20 text-white/80 hover:border-white/50"}`}
             >
-              {pendiente ? "Guardando…" : "✓ Revisado"}
+              ✓ Revisado
             </button>
           </motion.div>
         ) : (
