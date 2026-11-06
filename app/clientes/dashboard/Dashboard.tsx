@@ -6,7 +6,7 @@ import { AnimatePresence, animate, motion } from "motion/react";
 import { Logo } from "@/components/Logo";
 import { MapaClientes, type MapaHandle } from "@/components/MapaClientes";
 import { useRouter } from "next/navigation";
-import type { Cliente } from "@/lib/clientes";
+import { porEntrada, type Cliente } from "@/lib/clientes";
 import type { Caso } from "@/lib/equipo";
 
 export type Vista = "estadisticas" | "satisfaccion" | "geografia";
@@ -288,7 +288,9 @@ function Buscador({ clientes, casosPorCliente, onMapa }: { clientes: Cliente[]; 
 }
 
 /* ---------- Dashboard ---------- */
-export function Dashboard({ clientes, casos, vistaInicial }: { clientes: Cliente[]; casos: Caso[]; vistaInicial: Vista }) {
+export function Dashboard({ clientes: clientesProp, casos, vistaInicial }: { clientes: Cliente[]; casos: Caso[]; vistaInicial: Vista }) {
+  // Orden de entrada (fecha "Desde"), no alfabético
+  const clientes = [...clientesProp].sort(porEntrada);
   const [vista, setVista] = useState<Vista>(vistaInicial);
   const casosPorCliente: Record<string, number> = {};
   for (const k of casos) if (k.cliente) casosPorCliente[k.cliente] = (casosPorCliente[k.cliente] ?? 0) + 1;
