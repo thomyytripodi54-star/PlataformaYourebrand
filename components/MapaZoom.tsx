@@ -127,7 +127,9 @@ export function MapaZoom({
   encuadre,
   seleccionado,
   onSeleccionar,
+  animado = true,
 }: {
+  animado?: boolean;
   puntos: PuntoCliente[];
   encuadre: Encuadre;
   seleccionado: string | null;
@@ -135,6 +137,7 @@ export function MapaZoom({
 }) {
   const contenedor = useRef<HTMLDivElement>(null);
   const mapa = useRef<maplibregl.Map | null>(null);
+  const animadoRef = useRef(animado);
   const partidos = useRef<FC | null>(null);
   const etiquetas = useRef<maplibregl.Marker[]>([]);
   const marcadores = useRef(new Map<string, { m: maplibregl.Marker; el: HTMLElement; p: PuntoCliente }>());
@@ -165,8 +168,8 @@ export function MapaZoom({
     const m = new maplibregl.Map({
       container: contenedor.current,
       style: estilo(),
-      center: centroIni,
-      zoom: 3,
+      // Con animación arranca de lejos y "vuela"; sin animación abre directo en el encuadre.
+      ...(animado ? { center: centroIni, zoom: 3 } : { bounds: encuadre, fitBoundsOptions: { padding: 40, maxZoom: 13 } }),
       attributionControl: false,
       fadeDuration: 0,
       renderWorldCopies: false,
@@ -187,7 +190,11 @@ export function MapaZoom({
       (m.getSource("caba") as maplibregl.GeoJSONSource).setData(caba);
       (m.getSource("comunas") as maplibregl.GeoJSONSource).setData(comunas);
       partidos.current = part;
-      // Aparición animada de los partidos
+      // Aparición animada de los partidos (instantánea si no hay animación)
+      if (!animado) {
+        m.setPaintProperty("partidos", "fill-opacity-transition", { duration: 0, delay: 0 });
+        m.setPaintProperty("partidos-borde", "line-opacity-transition", { duration: 0, delay: 0 });
+      }
       m.setPaintProperty("partidos", "fill-opacity", 1);
       m.setPaintProperty("partidos-borde", "line-opacity", 0.9);
       m.once("idle", marcarPartidos);
@@ -225,7 +232,7 @@ export function MapaZoom({
       });
     });
 
-    const t = setTimeout(() => m.fitBounds(encuadre, { padding: 40, maxZoom: 13, duration: 2400, curve: 1.6, essential: true }), 350);
+    const t = animado ? setTimeout(() => m.fitBounds(encuadre, { padding: 40, maxZoom: 13, duration: 2400, curve: 1.6, essential: true }), 350) : undefined;
     const marks = marcadores.current;
     const labels = etiquetas.current;
     return () => {
@@ -267,12 +274,18 @@ export function MapaZoom({
         const ang = (i / n) * Math.PI * 2 - Math.PI / 2;
         const offset: [number, number] = [Math.cos(ang) * radio, Math.sin(ang) * radio];
         const prev = marcadores.current.get(p.id);
-        if (prev) {
+        if (prev && prev.p.followUp === p.followUp && prev.p.casos === p.casos && prev.p.satisfaccion === p.satisfaccion) {
           prev.m.setLngLat([p.lng, p.lat]).setOffset(offset);
           return;
         }
+        // Cambió algo que se ve en el marcador (follow up, casos, satisfacción): se rehace sin animación.
+        if (prev) {
+          prev.m.remove();
+          marcadores.current.delete(p.id);
+        }
         const { pin, el } = crearMarcador(p, () => onSel.current(p.id));
-        el.style.animationDelay = `${1.2 + (i % 6) * 0.08 + Math.random() * 0.6}s`;
+        if (prev || !animadoRef.current) el.classList.add("yb-sin-anim");
+        else el.style.animationDelay = `${1.2 + (i % 6) * 0.08 + Math.random() * 0.6}s`;
         const mk = new maplibregl.Marker({ element: pin, offset }).setLngLat([p.lng, p.lat]).addTo(m);
         marcadores.current.set(p.id, { m: mk, el, p });
       });

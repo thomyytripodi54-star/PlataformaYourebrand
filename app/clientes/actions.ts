@@ -18,7 +18,7 @@ export async function definirFollowUp(id: string, cada: number | null) {
   if (cada !== null && !FRECUENCIAS.some((f) => f.dias === cada)) return { error: "Frecuencia inválida." };
   const f = await followUps();
   if (cada === null) delete f[id];
-  else f[id] = { cada, ultimo: f[id]?.cada === cada ? f[id].ultimo : new Date().toISOString() };
+  else f[id] = { cada, ultimo: f[id]?.ultimo ?? new Date().toISOString() }; // cambiar la frecuencia mantiene la fecha del último
   await guardarFollowUps(f);
   refrescar(id);
   return { ok: true };

@@ -171,6 +171,10 @@ export function Inicio({ puntos, areas, nombre, notificaciones }: { puntos: Punt
     if (!a.href || saliendo) return;
     setSaliendo(a);
     fuera.current = true;
+    if (a.nombre === "Dirección")
+      try {
+        sessionStorage.setItem("yb-entrada-direccion", "1");
+      } catch {}
     const m = mapa.current;
     // Dirección "entra al país": la cámara baja hasta Buenos Aires y se endereza.
     if (m) {

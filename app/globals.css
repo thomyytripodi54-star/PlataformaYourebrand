@@ -162,3 +162,5 @@ body {
 }
 .yb-marcador-fu svg { height: 11px; width: 11px; }
 @keyframes yb-fu { 50% { box-shadow: 0 0 0 2px #272626, 0 0 16px 4px rgb(255 255 255 / 0.25); } }
+
+.yb-marcador.yb-sin-anim { animation: none; opacity: 1; }
