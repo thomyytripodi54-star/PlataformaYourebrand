@@ -287,7 +287,12 @@ export function MapaZoom({
   useEffect(() => {
     for (const [id, x] of marcadores.current) x.el.classList.toggle("activo", id === seleccionado);
     const s = seleccionado && marcadores.current.get(seleccionado);
-    if (s && mapa.current) mapa.current.flyTo({ center: [s.p.lng, s.p.lat], zoom: Math.max(mapa.current.getZoom(), 13), offset: [0, -60], duration: 1400, essential: true });
+    // Acercamiento mínimo: se centra en el cliente con un paso más de zoom (tope nivel ciudad),
+    // así se siguen viendo los demás clientes alrededor.
+    if (s && mapa.current) {
+      const z = mapa.current.getZoom();
+      mapa.current.easeTo({ center: [s.p.lng, s.p.lat], zoom: Math.max(z, Math.min(z + 0.6, 10.5)), offset: [0, -60], duration: 900, essential: true });
+    }
   }, [seleccionado]);
 
   return <div ref={contenedor} className="yb-mapa h-full w-full" />;

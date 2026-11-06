@@ -42,3 +42,8 @@ export function diasAlVencimiento(iso: string | null, hoy = new Date()) {
   const h = new Date(hoy.toISOString().slice(0, 10) + "T00:00:00");
   return Math.round((v.getTime() - h.getTime()) / 86400000);
 }
+
+/** Orden de entrada: fecha "Desde" de Notion, del más antiguo al más nuevo (sin fecha, al final). */
+export function porEntrada(a: Pick<Cliente, "desde" | "nombre">, b: Pick<Cliente, "desde" | "nombre">) {
+  return (a.desde ?? "9999").localeCompare(b.desde ?? "9999") || a.nombre.localeCompare(b.nombre, "es");
+}

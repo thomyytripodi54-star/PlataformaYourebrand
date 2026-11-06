@@ -6,7 +6,7 @@ import createGlobe from "cobe";
 import { useEffect, useImperativeHandle, useMemo, useRef, useState } from "react";
 import { AnimatePresence, animate, motion, useMotionValue, useSpring, useTransform } from "motion/react";
 import { Logo } from "@/components/Logo";
-import type { Cliente } from "@/lib/clientes";
+import { porEntrada, type Cliente } from "@/lib/clientes";
 import type { Caso } from "@/lib/equipo";
 import { ENCUADRES, PAISES, SEDE, angulos, esAMBA, ubicar } from "@/lib/geo";
 import type { PuntoCliente } from "@/components/MapaZoom";
@@ -326,7 +326,7 @@ export function MapaClientes({
         .filter((c) => pais && c.pais === pais)
         .map((c) => ({ c, u: ubicar(c.ubicacion ?? [], c.pais) }))
         .filter((x): x is { c: Cliente; u: NonNullable<ReturnType<typeof ubicar>> } => !!x.u)
-        .sort((a, b) => a.c.nombre.localeCompare(b.c.nombre, "es")),
+        .sort((a, b) => porEntrada(a.c, b.c)),
     [clientes, pais],
   );
   const esArg = pais === "Argentina";
@@ -347,7 +347,7 @@ export function MapaClientes({
     [pais, todaArgentina, ubicados.length],
   );
 
-  const lista = clientes.filter((c) => !pais || c.pais === pais).sort((a, b) => a.nombre.localeCompare(b.nombre, "es"));
+  const lista = clientes.filter((c) => !pais || c.pais === pais).sort(porEntrada);
   const sinUbicacion = ubicados.filter((x) => !x.u.precisa);
 
   return (
