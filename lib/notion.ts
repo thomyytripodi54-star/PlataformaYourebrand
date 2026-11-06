@@ -8,8 +8,6 @@ export const DS = {
   clientes: "0822fcc6-9457-4a70-8e6c-8160a4a8bf0b",
   nomina: "b88d4804-0158-4419-853f-8696f7169faa",
   casos: "9a6a6453-58b5-4b55-9fd1-dd77ba37d62b",
-  // Dirección › Marketing - Publicidad › Reuniones de venta › "Funnel de venta"
-  funnelVenta: "39dcc8a7-5766-4687-905d-c19effa21f19",
 };
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
