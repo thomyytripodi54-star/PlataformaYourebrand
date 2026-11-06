@@ -2,6 +2,7 @@ import Anthropic from "@anthropic-ai/sdk";
 import { cookies } from "next/headers";
 import { COOKIE, sesionValida } from "@/lib/auth";
 import { contextoAgencia, contextoDelDia } from "@/lib/asistente/contexto";
+import { leerPlanilla } from "@/lib/asistente/planilla";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 300;
@@ -46,6 +47,13 @@ function validar(cuerpo: unknown): MensajeChat[] | string {
   }
   if (out[0].rol !== "user" || out[out.length - 1].rol !== "user") return "La conversación tiene que empezar y terminar con una pregunta.";
   return out;
+}
+
+/** Estado de las fuentes del asistente (lo muestra el chat): si la planilla está en vivo o en copia, y por qué. */
+export async function GET() {
+  if (!(await sesionValida((await cookies()).get(COOKIE)?.value))) return new Response("No autorizado", { status: 401 });
+  const p = await leerPlanilla();
+  return Response.json({ listo: !!process.env.ANTHROPIC_API_KEY, planilla: { origen: p.origen, actualizado: p.actualizado, error: p.error, cuenta: p.cuenta } });
 }
 
 export async function POST(req: Request) {

@@ -9,6 +9,24 @@ import remarkGfm from "remark-gfm";
 const ease = [0.22, 1, 0.36, 1] as const;
 const CLAVE = "yb-asistente";
 type Mensaje = { rol: "user" | "assistant"; texto: string };
+type Estado = { listo: boolean; planilla: { origen: "en vivo" | "copia"; actualizado: string; error?: string; cuenta?: string } };
+
+/** De dónde lee el asistente: se ve al abrir el chat, para saber si la planilla está en vivo. */
+function Fuentes({ estado }: { estado: Estado | null }) {
+  if (!estado) return null;
+  const { planilla: p } = estado;
+  const enVivo = p.origen === "en vivo";
+  return (
+    <div className="mt-4 space-y-1 rounded-2xl border border-white/10 px-3.5 py-2.5 text-[11px] leading-snug text-white/55">
+      {!estado.listo && <p className="text-white/80">Falta configurar ANTHROPIC_API_KEY en Vercel para que pueda responder.</p>}
+      <p className="flex items-center gap-1.5">
+        <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${enVivo ? "bg-emerald-400" : "bg-amber-400"}`} />
+        Planilla de finanzas: {enVivo ? "en vivo" : `copia del ${p.actualizado.split("-").reverse().join("/")}`}
+      </p>
+      {p.error && <p className="text-white/75">{p.error}</p>}
+    </div>
+  );
+}
 
 const SUGERENCIAS = [
   "¿Cómo venimos contra los objetivos 2026?",
@@ -72,6 +90,7 @@ export function Asistente() {
   const [mensajes, setMensajes] = useState<Mensaje[]>(() => (typeof window === "undefined" ? [] : cargar()));
   const [texto, setTexto] = useState("");
   const [respondiendo, setRespondiendo] = useState(false);
+  const [estado, setEstado] = useState<Estado | null>(null);
   const corte = useRef<AbortController | null>(null);
   const lista = useRef<HTMLDivElement>(null);
   const entrada = useRef<HTMLTextAreaElement>(null);
@@ -82,6 +101,19 @@ export function Asistente() {
     } catch {}
     lista.current?.scrollTo({ top: lista.current.scrollHeight, behavior: "smooth" });
   }, [mensajes]);
+
+  // Al abrir, se consulta de dónde lee (planilla en vivo o copia).
+  useEffect(() => {
+    if (!abierto) return;
+    let vivo = true;
+    fetch("/api/asistente")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((e: Estado | null) => vivo && setEstado(e))
+      .catch(() => {});
+    return () => {
+      vivo = false;
+    };
+  }, [abierto]);
 
   useEffect(() => {
     if (abierto) entrada.current?.focus();
@@ -185,6 +217,7 @@ export function Asistente() {
                       </button>
                     ))}
                   </div>
+                  <Fuentes estado={estado} />
                 </div>
               ) : (
                 mensajes.map((m, i) =>

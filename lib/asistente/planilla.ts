@@ -1,8 +1,8 @@
 import "server-only";
-import { createSign } from "node:crypto";
 import { unstable_cache } from "next/cache";
 import copia from "@/data/asistente/planilla.json";
 import { pestanaComoTexto } from "./formato";
+import { credencialesDeEnv, explicarErrorGoogle, jwtCuentaServicio, type CuentaServicio } from "./google";
 
 /**
  * Pestañas de la planilla "Yourebrand Finanzas" que lee el asistente.
@@ -28,36 +28,30 @@ export type Planilla = {
   tablas: Record<string, string[][]>;
   /** Pestañas de meses y trimestres, como texto. */
   pestanas: Record<string, string>;
+  /** Si está configurada la lectura en vivo pero falla: qué pasa y qué hacer. */
+  error?: string;
+  /** Email de la cuenta de servicio configurada (para compartirle la planilla). */
+  cuenta?: string;
 };
 
-async function tokenGoogle(cred: { client_email: string; private_key: string }) {
-  const b64 = (o: object) => Buffer.from(JSON.stringify(o)).toString("base64url");
-  const ahora = Math.floor(Date.now() / 1000);
-  const cuerpo = `${b64({ alg: "RS256", typ: "JWT" })}.${b64({
-    iss: cred.client_email,
-    scope: "https://www.googleapis.com/auth/spreadsheets.readonly",
-    aud: "https://oauth2.googleapis.com/token",
-    iat: ahora,
-    exp: ahora + 3600,
-  })}`;
-  const firma = createSign("RSA-SHA256").update(cuerpo).sign(cred.private_key, "base64url");
+async function tokenGoogle(cred: CuentaServicio) {
   const r = await fetch("https://oauth2.googleapis.com/token", {
     method: "POST",
     headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    body: new URLSearchParams({ grant_type: "urn:ietf:params:oauth:grant-type:jwt-bearer", assertion: `${cuerpo}.${firma}` }),
+    body: new URLSearchParams({ grant_type: "urn:ietf:params:oauth:grant-type:jwt-bearer", assertion: jwtCuentaServicio(cred) }),
     cache: "no-store",
   });
-  if (!r.ok) throw new Error(`Google ${r.status}: ${await r.text()}`);
+  if (!r.ok) throw new Error(explicarErrorGoogle(r.status, await r.text(), cred.client_email));
   return ((await r.json()) as { access_token: string }).access_token;
 }
 
 const enVivo = unstable_cache(
   async (): Promise<Planilla> => {
-    const cred = JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT_JSON!) as { client_email: string; private_key: string };
+    const cred = credencialesDeEnv(process.env.GOOGLE_SERVICE_ACCOUNT_JSON!);
     const token = await tokenGoogle(cred);
     const get = async (ruta: string) => {
       const r = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${PLANILLA}${ruta}`, { headers: { Authorization: `Bearer ${token}` }, cache: "no-store" });
-      if (!r.ok) throw new Error(`Google Sheets ${r.status}: ${await r.text()}`);
+      if (!r.ok) throw new Error(explicarErrorGoogle(r.status, await r.text(), cred.client_email));
       return r.json();
     };
     // Las pestañas de meses y trimestres se detectan solas: las nuevas ("Noviembre 26", "Metricas Agencia Q1 2027") entran sin tocar código.
@@ -79,12 +73,15 @@ const enVivo = unstable_cache(
 );
 
 export async function leerPlanilla(): Promise<Planilla> {
-  if (process.env.GOOGLE_SERVICE_ACCOUNT_JSON) {
-    try {
-      return await enVivo();
-    } catch (e) {
-      console.error("[asistente] No se pudo leer la planilla en vivo, uso la copia:", e);
-    }
+  const base: Planilla = { origen: "copia", actualizado: copia.copiaDel, tablas: copia.tablas, pestanas: copia.pestanas };
+  const env = process.env.GOOGLE_SERVICE_ACCOUNT_JSON;
+  if (!env) return base;
+  let cuenta: string | undefined;
+  try {
+    cuenta = credencialesDeEnv(env).client_email;
+    return { ...(await enVivo()), cuenta };
+  } catch (e) {
+    console.error("[asistente] No se pudo leer la planilla en vivo, uso la copia:", e);
+    return { ...base, cuenta, error: e instanceof Error ? e.message : String(e) };
   }
-  return { origen: "copia", actualizado: copia.copiaDel, tablas: copia.tablas, pestanas: copia.pestanas };
 }
