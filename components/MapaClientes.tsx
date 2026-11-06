@@ -42,7 +42,7 @@ function Globo({ paises, foco }: { paises: [string, number][]; foco: string | nu
     if (!el) return;
     let width = el.offsetWidth;
     let phi = angulos(SEDE.lat, SEDE.lng)[0];
-    let theta = 0.25;
+    let theta = Math.max(-0.9, Math.min(0.9, angulos(SEDE.lat, SEDE.lng)[1]));
     let raf = 0;
 
     const markers = paises.map(([p, n]) => ({
@@ -89,8 +89,13 @@ function Globo({ paises, foco }: { paises: [string, number][]; foco: string | nu
         phi += d * 0.06;
         theta += (Math.max(-0.9, Math.min(0.9, o[1])) - theta) * 0.06;
       } else {
-        phi += 0.0025;
-        theta += (0.25 - theta) * 0.03;
+        // en reposo mira a Argentina, donde están casi todos los clientes
+        const [ap, at] = angulos(SEDE.lat, SEDE.lng);
+        let d = (ap - phi) % (Math.PI * 2);
+        if (d > Math.PI) d -= Math.PI * 2;
+        if (d < -Math.PI) d += Math.PI * 2;
+        phi += d * 0.04;
+        theta += (Math.max(-0.9, Math.min(0.9, at)) - theta) * 0.04;
       }
       globe.update({
         phi: phi + delta.current.phi,
@@ -333,7 +338,7 @@ export function MapaClientes({
   const amba = ubicados.filter((x) => x.u.precisa && esAMBA(x.u.lat, x.u.lng));
   const interior = esArg ? ubicados.filter((x) => !amba.includes(x)) : [];
   const visibles = esArg && !todaArgentina ? amba : ubicados;
-  const puntos: PuntoCliente[] = visibles.map(({ c, u }) => ({ id: c.id, nombre: c.nombre, logo: c.logo, lat: u.lat, lng: u.lng, lugar: u.lugar, casos: casosPorCliente[c.id] ?? 0 }));
+  const puntos: PuntoCliente[] = visibles.map(({ c, u }) => ({ id: c.id, nombre: c.nombre, logo: c.logo, lat: u.lat, lng: u.lng, lugar: u.lugar, satisfaccion: c.satisfaccion, casos: casosPorCliente[c.id] ?? 0 }));
   const encuadre = useMemo<[number, number, number, number]>(
     () =>
       esArg

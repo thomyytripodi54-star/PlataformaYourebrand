@@ -15,6 +15,7 @@ export type PuntoCliente = {
   lng: number;
   lugar: string;
   casos: number;
+  satisfaccion?: "Contento" | "Expectante" | "Insatisfecho" | null;
 };
 
 type Encuadre = [number, number, number, number];
@@ -64,7 +65,7 @@ function crearMarcador(p: PuntoCliente, onClick: () => void) {
   const el = document.createElement("button");
   pin.appendChild(el);
   el.type = "button";
-  el.className = "yb-marcador";
+  el.className = `yb-marcador${p.satisfaccion ? ` sat-${p.satisfaccion.toLowerCase()}` : ""}`;
   el.setAttribute("aria-label", p.nombre);
   el.innerHTML = `
     <span class="yb-marcador-logo">${p.logo ? `<img src="${esc(p.logo)}" alt="" />` : esc(iniciales(p.nombre))}</span>
@@ -287,11 +288,9 @@ export function MapaZoom({
   useEffect(() => {
     for (const [id, x] of marcadores.current) x.el.classList.toggle("activo", id === seleccionado);
     const s = seleccionado && marcadores.current.get(seleccionado);
-    // Acercamiento mínimo: se centra en el cliente con un paso más de zoom (tope nivel ciudad),
-    // así se siguen viendo los demás clientes alrededor.
+    // Sin zoom: solo centra el cliente, manteniendo el nivel de acercamiento actual.
     if (s && mapa.current) {
-      const z = mapa.current.getZoom();
-      mapa.current.easeTo({ center: [s.p.lng, s.p.lat], zoom: Math.max(z, Math.min(z + 0.6, 10.5)), offset: [0, -60], duration: 900, essential: true });
+      mapa.current.easeTo({ center: [s.p.lng, s.p.lat], offset: [0, -60], duration: 900, essential: true });
     }
   }, [seleccionado]);
 
