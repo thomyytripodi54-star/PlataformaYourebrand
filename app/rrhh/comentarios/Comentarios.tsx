@@ -112,7 +112,7 @@ export function Comentarios({
       <motion.header initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease }} className="mb-6">
         <p className="text-xs font-medium uppercase tracking-wider text-zinc-400">Recursos Humanos</p>
         <h1 className="mt-1 text-3xl font-black uppercase tracking-tight">
-          Comentarios<span className="text-accent">.</span>
+          Comentarios<span className="punto text-accent">.</span>
         </h1>
         <p className="mt-1 text-sm text-zinc-500">Comentarios hechos en Notion sobre cada cliente, por orden de llegada. Marcarlos como leídos no cambia nada en Notion.</p>
       </motion.header>

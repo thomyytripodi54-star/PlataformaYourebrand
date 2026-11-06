@@ -157,7 +157,7 @@ function Globo({ paises, foco }: { paises: [string, number][]; foco: string | nu
   );
 }
 
-function TarjetaCliente({ c, i, casos, lugar, activo, onSeleccionar }: { c: Cliente; i: number; casos: number; lugar?: string; activo?: boolean; onSeleccionar?: () => void }) {
+function TarjetaCliente({ c, i, casos, lugar, activo, onSeleccionar, fu }: { c: Cliente; i: number; casos: number; fu?: boolean; lugar?: string; activo?: boolean; onSeleccionar?: () => void }) {
   // inclinación 3D siguiendo el mouse
   const x = useMotionValue(0);
   const y = useMotionValue(0);
@@ -173,6 +173,7 @@ function TarjetaCliente({ c, i, casos, lugar, activo, onSeleccionar }: { c: Clie
         <p className="truncate text-sm font-semibold text-white">{c.nombre}</p>
         <p className="truncate text-[11px] text-white/45">{lugar ?? (c.rubros.slice(0, 2).join(" · ") || "—")}</p>
       </div>
+      {fu && <span className="shrink-0 rounded-full bg-white px-2 py-0.5 text-[10px] font-bold text-[#121111]">Follow up</span>}
     </>
   );
   return (
@@ -229,7 +230,7 @@ function FichaMapa({ c, lugar, casos, onClose }: { c: Cliente; lugar?: string; c
         <div className="min-w-0 flex-1">
           <p className="truncate font-bold">
             {c.nombre}
-            <span className="text-accent">.</span>
+            <span className="punto text-accent">.</span>
           </p>
           <p className="text-xs text-zinc-500">{lugar ?? c.pais}</p>
         </div>
@@ -284,9 +285,15 @@ export function MapaClientes({
   embebido = false,
   casos = [],
   ref,
+  pantallaCompleta = false,
+  cabecera,
+  followUp = [],
 }: {
+  followUp?: string[];
   clientes: Cliente[];
   embebido?: boolean;
+  pantallaCompleta?: boolean;
+  cabecera?: React.ReactNode;
   casos?: Caso[];
   ref?: React.Ref<MapaHandle>;
 }) {
@@ -296,7 +303,7 @@ export function MapaClientes({
     return m;
   }, [casos]);
   const casosPorCliente = Object.fromEntries(Object.entries(casosDe).map(([k, v]) => [k, v.length]));
-  const [pais, setPais] = useState<string | null>(null);
+  const [pais, setPais] = useState<string | null>("Argentina");
   const [todaArgentina, setTodaArgentina] = useState(false);
   const [sel, setSel] = useState<string | null>(null);
 
@@ -338,7 +345,7 @@ export function MapaClientes({
   const amba = ubicados.filter((x) => x.u.precisa && esAMBA(x.u.lat, x.u.lng));
   const interior = esArg ? ubicados.filter((x) => !amba.includes(x)) : [];
   const visibles = esArg && !todaArgentina ? amba : ubicados;
-  const puntos: PuntoCliente[] = visibles.map(({ c, u }) => ({ id: c.id, nombre: c.nombre, logo: c.logo, lat: u.lat, lng: u.lng, lugar: u.lugar, satisfaccion: c.satisfaccion, casos: casosPorCliente[c.id] ?? 0 }));
+  const puntos: PuntoCliente[] = visibles.map(({ c, u }) => ({ id: c.id, nombre: c.nombre, logo: c.logo, lat: u.lat, lng: u.lng, lugar: u.lugar, satisfaccion: c.satisfaccion, followUp: followUp.includes(c.id), casos: casosPorCliente[c.id] ?? 0 }));
   const encuadre = useMemo<[number, number, number, number]>(
     () =>
       esArg
@@ -355,11 +362,8 @@ export function MapaClientes({
   const lista = clientes.filter((c) => !pais || c.pais === pais).sort(porEntrada);
   const sinUbicacion = ubicados.filter((x) => !x.u.precisa);
 
-  return (
-    <div className={embebido ? "rounded-3xl bg-ink px-4 py-6 text-white md:px-8 md:py-8" : "-mx-4 -my-6 min-h-screen bg-ink px-4 py-8 text-white md:-mx-10 md:-my-8 md:px-10"}>
-      <div className="mx-auto max-w-7xl">
-        <div className="grid grid-cols-1 items-start gap-10 lg:grid-cols-[1.15fr_1fr]">
-          <div className="lg:sticky lg:top-8">
+  const bloqueMapa = (
+          <>
             <AnimatePresence mode="wait" initial={false}>
               {pais ? (
                 <motion.div
@@ -368,7 +372,7 @@ export function MapaClientes({
                   animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
                   exit={{ opacity: 0, scale: 0.9, filter: "blur(8px)" }}
                   transition={{ duration: 0.7, ease }}
-                  className="relative h-[460px] overflow-hidden rounded-3xl border border-white/10 lg:h-[640px]"
+                  className={pantallaCompleta ? "absolute inset-0" : "relative h-[460px] overflow-hidden rounded-3xl border border-white/10 lg:h-[640px]"}
                 >
                   <MapaZoom key={pais} puntos={puntos} encuadre={encuadre} seleccionado={sel} onSeleccionar={setSel} />
                   <AnimatePresence>
@@ -404,13 +408,14 @@ export function MapaClientes({
                 </motion.div>
               )}
             </AnimatePresence>
-          </div>
-
-          <div>
+          </>
+  );
+  const bloquePanel = (
+          <>
             {!embebido && (
               <motion.header initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, ease }} className="mb-6">
                 <h1 className="text-3xl font-black uppercase tracking-tight md:text-4xl">
-                  Mapa de clientes<span className="text-accent">.</span>
+                  Mapa de clientes<span className="punto text-accent">.</span>
                 </h1>
               </motion.header>
             )}
@@ -450,10 +455,10 @@ export function MapaClientes({
             </div>
 
             {!pais ? (
-              <motion.ul layout className="mt-6 grid grid-cols-1 gap-2 sm:grid-cols-2">
+              <motion.ul layout className={`mt-6 grid grid-cols-1 gap-2 ${pantallaCompleta ? "" : "sm:grid-cols-2"}`}>
                 <AnimatePresence mode="popLayout">
                   {lista.map((c, i) => (
-                    <TarjetaCliente key={c.id} c={c} i={i} casos={casosPorCliente[c.id] ?? 0} />
+                    <TarjetaCliente key={c.id} c={c} i={i} fu={followUp.includes(c.id)} casos={casosPorCliente[c.id] ?? 0} />
                   ))}
                 </AnimatePresence>
               </motion.ul>
@@ -483,10 +488,10 @@ export function MapaClientes({
                 <p className="mt-5 text-[11px] font-bold uppercase tracking-wider text-white/40">
                   {esArg && !todaArgentina ? "CABA y Gran Buenos Aires" : "Clientes"} · tocá uno para verlo en el mapa
                 </p>
-                <motion.ul layout className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2">
+                <motion.ul layout className={`mt-2 grid grid-cols-1 gap-2 ${pantallaCompleta ? "" : "sm:grid-cols-2"}`}>
                   <AnimatePresence mode="popLayout">
                     {visibles.map(({ c, u }, i) => (
-                      <TarjetaCliente key={c.id} c={c} i={i} casos={casosPorCliente[c.id] ?? 0} lugar={u.lugar} activo={sel === c.id} onSeleccionar={() => setSel(c.id)} />
+                      <TarjetaCliente key={c.id} c={c} i={i} fu={followUp.includes(c.id)} casos={casosPorCliente[c.id] ?? 0} lugar={u.lugar} activo={sel === c.id} onSeleccionar={() => setSel(c.id)} />
                     ))}
                   </AnimatePresence>
                 </motion.ul>
@@ -495,7 +500,7 @@ export function MapaClientes({
                   <motion.aside initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3, ease }} className="mt-6 rounded-2xl border border-white/10 p-4">
                     <div className="flex items-center justify-between gap-2">
                       <p className="text-sm font-bold">
-                        Interior del país<span className="text-accent">.</span> <span className="font-normal text-white/50">{interior.length}</span>
+                        Interior del país<span className="punto text-accent">.</span> <span className="font-normal text-white/50">{interior.length}</span>
                       </p>
                       <button onClick={() => setTodaArgentina(true)} className="rounded-full bg-white px-3 py-1.5 text-xs font-bold text-ink hover:bg-accent hover:text-white">
                         Ver toda Argentina →
@@ -528,6 +533,35 @@ export function MapaClientes({
                 )}
               </>
             )}
+          </>
+  );
+
+  if (pantallaCompleta)
+    return (
+      <div className="sin-tema fixed inset-x-0 bottom-0 top-14 z-30 flex flex-col bg-ink text-white lg:flex-row">
+        <div className="relative min-h-[55vh] flex-1 overflow-hidden">{bloqueMapa}</div>
+        <motion.aside
+          initial={{ x: 60, opacity: 0 }}
+          animate={{ x: 0, opacity: 1 }}
+          transition={{ duration: 0.8, delay: 0.5, ease }}
+          className="w-full shrink-0 overflow-y-auto border-l border-white/10 px-5 py-6 lg:w-[460px]"
+        >
+          {cabecera}
+          {bloquePanel}
+        </motion.aside>
+      </div>
+    );
+
+  return (
+    <div className={"sin-tema " + (embebido ? "rounded-3xl bg-ink px-4 py-6 text-white md:px-8 md:py-8" : "-mx-4 -my-6 min-h-screen bg-ink px-4 py-8 text-white md:-mx-10 md:-my-8 md:px-10")}>
+      <div className="mx-auto max-w-7xl">
+        <div className="grid grid-cols-1 items-start gap-10 lg:grid-cols-[1.15fr_1fr]">
+          <div className="lg:sticky lg:top-8">
+            {bloqueMapa}
+          </div>
+
+          <div>
+            {bloquePanel}
           </div>
         </div>
       </div>

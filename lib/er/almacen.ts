@@ -37,7 +37,7 @@ async function enMemoria(cmd: (string | number)[]): Promise<unknown> {
   return null;
 }
 
-async function redis<T = unknown>(...cmd: (string | number)[]): Promise<T> {
+export async function redis<T = unknown>(...cmd: (string | number)[]): Promise<T> {
   if (process.env.ER_FIXTURES) return (await enMemoria(cmd)) as T;
   if (!URL_ || !TOKEN) throw new Error("La plataforma no encuentra la base Upstash Redis. Revisá que esté conectada al proyecto (Storage → la base → Projects) y hacé Redeploy para que tome sus variables.");
   const r = await fetch(URL_, { method: "POST", headers: { Authorization: `Bearer ${TOKEN}` }, body: JSON.stringify(cmd), cache: "no-store" });

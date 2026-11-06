@@ -3,7 +3,9 @@ import { notFound } from "next/navigation";
 import { CalendarioCliente } from "@/components/CalendarioCliente";
 import { Logo } from "@/components/Logo";
 import { formatFecha, formatPago } from "@/lib/clientes";
-import { getCalendario, getDatos } from "@/lib/datos";
+import { getCalendario, getComentarios, getDatos } from "@/lib/datos";
+import { FollowUpCliente } from "@/components/FollowUpCliente";
+import { estado as estadoFollowUp, followUps } from "@/lib/followup";
 
 export const revalidate = 60;
 
@@ -29,6 +31,9 @@ export default async function FichaCliente({ params }: { params: Promise<{ id: s
   const c = datos.clientes.find((x) => x.id === id);
   if (!c) notFound();
   const casos = datos.casos.filter((k) => k.cliente === c.id);
+  const [fus, com] = await Promise.all([followUps(), getComentarios()]);
+  const fu = fus[c.id];
+  const comentarios = com.comentarios.filter((k) => k.cliente === c.id).sort((a, b) => b.fecha.localeCompare(a.fecha));
   const nombreDe = new Map(datos.equipo.map((p) => [p.id, p.nombre]));
   const sinContenido = c.planes.length > 0 && c.planes.every((p) => PLANES_SIN_CONTENIDO.has(p));
   const cal = sinContenido ? null : await getCalendario(c.notionUrl);
@@ -62,7 +67,7 @@ export default async function FichaCliente({ params }: { params: Promise<{ id: s
         <div className="min-w-0">
           <h1 className="text-3xl font-black tracking-tight">
             {c.nombre}
-            <span className="text-accent">.</span>
+            <span className="punto text-accent">.</span>
           </h1>
           <p className="mt-0.5 text-sm text-zinc-500">{c.rubros.join(" · ") || "—"}</p>
         </div>
@@ -75,7 +80,11 @@ export default async function FichaCliente({ params }: { params: Promise<{ id: s
         </div>
       </header>
 
-      <div className="mt-6 grid grid-cols-1 gap-3 md:grid-cols-3">
+      <div className="mt-6">
+        <FollowUpCliente id={c.id} estado={fu ? estadoFollowUp(fu) : null} />
+      </div>
+
+      <div className="mt-3 grid grid-cols-1 gap-3 md:grid-cols-3">
         <section className="rounded-2xl border border-zinc-200 bg-white p-4">
           <h2 className="mb-3 text-[11px] font-bold uppercase tracking-wider text-zinc-400">Planes contratados</h2>
           <div className="flex flex-wrap gap-1.5">
@@ -128,8 +137,42 @@ export default async function FichaCliente({ params }: { params: Promise<{ id: s
       </section>
 
       <section className="mt-6 rounded-3xl border border-zinc-200 bg-white p-4 md:p-6">
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+          <h2 className="flex items-center gap-2 text-xl font-black uppercase tracking-tight">
+            Comentarios<span className="punto -ml-2 text-accent">.</span>
+            {comentarios.length > 0 && <span className="rounded-full bg-surface px-2 text-xs font-bold">{comentarios.length}</span>}
+          </h2>
+          <a href={c.notionUrl} target="_blank" rel="noreferrer" className="rounded-full border border-zinc-200 px-3 py-1.5 text-xs font-semibold hover:border-ink">
+            Abrir cliente en Notion ↗
+          </a>
+        </div>
+        {com.motivo ? (
+          <p className="text-sm text-zinc-500">{com.motivo}</p>
+        ) : comentarios.length ? (
+          <ul className="space-y-2">
+            {comentarios.map((k) => (
+              <li key={k.id} className="rounded-2xl border border-zinc-200 p-3">
+                <div className="flex flex-wrap items-center justify-between gap-2 text-[11px] text-zinc-400">
+                  <span>
+                    <span className="font-bold text-zinc-600">{k.autor}</span> ·{" "}
+                    {new Date(k.fecha).toLocaleString("es-AR", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit", timeZone: "America/Argentina/Buenos_Aires" })}
+                  </span>
+                  <a href={k.notionUrl} target="_blank" rel="noreferrer" className="hover:text-ink">
+                    Ver en Notion ↗
+                  </a>
+                </div>
+                <p className="mt-1 whitespace-pre-line text-sm">{k.texto}</p>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="text-sm text-zinc-500">Todavía no hay comentarios sobre este cliente en Notion.</p>
+        )}
+      </section>
+
+      <section className="mt-6 rounded-3xl border border-zinc-200 bg-white p-4 md:p-6">
         <h2 className="mb-4 text-xl font-black uppercase tracking-tight">
-          Calendario de contenido<span className="text-accent">.</span>
+          Calendario de contenido<span className="punto text-accent">.</span>
         </h2>
         {sinContenido ? (
           <p className="rounded-2xl bg-surface p-6 text-center text-sm text-zinc-500">

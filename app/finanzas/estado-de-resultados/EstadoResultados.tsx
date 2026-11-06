@@ -74,7 +74,7 @@ function TarjetaPendiente({ mes, anio, atrasado, onClick }: { mes: number; anio:
       </motion.span>
       <span className="mt-3 text-sm font-bold">
         {MESES[mes - 1]} {anio}
-        <span className="text-accent">.</span>
+        <span className="punto text-accent">.</span>
       </span>
     </motion.button>
   );
@@ -127,7 +127,7 @@ function TarjetaMes({ m, anterior, moneda, onClick, i }: { m: MesER; anterior?: 
       <div className="flex items-center justify-between">
         <p className="text-sm font-bold">
           {MESES[m.mes - 1]}
-          <span className="text-accent">.</span>
+          <span className="punto text-accent">.</span>
         </p>
         <Variacion actual={t.utilidadUsd} anterior={ta?.utilidadUsd ?? null} />
       </div>
@@ -194,7 +194,7 @@ function Resumen({ m, anterior, moneda }: { m: MesER; anterior?: MesER; moneda: 
     <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3, ease }} className="space-y-6">
       <section>
         <h3 className="text-sm font-black uppercase tracking-tight">
-          De cada $100 facturados<span className="text-accent">.</span>
+          De cada $100 facturados<span className="punto text-accent">.</span>
         </h3>
         <div className="mt-3">
           <Reparto m={m} alto="h-4" conLeyenda />
@@ -204,7 +204,7 @@ function Resumen({ m, anterior, moneda }: { m: MesER; anterior?: MesER; moneda: 
         <section>
           <h3 className="text-sm font-black uppercase tracking-tight">
             Qué cambió vs {MESES[anterior!.mes - 1].toLowerCase()}
-            <span className="text-accent">.</span>
+            <span className="punto text-accent">.</span>
           </h3>
           <ul className="mt-2 divide-y divide-zinc-100">
             {cambios.map((c) => {
@@ -233,7 +233,7 @@ function Resumen({ m, anterior, moneda }: { m: MesER; anterior?: MesER; moneda: 
       {m.analisis.length > 0 && (
         <section>
           <h3 className="text-sm font-black uppercase tracking-tight">
-            Análisis<span className="text-accent">.</span>
+            Análisis<span className="punto text-accent">.</span>
           </h3>
           <ul className="mt-2 space-y-1.5">
             {m.analisis.slice(0, 3).map((x) => (
@@ -281,7 +281,7 @@ function DetalleMes({ m, anterior, moneda, setMoneda, onClose }: { m: MesER; ant
             <p className="text-[11px] uppercase tracking-wider text-zinc-400">Estado de Resultados · Q{trimestreDe(m.mes)}</p>
             <h2 className="text-2xl font-black uppercase tracking-tight">
               {MESES[m.mes - 1]} {m.anio}
-              <span className="text-accent">.</span>
+              <span className="punto text-accent">.</span>
             </h2>
           </div>
           <div className="ml-auto inline-flex rounded-full bg-surface p-1">
@@ -372,7 +372,7 @@ function DetalleMes({ m, anterior, moneda, setMoneda, onClose }: { m: MesER; ant
           {/* Mezcla del margen */}
           <section>
             <h3 className="text-sm font-black uppercase tracking-tight">
-              Mezcla del margen<span className="text-accent">.</span>
+              Mezcla del margen<span className="punto text-accent">.</span>
             </h3>
             <p className="text-xs text-zinc-500">
               Cada costo operativo como % de los ingresos{a ? `, contra ${MESES[a.mes - 1].toLowerCase()}` : ""}.
@@ -384,7 +384,7 @@ function DetalleMes({ m, anterior, moneda, setMoneda, onClose }: { m: MesER; ant
               )}
             </p>
             <div className="mt-2 flex gap-4 text-[11px] text-zinc-500">
-              <span className="flex items-center gap-1.5"><span className="h-2 w-3 rounded-sm bg-ink" />{MESES[m.mes - 1]}</span>
+              <span className="flex items-center gap-1.5"><span className="h-2 w-3 rounded-sm bg-white/70" />{MESES[m.mes - 1]}</span>
               {a && <span className="flex items-center gap-1.5"><span className="h-2 w-3 rounded-sm bg-[#a9a8a8]" />{MESES[a.mes - 1]}</span>}
             </div>
             <ul className="mt-3 space-y-2.5">
@@ -392,7 +392,7 @@ function DetalleMes({ m, anterior, moneda, setMoneda, onClose }: { m: MesER; ant
                 <li key={x.k} className="grid grid-cols-[8.5rem_1fr_3.5rem] items-center gap-3" title={`${x.k}: ${fmtPct(x.p)}${x.pa !== null ? ` (antes ${fmtPct(x.pa)})` : ""}`}>
                   <span className="truncate text-xs text-zinc-600">{x.k}</span>
                   <span className="space-y-[2px]">
-                    <motion.span className="block h-3 rounded-r-[4px] bg-ink" initial={{ width: 0 }} animate={{ width: `${(x.p / maxP) * 100}%` }} transition={{ delay: 0.1 + i * 0.05, duration: 0.4, ease }} />
+                    <motion.span className="block h-3 rounded-r-[4px] bg-white/70" initial={{ width: 0 }} animate={{ width: `${(x.p / maxP) * 100}%` }} transition={{ delay: 0.1 + i * 0.05, duration: 0.4, ease }} />
                     {x.pa !== null && (
                       <motion.span className="block h-2 rounded-r-[4px] bg-[#a9a8a8]" initial={{ width: 0 }} animate={{ width: `${(x.pa / maxP) * 100}%` }} transition={{ delay: 0.15 + i * 0.05, duration: 0.4, ease }} />
                     )}
@@ -443,7 +443,7 @@ function DetalleMes({ m, anterior, moneda, setMoneda, onClose }: { m: MesER; ant
               <section key={titulo as string}>
                 <h3 className="text-sm font-black uppercase tracking-tight">
                   {titulo as string}
-                  <span className="text-accent">.</span>
+                  <span className="punto text-accent">.</span>
                 </h3>
                 <ul className="mt-2 space-y-1.5">
                   {(lista as string[]).map((x) => (
@@ -494,7 +494,7 @@ function TarjetaQ({ q, ag, onClick, i, moneda }: { q: number; ag: Agregado | nul
     >
       <motion.p layoutId={`q-titulo-${q}`} className="text-2xl font-black">
         Q{q}
-        <span className="text-accent">.</span>
+        <span className="punto text-accent">.</span>
       </motion.p>
       {ag ? (
         <>
@@ -533,7 +533,7 @@ function QExpandido({ q, anio, lista, anterior, pendiente, moneda, onClose, onMe
       <div className="flex items-start justify-between gap-3">
         <motion.h2 layoutId={`q-titulo-${q}`} className="text-3xl font-black">
           Q{q} {anio}
-          <span className="text-accent">.</span>
+          <span className="punto text-accent">.</span>
         </motion.h2>
         <button onClick={onClose} className="rounded-full bg-white/10 px-3 py-1.5 text-xs font-bold hover:bg-white/20">
           ← Todos los Q
@@ -655,7 +655,7 @@ export function EstadoResultados({ meses, pendiente }: { meses: MesER[]; pendien
             </p>
             <h1 className="mt-1 text-3xl font-black uppercase tracking-tight">
               Estado de <span className="font-extralight">Resultados</span>
-              <span className="text-accent">.</span>
+              <span className="punto text-accent">.</span>
             </h1>
           </div>
           <div className="ml-auto flex items-center gap-2">

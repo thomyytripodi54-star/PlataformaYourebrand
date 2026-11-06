@@ -5,6 +5,7 @@ import equipoLocal from "@/data/equipo.json";
 import type { Cliente } from "@/lib/clientes";
 import { ordenarCasos, type Caso, type Persona } from "@/lib/equipo";
 import { slug } from "@/lib/notion";
+import { almacenConfigurado, redis } from "@/lib/er/almacen";
 import { DS, idDeUrl, leerCalendario, listarComentarios, mapCaso, mapCliente, mapComentario, mapearCalendarios, mapPersona, queryDataSource, type Comentario, type Publicacion } from "@/lib/notion";
 
 export const TAG_NOTION = "notion";
@@ -48,7 +49,29 @@ async function desdeNotion(): Promise<Datos> {
   return { clientes, equipo, casos: ordenarCasos(casos), origen: "notion", actualizado: new Date().toISOString() };
 }
 
-const cacheado = unstable_cache(desdeNotion, ["datos-notion"], { revalidate: 60, tags: [TAG_NOTION] });
+// Última lectura buena de Notion: si Notion falla un momento, se usa esto en vez de la copia local vieja.
+const ultimaBuena = globalThis as unknown as { __ybDatos?: Datos };
+async function desdeNotionConRespaldo(): Promise<Datos> {
+  const d = await desdeNotion();
+  ultimaBuena.__ybDatos = d;
+  guardarRespaldo(d).catch(() => {});
+  return d;
+}
+async function guardarRespaldo(d: Datos) {
+  if (almacenConfigurado() && !process.env.ER_FIXTURES) await redis("SET", "datos:notion", JSON.stringify(d));
+}
+async function leerRespaldo(): Promise<Datos | null> {
+  if (ultimaBuena.__ybDatos) return ultimaBuena.__ybDatos;
+  if (!almacenConfigurado() || process.env.ER_FIXTURES) return null;
+  try {
+    const v = await redis<string | null>("GET", "datos:notion");
+    return v ? (JSON.parse(v) as Datos) : null;
+  } catch {
+    return null;
+  }
+}
+
+const cacheado = unstable_cache(desdeNotionConRespaldo, ["datos-notion"], { revalidate: 60, tags: [TAG_NOTION] });
 
 export async function getDatos(): Promise<Datos> {
   let motivo = "Falta la variable NOTION_TOKEN en Vercel (o falta hacer Redeploy).";
@@ -63,6 +86,8 @@ export async function getDatos(): Promise<Datos> {
         : m.includes("404")
           ? "Notion no encuentra las bases (404): conectá la integración a la página Yourebrand (··· → Conexiones)."
           : `Error al leer Notion: ${m.slice(0, 160)}`;
+      const respaldo = await leerRespaldo();
+      if (respaldo) return respaldo;
     }
   }
   const equipo = equipoLocal as Persona[];

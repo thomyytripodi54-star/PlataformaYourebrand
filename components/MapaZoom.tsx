@@ -15,6 +15,7 @@ export type PuntoCliente = {
   lng: number;
   lugar: string;
   casos: number;
+  followUp?: boolean;
   satisfaccion?: "Contento" | "Expectante" | "Insatisfecho" | null;
 };
 
@@ -70,6 +71,7 @@ function crearMarcador(p: PuntoCliente, onClick: () => void) {
   el.innerHTML = `
     <span class="yb-marcador-logo">${p.logo ? `<img src="${esc(p.logo)}" alt="" />` : esc(iniciales(p.nombre))}</span>
     ${p.casos ? `<span class="yb-marcador-alerta">${p.casos}</span>` : ""}
+    ${p.followUp ? `<span class="yb-marcador-fu" title="Follow up pendiente"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span>` : ""}
     <span class="yb-marcador-nombre">${esc(p.nombre)}</span>`;
   el.addEventListener("click", (e) => {
     e.stopPropagation();

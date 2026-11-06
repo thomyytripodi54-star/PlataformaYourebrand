@@ -89,7 +89,7 @@ function Estadisticas({ clientes, casos }: { clientes: Cliente[]; casos: Caso[] 
         transition={{ delay: 0.35, duration: 0.5, ease }}
         className="mt-6 rounded-2xl border border-zinc-200 bg-white p-5"
       >
-        <h2 className="text-sm font-bold uppercase tracking-wider">Ingresos netos por cliente<span className="text-accent">.</span></h2>
+        <h2 className="text-sm font-bold uppercase tracking-wider">Ingresos netos por cliente<span className="punto text-accent">.</span></h2>
         <p className="mt-0.5 text-xs text-zinc-500">Margen de contribución mensual en ARS, de mayor a menor.</p>
         <ul className="mt-4 space-y-1.5">
           {ranking.map((c, i) => {
@@ -100,7 +100,7 @@ function Estadisticas({ clientes, casos }: { clientes: Cliente[]; casos: Caso[] 
                   <span className={`truncate text-xs ${activo ? "font-bold" : "text-zinc-600"}`}>{c.nombre}</span>
                   <span className="relative h-4">
                     <motion.span
-                      className={`absolute inset-y-0 left-0 rounded-r-[4px] ${activo ? "bg-accent" : "bg-ink"}`}
+                      className={`absolute inset-y-0 left-0 rounded-r-[4px] ${activo ? "bg-accent" : "bg-white/70"}`}
                       initial={{ width: 0 }}
                       animate={{ width: `${(c.margen! / max) * 100}%` }}
                       transition={{ delay: 0.45 + i * 0.025, duration: 0.7, ease }}
@@ -177,7 +177,7 @@ function Satisfaccion({ clientes, casosPorCliente }: { clientes: Cliente[]; caso
           >
             <h3 className="flex items-center gap-2 text-sm font-bold">
               <span className="h-2.5 w-2.5 rounded-full" style={{ background: g.color }} />
-              <span>{g.id}<span className="text-accent">.</span></span>
+              <span>{g.id}<span className="punto text-accent">.</span></span>
               <span className="ml-auto text-xs font-normal text-zinc-400">{g.clientes.length}</span>
             </h3>
             {g.clientes.length ? (
@@ -288,7 +288,7 @@ function Buscador({ clientes, casosPorCliente, onMapa }: { clientes: Cliente[]; 
 }
 
 /* ---------- Dashboard ---------- */
-export function Dashboard({ clientes: clientesProp, casos, vistaInicial }: { clientes: Cliente[]; casos: Caso[]; vistaInicial: Vista }) {
+export function Dashboard({ clientes: clientesProp, casos, vistaInicial, followUp = [] }: { clientes: Cliente[]; casos: Caso[]; vistaInicial: Vista; followUp?: string[] }) {
   // Orden de entrada (fecha "Desde"), no alfabético
   const clientes = [...clientesProp].sort(porEntrada);
   const [vista, setVista] = useState<Vista>(vistaInicial);
@@ -310,27 +310,50 @@ export function Dashboard({ clientes: clientesProp, casos, vistaInicial }: { cli
     window.history.replaceState(null, "", v === "geografia" ? "/clientes/dashboard" : `/clientes/dashboard?vista=${v}`);
   };
 
+  const pestanas = (oscuro: boolean) => (
+    <div className={`inline-flex w-fit rounded-full p-1 ${oscuro ? "bg-white/[0.06]" : "bg-surface"}`}>
+      {TABS.map((t) => (
+        <button key={t.id} onClick={() => cambiar(t.id)} className="relative rounded-full px-4 py-2 text-sm font-semibold">
+          {vista === t.id && (
+            <motion.span layoutId="tab-dashboard" className={`absolute inset-0 rounded-full ${oscuro ? "bg-white" : "bg-ink"}`} transition={{ type: "spring", stiffness: 400, damping: 34 }} />
+          )}
+          <span className={`relative ${vista === t.id ? (oscuro ? "text-ink" : "text-white") : oscuro ? "text-white/60 hover:text-white" : "text-zinc-500 hover:text-ink"}`}>{t.label}</span>
+        </button>
+      ))}
+    </div>
+  );
+
+  // Geografía: mapa a pantalla completa con los clientes a la derecha.
+  if (vista === "geografia")
+    return (
+      <MapaClientes
+        ref={mapaRef}
+        clientes={clientes}
+        casos={casos}
+        embebido
+        pantallaCompleta
+        followUp={followUp}
+        cabecera={
+          <div className="mb-6 space-y-3 text-ink">
+            {pestanas(true)}
+            <Buscador clientes={clientes} casosPorCliente={casosPorCliente} onMapa={verEnMapa} />
+          </div>
+        }
+      />
+    );
+
   return (
     <div className="mx-auto max-w-7xl">
       <motion.header initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease }} className="mb-6">
         <p className="text-xs font-medium uppercase tracking-wider text-zinc-400">Dirección</p>
         <h1 className="mt-1 text-3xl font-black uppercase tracking-tight">
-          Dashboard de clientes<span className="text-accent">.</span>
+          Dashboard de clientes<span className="punto text-accent">.</span>
         </h1>
         <p className="mt-1 text-sm text-zinc-500">{clientes.length} clientes activos</p>
       </motion.header>
 
       <div className="mb-6 flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-between">
-      <div className="inline-flex w-fit rounded-full bg-surface p-1">
-        {TABS.map((t) => (
-          <button key={t.id} onClick={() => cambiar(t.id)} className="relative rounded-full px-4 py-2 text-sm font-semibold">
-            {vista === t.id && (
-              <motion.span layoutId="tab-dashboard" className="absolute inset-0 rounded-full bg-ink" transition={{ type: "spring", stiffness: 400, damping: 34 }} />
-            )}
-            <span className={`relative ${vista === t.id ? "text-white" : "text-zinc-500 hover:text-ink"}`}>{t.label}</span>
-          </button>
-        ))}
-      </div>
+      {pestanas(false)}
         <Buscador clientes={clientes} casosPorCliente={casosPorCliente} onMapa={verEnMapa} />
       </div>
 
@@ -338,7 +361,6 @@ export function Dashboard({ clientes: clientesProp, casos, vistaInicial }: { cli
         <motion.div key={vista} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.25, ease }}>
           {vista === "estadisticas" && <Estadisticas clientes={clientes} casos={casos} />}
           {vista === "satisfaccion" && <Satisfaccion clientes={clientes} casosPorCliente={casosPorCliente} />}
-          {vista === "geografia" && <MapaClientes ref={mapaRef} clientes={clientes} embebido casos={casos} />}
         </motion.div>
       </AnimatePresence>
     </div>

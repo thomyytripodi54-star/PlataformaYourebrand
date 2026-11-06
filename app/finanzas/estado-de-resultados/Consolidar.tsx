@@ -119,7 +119,7 @@ export function Consolidar({ anio, mes, clientesMesAnterior, onClose }: { anio: 
             <p className="text-[11px] uppercase tracking-wider text-zinc-400">{borrador ? "Borrador · revisión" : "Consolidar mes"}</p>
             <h2 className="text-xl font-black uppercase tracking-tight">
               {MESES[mes - 1]} {anio}
-              <span className="text-accent">.</span>
+              <span className="punto text-accent">.</span>
             </h2>
           </div>
           {!cargando && (
@@ -137,7 +137,7 @@ export function Consolidar({ anio, mes, clientesMesAnterior, onClose }: { anio: 
                   ✓
                 </motion.div>
                 <p className="mt-4 text-lg font-black uppercase">
-                  {MESES[mes - 1]} consolidado<span className="text-accent">.</span>
+                  {MESES[mes - 1]} consolidado<span className="punto text-accent">.</span>
                 </p>
                 <p className="text-sm text-zinc-500">Versión {listo} guardada. La alerta se apaga.</p>
               </motion.div>
@@ -229,7 +229,7 @@ export function Consolidar({ anio, mes, clientesMesAnterior, onClose }: { anio: 
                   {/* Control */}
                   <section className="rounded-2xl border border-zinc-200 p-4">
                     <h3 className="text-sm font-black uppercase tracking-tight">
-                      Control contra el Excel<span className="text-accent">.</span>
+                      Control contra el Excel<span className="punto text-accent">.</span>
                     </h3>
                     {ctrl.excel === null ? (
                       <p className="mt-1 text-sm text-zinc-500">El bloque no tiene la fila «Calculo diferido».</p>
@@ -275,7 +275,7 @@ export function Consolidar({ anio, mes, clientesMesAnterior, onClose }: { anio: 
                   {/* Clientes */}
                   <section className="rounded-2xl border border-zinc-200 p-4 text-sm">
                     <h3 className="text-sm font-black uppercase tracking-tight">
-                      Clientes, entradas y bajas<span className="text-accent">.</span>
+                      Clientes, entradas y bajas<span className="punto text-accent">.</span>
                     </h3>
                     <div className="mt-2 grid grid-cols-1 gap-3 sm:grid-cols-3">
                       <div>
@@ -306,7 +306,7 @@ export function Consolidar({ anio, mes, clientesMesAnterior, onClose }: { anio: 
                   {/* ER armado */}
                   <section>
                     <h3 className="text-sm font-black uppercase tracking-tight">
-                      ER armado<span className="text-accent">.</span>
+                      ER armado<span className="punto text-accent">.</span>
                     </h3>
                     <div className="mt-2 grid grid-cols-1 gap-x-8 sm:grid-cols-2">
                       {[ING, COP, CFI, OTROS].map((grupo, gi) => (

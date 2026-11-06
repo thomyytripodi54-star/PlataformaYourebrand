@@ -41,7 +41,7 @@ export function CasosAbiertos({ casos, clientes, equipo }: { casos: Caso[]; clie
       <motion.header initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease }} className="mb-8">
         <p className="text-xs font-medium uppercase tracking-wider text-zinc-400">Recursos Humanos</p>
         <h1 className="mt-1 text-3xl font-black uppercase tracking-tight">
-          Casos abiertos<span className="text-accent">.</span>
+          Casos abiertos<span className="punto text-accent">.</span>
         </h1>
         <p className="mt-1 text-sm text-zinc-500">Ordenados por importancia y, dentro de cada nivel, del más reciente al más antiguo.</p>
       </motion.header>
