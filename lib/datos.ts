@@ -1,5 +1,6 @@
 import "server-only";
 import { unstable_cache } from "next/cache";
+import { cache } from "react";
 import clientesLocal from "@/data/clientes.json";
 import equipoLocal from "@/data/equipo.json";
 import type { Cliente } from "@/lib/clientes";
@@ -8,7 +9,13 @@ import { slug } from "@/lib/notion";
 import { almacenConfigurado, redis } from "@/lib/er/almacen";
 import { DS, idDeUrl, leerCalendario, listarComentarios, mapCaso, mapCliente, mapComentario, mapearCalendarios, mapPersona, queryDataSource, type Comentario, type Publicacion } from "@/lib/notion";
 
-export const TAG_NOTION = "notion";
+/* Etiquetas de caché: el webhook de Notion invalida solo lo que cambió (ver app/api/notion-webhook). */
+export const TAG_DATOS = "notion-datos"; // clientes, casos y nómina (3 consultas, barato)
+export const TAG_COMENTARIOS = "notion-comentarios"; // todos los comentarios; cada cliente además tiene "com:<página>"
+export const TAG_MAPA_CALENDARIOS = "notion-mapa-calendarios"; // qué calendario es de qué cliente (búsqueda cara)
+export const TAG_CALENDARIO = "notion-calendario"; // publicaciones; cada calendario además tiene "cal:<id>"
+export const tagComentarios = (paginaId: string) => `com:${paginaId.replace(/-/g, "")}`;
+export const tagCalendario = (id: string) => `cal:${id.replace(/-/g, "")}`;
 
 export type Datos = { clientes: Cliente[]; equipo: Persona[]; casos: Caso[]; origen: "notion" | "local"; actualizado: string; motivo?: string };
 
@@ -60,20 +67,23 @@ async function desdeNotionConRespaldo(): Promise<Datos> {
 async function guardarRespaldo(d: Datos) {
   if (almacenConfigurado() && !process.env.ER_FIXTURES) await redis("SET", "datos:notion", JSON.stringify(d));
 }
+// En caché: una lectura de Redis sin caché dentro de una página estática la rompe en producción.
+const respaldoRedis = unstable_cache(async () => redis<string | null>("GET", "datos:notion"), ["respaldo-datos"], { revalidate: 60 });
 async function leerRespaldo(): Promise<Datos | null> {
   if (ultimaBuena.__ybDatos) return ultimaBuena.__ybDatos;
   if (!almacenConfigurado() || process.env.ER_FIXTURES) return null;
   try {
-    const v = await redis<string | null>("GET", "datos:notion");
+    const v = await respaldoRedis();
     return v ? (JSON.parse(v) as Datos) : null;
   } catch {
     return null;
   }
 }
 
-const cacheado = unstable_cache(desdeNotionConRespaldo, ["datos-notion"], { revalidate: 60, tags: [TAG_NOTION] });
+const cacheado = unstable_cache(desdeNotionConRespaldo, ["datos-notion"], { revalidate: 60, tags: [TAG_DATOS] });
 
-export async function getDatos(): Promise<Datos> {
+/** Datos de Notion (clientes, casos, equipo). `cache` evita repetir la lectura dentro de una misma carga (layout + página). */
+export const getDatos = cache(async function getDatos(): Promise<Datos> {
   let motivo = "Falta la variable NOTION_TOKEN en Vercel (o falta hacer Redeploy).";
   if (process.env.NOTION_TOKEN) {
     try {
@@ -105,72 +115,63 @@ export async function getDatos(): Promise<Datos> {
     origen: "local",
     actualizado: new Date().toISOString(),
   };
-}
+});
 
 /* ---------- Comentarios de clientes (Notion) ---------- */
 
 export type DatosComentarios = { comentarios: Comentario[]; motivo?: string };
 
-async function comentariosDesdeNotion(): Promise<Comentario[]> {
-  const { clientes } = await getDatos();
-  const out: Comentario[] = [];
-  // De a 3 páginas por vez para respetar el límite de la API de Notion (~3 pedidos por segundo).
-  for (let i = 0; i < clientes.length; i += 3) {
-    const lote = clientes.slice(i, i + 3);
-    const res = await Promise.all(
-      lote.map(async (c) => {
-        const id = idDeUrl(c.notionUrl);
-        if (!id) return [];
-        const crudos = await listarComentarios(id);
-        return Promise.all(crudos.map((k) => mapComentario(k, c)));
-      }),
-    );
-    out.push(...res.flat().filter((k) => k.texto));
-  }
-  return out.sort((a, b) => a.fecha.localeCompare(b.fecha));
+/** Comentarios de un cliente, en caché por cliente: los usan la ficha, el inicio y RRHH, y el webhook invalida solo el cliente comentado. */
+function comentariosDe(id: string, notionUrl: string): Promise<Comentario[]> {
+  const pid = idDeUrl(notionUrl);
+  if (!pid) return Promise.resolve([]);
+  return unstable_cache(
+    async () => {
+      const crudos = await listarComentarios(pid);
+      const out = await Promise.all(crudos.map((k) => mapComentario(k, { id, notionUrl })));
+      return out.filter((k) => k.texto);
+    },
+    ["comentarios-cliente-v2", pid, id],
+    { revalidate: 300, tags: [TAG_COMENTARIOS, tagComentarios(pid)] },
+  )();
 }
 
-const comentariosCache = unstable_cache(comentariosDesdeNotion, ["comentarios-notion"], { revalidate: 120, tags: [TAG_NOTION] });
+function motivoComentarios(e: unknown): string {
+  const m = String(e instanceof Error ? e.message : e);
+  return m.includes("403")
+    ? "La integración no tiene permiso para leer comentarios: activá «Leer comentarios» en notion.so/profile/integrations → Plataforma Yourebrand → Capacidades."
+    : m.includes("404")
+      ? "Notion no encuentra las páginas de clientes (404): conectá la integración a la página Yourebrand."
+      : `Error al leer comentarios: ${m.slice(0, 160)}`;
+}
+const SIN_TOKEN_COMENTARIOS = "Falta conectar Notion (NOTION_TOKEN) para leer los comentarios.";
 
-export async function getComentarios(): Promise<DatosComentarios> {
-  if (!process.env.NOTION_TOKEN) return { comentarios: [], motivo: "Falta conectar Notion (NOTION_TOKEN) para leer los comentarios." };
+/** Todos los comentarios, del más viejo al más nuevo. Arma la lista con las cachés de cada cliente. */
+export const getComentarios = cache(async function getComentarios(): Promise<DatosComentarios> {
+  if (!process.env.NOTION_TOKEN) return { comentarios: [], motivo: SIN_TOKEN_COMENTARIOS };
   try {
-    return { comentarios: await comentariosCache() };
+    const { clientes } = await getDatos();
+    const out: Comentario[] = [];
+    // De a 3 clientes por vez para respetar el límite de la API de Notion (~3 pedidos por segundo) cuando no están en caché.
+    for (let i = 0; i < clientes.length; i += 3) {
+      const res = await Promise.all(clientes.slice(i, i + 3).map((c) => comentariosDe(c.id, c.notionUrl)));
+      out.push(...res.flat());
+    }
+    return { comentarios: out.sort((a, b) => a.fecha.localeCompare(b.fecha)) };
   } catch (e) {
     console.error("[notion] No se pudieron leer los comentarios:", e);
-    const m = String(e instanceof Error ? e.message : e);
-    return {
-      comentarios: [],
-      motivo: m.includes("403")
-        ? "La integración no tiene permiso para leer comentarios: activá «Leer comentarios» en notion.so/profile/integrations → Plataforma Yourebrand → Capacidades."
-        : m.includes("404")
-          ? "Notion no encuentra las páginas de clientes (404): conectá la integración a la página Yourebrand."
-          : `Error al leer comentarios: ${m.slice(0, 160)}`,
-    };
+    return { comentarios: [], motivo: motivoComentarios(e) };
   }
-}
+});
 
-/** Comentarios de un solo cliente: un pedido a Notion en vez de recorrer todos los clientes. */
-const comentariosClienteCache = unstable_cache(
-  async (id: string, notionUrl: string) => {
-    const pid = idDeUrl(notionUrl);
-    if (!pid) return [];
-    const crudos = await listarComentarios(pid);
-    const out = await Promise.all(crudos.map((k) => mapComentario(k, { id, notionUrl })));
-    return out.filter((k) => k.texto).sort((a, b) => b.fecha.localeCompare(a.fecha));
-  },
-  ["comentarios-cliente"],
-  { revalidate: 120, tags: [TAG_NOTION] },
-);
-
+/** Comentarios de un solo cliente (del más nuevo al más viejo): un pedido a Notion, no los 34. */
 export async function getComentariosCliente(id: string, notionUrl: string): Promise<DatosComentarios> {
-  if (!process.env.NOTION_TOKEN) return { comentarios: [], motivo: "Falta conectar Notion (NOTION_TOKEN) para leer los comentarios." };
+  if (!process.env.NOTION_TOKEN) return { comentarios: [], motivo: SIN_TOKEN_COMENTARIOS };
   try {
-    return { comentarios: await comentariosClienteCache(id, notionUrl) };
+    return { comentarios: [...(await comentariosDe(id, notionUrl))].sort((a, b) => b.fecha.localeCompare(a.fecha)) };
   } catch (e) {
     console.error("[notion] No se pudieron leer los comentarios del cliente:", e);
-    const m = String(e instanceof Error ? e.message : e);
-    return { comentarios: [], motivo: m.includes("403") ? "La integración no tiene permiso para leer comentarios en Notion." : `Error al leer comentarios: ${m.slice(0, 160)}` };
+    return { comentarios: [], motivo: motivoComentarios(e) };
   }
 }
 
@@ -183,19 +184,27 @@ const mapaCalendarios = unstable_cache(
     const ids = new Set(clientes.map((c) => idDeUrl(c.notionUrl)).filter((x): x is string => !!x));
     return Object.fromEntries(await mapearCalendarios(ids));
   },
-  ["mapa-calendarios"],
-  { revalidate: 6 * 3600, tags: [TAG_NOTION, "calendarios"] },
+  ["mapa-calendarios-v2"],
+  // Búsqueda cara (recorre los calendarios y sus páginas padre): se refresca en segundo plano cada hora.
+  { revalidate: 3600, tags: [TAG_MAPA_CALENDARIOS] },
 );
 
-const calendarioCache = unstable_cache(async (ds: string) => leerCalendario(ds), ["calendario"], { revalidate: 60, tags: [TAG_NOTION] });
+/** Publicaciones de un calendario. Se etiqueta con el id de la fuente y de la base para que el webhook lo invalide justo. */
+// Los links de imágenes de Notion vencen a la hora: la clave cambia cada 45 minutos para no servir nunca imágenes vencidas.
+const tramoDeLinks = () => Math.floor(Date.now() / (45 * 60_000));
+const calendarioDe = (cal: { ds: string; db: string | null }) =>
+  unstable_cache(() => leerCalendario(cal.ds), ["calendario-v2", cal.ds, String(tramoDeLinks())], {
+    revalidate: 120,
+    tags: [TAG_CALENDARIO, tagCalendario(cal.ds), ...(cal.db ? [tagCalendario(cal.db)] : [])],
+  })();
 
 export async function getCalendario(notionUrl: string): Promise<DatosCalendario> {
   if (!process.env.NOTION_TOKEN) return { publicaciones: [], tieneCalendario: false, motivo: "Falta conectar Notion (NOTION_TOKEN) para ver el calendario." };
   try {
     const id = idDeUrl(notionUrl);
-    const ds = id ? (await mapaCalendarios())[id] : undefined;
-    if (!ds) return { publicaciones: [], tieneCalendario: false };
-    return { publicaciones: await calendarioCache(ds), tieneCalendario: true };
+    const cal = id ? (await mapaCalendarios())[id] : undefined;
+    if (!cal) return { publicaciones: [], tieneCalendario: false };
+    return { publicaciones: await calendarioDe(cal), tieneCalendario: true };
   } catch (e) {
     console.error("[notion] No se pudo leer el calendario:", e);
     const m = String(e instanceof Error ? e.message : e);

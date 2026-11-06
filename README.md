@@ -1,39 +1,18 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Plataforma Yourebrand
 
-## Getting Started
+Plataforma interna de la agencia: un inicio con el mapa de clientes y una entrada por área (Dirección, RRHH, Finanzas, Creativa y Operaciones).
 
-First, run the development server:
+- **Stack:** Next.js 16 (App Router), React 19, Tailwind 4, Motion, MapLibre y cobe. Datos en vivo desde Notion; follow ups y Finanzas en Upstash Redis.
+- **Desarrollo:** `npm run dev` · **Tests:** `npm test` · **Lint:** `npm run lint`.
+- **Variables (Vercel):** `NOTION_TOKEN`, `NOTION_WEBHOOK_SECRET`, `AUTH_USER`, `AUTH_PASSWORD`, `AUTH_SECRET` y la base Upstash Redis conectada al proyecto (`KV_REST_API_URL`, `KV_REST_API_TOKEN`).
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## Datos y caché
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- **Notion** se lee por la API (`lib/notion.ts`) con reintentos si Notion limita los pedidos (429) o falla (5xx). Si aun así falla, se usa la última lectura buena; la copia local de `data/` es el último recurso.
+- **Cachés** (`lib/datos.ts`): datos generales (clientes, casos, nómina), comentarios **por cliente**, calendario **por cliente** y el mapa de qué calendario es de quién. Todo se sirve desde la caché y se refresca en segundo plano.
+- **Webhook de Notion** (`app/api/notion-webhook`): invalida solo lo que cambió. Un comentario refresca los comentarios de ese cliente; una publicación, su calendario; cualquier página, los datos generales.
+- **Follow up** (`lib/followup.ts`): un campo por cliente en un hash de Redis, así dos personas no se pisan. Las pantallas que lo muestran se arman en cada visita.
+- **Recursos estáticos:** las capas del mapa (`public/geo`) y el worker de MapLibre se guardan un día en el navegador.
 
 ## Finanzas › Estado de Resultados
 - Datos: `data/finanzas/estado-resultados.json`, un registro por mes consolidado (líneas del ER en ARS, dólar usado, recurrencias, clientes/entradas/bajas, análisis). 2026 (enero–octubre) se importó de Google Sheets "Yourebrand Finanzas" y se validó que cada mes cierre exacto contra la planilla.

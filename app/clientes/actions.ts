@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { almacenConfigurado } from "@/lib/er/almacen";
-import { FRECUENCIAS, followUps, guardarFollowUps } from "@/lib/followup";
+import { FRECUENCIAS, followUpDe, guardarFollowUp } from "@/lib/followup";
 
 function refrescar(id: string) {
   revalidatePath("/");
@@ -16,10 +16,9 @@ const SIN_BASE = "Falta conectar la base Upstash Redis para guardar los follow u
 export async function definirFollowUp(id: string, cada: number | null) {
   if (!almacenConfigurado()) return { error: SIN_BASE };
   if (cada !== null && !FRECUENCIAS.some((f) => f.dias === cada)) return { error: "Frecuencia inválida." };
-  const f = await followUps();
-  if (cada === null) delete f[id];
-  else f[id] = { cada, ultimo: f[id]?.ultimo ?? new Date().toISOString() }; // cambiar la frecuencia mantiene la fecha del último
-  await guardarFollowUps(f);
+  const actual = await followUpDe(id);
+  // Cambiar la frecuencia mantiene la fecha del último follow up.
+  await guardarFollowUp(id, cada === null ? null : { cada, ultimo: actual?.ultimo ?? new Date().toISOString() });
   refrescar(id);
   return { ok: true };
 }
@@ -27,10 +26,9 @@ export async function definirFollowUp(id: string, cada: number | null) {
 /** Marca el follow up como hecho: borra la alerta y reinicia la cuenta desde hoy. */
 export async function marcarRevisado(id: string) {
   if (!almacenConfigurado()) return { error: SIN_BASE };
-  const f = await followUps();
-  if (!f[id]) return { error: "Este cliente no tiene follow up configurado." };
-  f[id] = { ...f[id], ultimo: new Date().toISOString() };
-  await guardarFollowUps(f);
+  const actual = await followUpDe(id);
+  if (!actual) return { error: "Este cliente no tiene follow up configurado." };
+  await guardarFollowUp(id, { ...actual, ultimo: new Date().toISOString() });
   refrescar(id);
   return { ok: true };
 }
@@ -38,12 +36,11 @@ export async function marcarRevisado(id: string) {
 /** Corrige la fecha del último follow up (por ejemplo, si se hizo antes de cargarlo en la plataforma). */
 export async function registrarUltimo(id: string, fecha: string) {
   if (!almacenConfigurado()) return { error: SIN_BASE };
-  const f = await followUps();
-  if (!f[id]) return { error: "Primero elegí cada cuánto hacer el follow up." };
+  const actual = await followUpDe(id);
+  if (!actual) return { error: "Primero elegí cada cuánto hacer el follow up." };
   const d = new Date(fecha + "T12:00:00-03:00");
   if (isNaN(d.getTime()) || d.getTime() > Date.now()) return { error: "La fecha no puede ser futura." };
-  f[id] = { ...f[id], ultimo: d.toISOString() };
-  await guardarFollowUps(f);
+  await guardarFollowUp(id, { ...actual, ultimo: d.toISOString() });
   refrescar(id);
   return { ok: true };
 }

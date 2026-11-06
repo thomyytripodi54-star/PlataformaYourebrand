@@ -1,4 +1,5 @@
 import "server-only";
+import { unstable_cache } from "next/cache";
 import type { MesER } from "@/lib/finanzas";
 
 /**
@@ -33,6 +34,11 @@ async function enMemoria(cmd: (string | number)[]): Promise<unknown> {
     case "SADD": m.set(k, [...new Set([...lista(), ...r])]); return 1;
     case "SMEMBERS": return lista();
     case "MGET": return [k, ...r].map((x) => m.get(x) ?? null);
+    case "DEL": m.delete(k); return 1;
+    case "HSET": { const h = { ...((m.get(k) as Record<string, string>) ?? {}) }; for (let i = 0; i < r.length; i += 2) h[r[i]] = r[i + 1]; m.set(k, h); return 1; }
+    case "HDEL": { const h = { ...((m.get(k) as Record<string, string>) ?? {}) }; for (const f of r) delete h[f]; m.set(k, h); return 1; }
+    case "HGET": return ((m.get(k) as Record<string, string>) ?? {})[r[0]] ?? null;
+    case "HGETALL": return Object.entries((m.get(k) as Record<string, string>) ?? {}).flat();
   }
   return null;
 }
@@ -51,13 +57,23 @@ const clave = (anio: number, mes: number) => `er:${anio}-${String(mes).padStart(
 export type Version = { mes: MesER; version: number; consolidadoPor: string; consolidadoEn: string; archivo: string; resultado: string };
 
 /** Meses guardados (la última versión de cada uno). */
-export async function mesesGuardados(): Promise<MesER[]> {
+export const TAG_ER = "er-meses";
+
+async function leerMeses(): Promise<MesER[]> {
+  const claves = await redis<string[]>("SMEMBERS", "er:meses");
+  if (!claves.length) return [];
+  const vals = await redis<(string | null)[]>("MGET", ...claves);
+  return vals.filter((v): v is string => !!v).map((v) => (JSON.parse(v) as Version).mes);
+}
+// Antes se leían de Redis en cada pantalla (el aviso de Finanzas está en la barra de todas las áreas).
+// Ahora quedan en caché y se invalidan al consolidar un mes. Los errores no se guardan en caché.
+const mesesEnCache = unstable_cache(leerMeses, ["er-meses"], { revalidate: 3600, tags: [TAG_ER] });
+
+/** Meses consolidados. `fresco` lee directo de Redis (para escribir sobre datos al día). */
+export async function mesesGuardados({ fresco = false } = {}): Promise<MesER[]> {
   if (!almacenConfigurado()) return [];
   try {
-    const claves = await redis<string[]>("SMEMBERS", "er:meses");
-    if (!claves.length) return [];
-    const vals = await redis<(string | null)[]>("MGET", ...claves);
-    return vals.filter((v): v is string => !!v).map((v) => (JSON.parse(v) as Version).mes);
+    return fresco ? await leerMeses() : await mesesEnCache();
   } catch (e) {
     console.error("[finanzas] No se pudieron leer los meses guardados:", e);
     return [];

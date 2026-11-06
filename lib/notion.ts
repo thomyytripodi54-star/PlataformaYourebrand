@@ -1,5 +1,6 @@
 // Lectura en vivo de las bases de Notion (API REST, versión con data sources).
 // Si no hay NOTION_TOKEN, la plataforma usa los JSON de /data como respaldo.
+import { unstable_cache } from "next/cache";
 import type { Cliente } from "@/lib/clientes";
 import type { AreaId, Caso, Persona } from "@/lib/equipo";
 
@@ -208,18 +209,25 @@ export async function listarComentarios(pageId: string) {
 }
 
 const nombres = new Map<string, string>();
+// Los nombres casi no cambian: caché compartida de un día (antes se pedían de nuevo en cada servidor que arrancaba).
+const nombreDeNotion = (id: string) =>
+  unstable_cache(
+    async () => {
+      try {
+        const u = await notionGet(`users/${id}`);
+        return (u.name as string | undefined) ?? (u.type === "bot" ? "Integración" : "Usuario de Notion");
+      } catch {
+        return "Usuario de Notion"; // sin permiso "Leer información de usuarios": queda el nombre genérico
+      }
+    },
+    ["usuario-notion", id],
+    { revalidate: 86_400 },
+  )();
 export async function nombreUsuario(id: string, sugerido?: string | null) {
   if (sugerido) return sugerido;
-  if (nombres.has(id)) return nombres.get(id)!;
-  let n = "Usuario de Notion";
-  try {
-    const u = await notionGet(`users/${id}`);
-    n = u.name ?? (u.type === "bot" ? "Integración" : n);
-  } catch {
-    // sin permiso "Leer información de usuarios": queda el nombre genérico
-  }
-  nombres.set(id, n);
-  return n;
+  if (!id) return "Usuario de Notion";
+  if (!nombres.has(id)) nombres.set(id, await nombreDeNotion(id));
+  return nombres.get(id)!;
 }
 
 export function idDeUrl(url: string) {
@@ -263,7 +271,7 @@ async function notionPost(path: string, body: unknown) {
 }
 
 /** Busca todas las bases "Calendario mensual…" y las asocia al cliente que las contiene (aunque estén en subpáginas). */
-export async function mapearCalendarios(idsClientes: Set<string>): Promise<Map<string, string>> {
+export async function mapearCalendarios(idsClientes: Set<string>): Promise<Map<string, { ds: string; db: string | null }>> {
   const fuentes: any[] = [];
   let cursor: string | undefined;
   do {
@@ -285,7 +293,7 @@ export async function mapearCalendarios(idsClientes: Set<string>): Promise<Map<s
     return cachePadre.get(k);
   };
 
-  const resultado = new Map<string, { ds: string; editado: string }>();
+  const resultado = new Map<string, { ds: string; db: string | null; editado: string }>();
   for (const f of fuentes) {
     const titulo = (f.title ?? []).map((t: any) => t.plain_text).join("");
     if (!/calendario mensual/i.test(titulo) || f.in_trash || f.archived) continue;
@@ -294,14 +302,14 @@ export async function mapearCalendarios(idsClientes: Set<string>): Promise<Map<s
       const id = (p.page_id ?? p.block_id ?? "").replace(/-/g, "");
       if (p.type === "page_id" && idsClientes.has(id)) {
         const prev = resultado.get(id);
-        if (!prev || f.last_edited_time > prev.editado) resultado.set(id, { ds: f.id, editado: f.last_edited_time });
+        if (!prev || f.last_edited_time > prev.editado) resultado.set(id, { ds: f.id, db: f.parent?.database_id ?? null, editado: f.last_edited_time });
         break;
       }
       if (p.type === "workspace") break;
       p = await padreDe(p);
     }
   }
-  return new Map([...resultado].map(([k, v]) => [k, v.ds]));
+  return new Map([...resultado].map(([k, v]) => [k, { ds: v.ds, db: v.db }]));
 }
 
 export async function leerCalendario(dataSourceId: string): Promise<Publicacion[]> {
