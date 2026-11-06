@@ -256,7 +256,7 @@ export function Inicio({ puntos, areas, nombre }: { puntos: PuntoInicio[]; areas
         initial={false}
         animate={{ opacity: velo ? 1 : 0 }}
         transition={{ duration: 0.55, ease }}
-        style={{ background: "#ffffff" }}
+        style={{ background: saliendo?.nombre === "Dirección" ? "#eceae6" : "#ffffff" }}
       />
     </div>
   );

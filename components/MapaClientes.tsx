@@ -284,9 +284,13 @@ export function MapaClientes({
   embebido = false,
   casos = [],
   ref,
+  pantallaCompleta = false,
+  cabecera,
 }: {
   clientes: Cliente[];
   embebido?: boolean;
+  pantallaCompleta?: boolean;
+  cabecera?: React.ReactNode;
   casos?: Caso[];
   ref?: React.Ref<MapaHandle>;
 }) {
@@ -355,11 +359,8 @@ export function MapaClientes({
   const lista = clientes.filter((c) => !pais || c.pais === pais).sort(porEntrada);
   const sinUbicacion = ubicados.filter((x) => !x.u.precisa);
 
-  return (
-    <div className={embebido ? "rounded-3xl bg-ink px-4 py-6 text-white md:px-8 md:py-8" : "-mx-4 -my-6 min-h-screen bg-ink px-4 py-8 text-white md:-mx-10 md:-my-8 md:px-10"}>
-      <div className="mx-auto max-w-7xl">
-        <div className="grid grid-cols-1 items-start gap-10 lg:grid-cols-[1.15fr_1fr]">
-          <div className="lg:sticky lg:top-8">
+  const bloqueMapa = (
+          <>
             <AnimatePresence mode="wait" initial={false}>
               {pais ? (
                 <motion.div
@@ -368,7 +369,7 @@ export function MapaClientes({
                   animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
                   exit={{ opacity: 0, scale: 0.9, filter: "blur(8px)" }}
                   transition={{ duration: 0.7, ease }}
-                  className="relative h-[460px] overflow-hidden rounded-3xl border border-white/10 lg:h-[640px]"
+                  className={pantallaCompleta ? "absolute inset-0" : "relative h-[460px] overflow-hidden rounded-3xl border border-white/10 lg:h-[640px]"}
                 >
                   <MapaZoom key={pais} puntos={puntos} encuadre={encuadre} seleccionado={sel} onSeleccionar={setSel} />
                   <AnimatePresence>
@@ -404,9 +405,10 @@ export function MapaClientes({
                 </motion.div>
               )}
             </AnimatePresence>
-          </div>
-
-          <div>
+          </>
+  );
+  const bloquePanel = (
+          <>
             {!embebido && (
               <motion.header initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, ease }} className="mb-6">
                 <h1 className="text-3xl font-black uppercase tracking-tight md:text-4xl">
@@ -450,7 +452,7 @@ export function MapaClientes({
             </div>
 
             {!pais ? (
-              <motion.ul layout className="mt-6 grid grid-cols-1 gap-2 sm:grid-cols-2">
+              <motion.ul layout className={`mt-6 grid grid-cols-1 gap-2 ${pantallaCompleta ? "" : "sm:grid-cols-2"}`}>
                 <AnimatePresence mode="popLayout">
                   {lista.map((c, i) => (
                     <TarjetaCliente key={c.id} c={c} i={i} casos={casosPorCliente[c.id] ?? 0} />
@@ -483,7 +485,7 @@ export function MapaClientes({
                 <p className="mt-5 text-[11px] font-bold uppercase tracking-wider text-white/40">
                   {esArg && !todaArgentina ? "CABA y Gran Buenos Aires" : "Clientes"} · tocá uno para verlo en el mapa
                 </p>
-                <motion.ul layout className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2">
+                <motion.ul layout className={`mt-2 grid grid-cols-1 gap-2 ${pantallaCompleta ? "" : "sm:grid-cols-2"}`}>
                   <AnimatePresence mode="popLayout">
                     {visibles.map(({ c, u }, i) => (
                       <TarjetaCliente key={c.id} c={c} i={i} casos={casosPorCliente[c.id] ?? 0} lugar={u.lugar} activo={sel === c.id} onSeleccionar={() => setSel(c.id)} />
@@ -528,6 +530,35 @@ export function MapaClientes({
                 )}
               </>
             )}
+          </>
+  );
+
+  if (pantallaCompleta)
+    return (
+      <div className="fixed inset-x-0 bottom-0 top-14 z-30 flex flex-col bg-ink text-white lg:flex-row">
+        <div className="relative min-h-[55vh] flex-1 overflow-hidden">{bloqueMapa}</div>
+        <motion.aside
+          initial={{ x: 60, opacity: 0 }}
+          animate={{ x: 0, opacity: 1 }}
+          transition={{ duration: 0.8, delay: 0.5, ease }}
+          className="w-full shrink-0 overflow-y-auto border-l border-white/10 px-5 py-6 lg:w-[460px]"
+        >
+          {cabecera}
+          {bloquePanel}
+        </motion.aside>
+      </div>
+    );
+
+  return (
+    <div className={embebido ? "rounded-3xl bg-ink px-4 py-6 text-white md:px-8 md:py-8" : "-mx-4 -my-6 min-h-screen bg-ink px-4 py-8 text-white md:-mx-10 md:-my-8 md:px-10"}>
+      <div className="mx-auto max-w-7xl">
+        <div className="grid grid-cols-1 items-start gap-10 lg:grid-cols-[1.15fr_1fr]">
+          <div className="lg:sticky lg:top-8">
+            {bloqueMapa}
+          </div>
+
+          <div>
+            {bloquePanel}
           </div>
         </div>
       </div>

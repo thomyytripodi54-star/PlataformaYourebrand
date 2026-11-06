@@ -310,6 +310,37 @@ export function Dashboard({ clientes: clientesProp, casos, vistaInicial }: { cli
     window.history.replaceState(null, "", v === "geografia" ? "/clientes/dashboard" : `/clientes/dashboard?vista=${v}`);
   };
 
+  const pestanas = (oscuro: boolean) => (
+    <div className={`inline-flex w-fit rounded-full p-1 ${oscuro ? "bg-white/[0.06]" : "bg-surface"}`}>
+      {TABS.map((t) => (
+        <button key={t.id} onClick={() => cambiar(t.id)} className="relative rounded-full px-4 py-2 text-sm font-semibold">
+          {vista === t.id && (
+            <motion.span layoutId="tab-dashboard" className={`absolute inset-0 rounded-full ${oscuro ? "bg-white" : "bg-ink"}`} transition={{ type: "spring", stiffness: 400, damping: 34 }} />
+          )}
+          <span className={`relative ${vista === t.id ? (oscuro ? "text-ink" : "text-white") : oscuro ? "text-white/60 hover:text-white" : "text-zinc-500 hover:text-ink"}`}>{t.label}</span>
+        </button>
+      ))}
+    </div>
+  );
+
+  // Geografía: mapa a pantalla completa con los clientes a la derecha.
+  if (vista === "geografia")
+    return (
+      <MapaClientes
+        ref={mapaRef}
+        clientes={clientes}
+        casos={casos}
+        embebido
+        pantallaCompleta
+        cabecera={
+          <div className="mb-6 space-y-3 text-ink">
+            {pestanas(true)}
+            <Buscador clientes={clientes} casosPorCliente={casosPorCliente} onMapa={verEnMapa} />
+          </div>
+        }
+      />
+    );
+
   return (
     <div className="mx-auto max-w-7xl">
       <motion.header initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease }} className="mb-6">
@@ -321,16 +352,7 @@ export function Dashboard({ clientes: clientesProp, casos, vistaInicial }: { cli
       </motion.header>
 
       <div className="mb-6 flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-between">
-      <div className="inline-flex w-fit rounded-full bg-surface p-1">
-        {TABS.map((t) => (
-          <button key={t.id} onClick={() => cambiar(t.id)} className="relative rounded-full px-4 py-2 text-sm font-semibold">
-            {vista === t.id && (
-              <motion.span layoutId="tab-dashboard" className="absolute inset-0 rounded-full bg-ink" transition={{ type: "spring", stiffness: 400, damping: 34 }} />
-            )}
-            <span className={`relative ${vista === t.id ? "text-white" : "text-zinc-500 hover:text-ink"}`}>{t.label}</span>
-          </button>
-        ))}
-      </div>
+      {pestanas(false)}
         <Buscador clientes={clientes} casosPorCliente={casosPorCliente} onMapa={verEnMapa} />
       </div>
 
@@ -338,7 +360,6 @@ export function Dashboard({ clientes: clientesProp, casos, vistaInicial }: { cli
         <motion.div key={vista} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.25, ease }}>
           {vista === "estadisticas" && <Estadisticas clientes={clientes} casos={casos} />}
           {vista === "satisfaccion" && <Satisfaccion clientes={clientes} casosPorCliente={casosPorCliente} />}
-          {vista === "geografia" && <MapaClientes ref={mapaRef} clientes={clientes} embebido casos={casos} />}
         </motion.div>
       </AnimatePresence>
     </div>
