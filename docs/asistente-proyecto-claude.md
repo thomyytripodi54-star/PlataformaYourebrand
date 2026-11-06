@@ -1,14 +1,13 @@
 # Asistente de dirección en un proyecto de Claude
 
-Con el plan de Claude (claude.ai) el asistente funciona sin costo extra. Las consultas se hacen en un proyecto de claude.ai, que lee en vivo la planilla de Finanzas y Notion con los conectores de tu cuenta. La plataforma te lleva al proyecto con el círculo de la esquina.
+Con el plan de Claude (claude.ai) el asistente funciona sin costo extra. Las consultas se hacen en un proyecto de claude.ai, que lee en vivo la planilla de Finanzas y Notion con los conectores de tu cuenta. En la plataforma, el círculo de la esquina copia tu pregunta y abre el proyecto: la pegás y listo. Para hablarle, usá el micrófono de Claude.
 
 ## Armado (una sola vez)
 
 1. En claude.ai → **Projects → Create project**, llamalo por ejemplo "Asistente Yourebrand".
 2. En **Instructions** (instrucciones del proyecto) pegá el bloque de abajo, completo.
 3. Verificá que estén conectados **Notion** y **Google Sheets** (o Google Drive) en Configuración → Conectores. En cada charla del proyecto, activalos desde el botón de herramientas.
-4. Copiá el link del proyecto (la URL `https://claude.ai/project/...`) y cargalo en Vercel como `CLAUDE_PROYECTO_URL`. Después hacé Redeploy. Así el círculo de la plataforma abre ese proyecto directo.
-5. Opcional: en la plataforma, en el asistente, tocá **Descargar (.md)** y subí el archivo a **Project knowledge**. Sirve como respaldo de los datos que solo están en la plataforma (follow ups). Conviene reemplazarlo cada tanto, o pegar **Copiar datos** en la charla cuando haga falta.
+4. Copiá el link del proyecto: abrilo en el navegador y copiá la URL `https://claude.ai/project/...` de la barra de direcciones. Cargalo en Vercel como `CLAUDE_PROYECTO_URL` y hacé Redeploy. Así el círculo de la plataforma abre ese proyecto directo.
 
 ## Instrucciones del proyecto (pegar en "Instructions")
 
@@ -32,7 +31,6 @@ Dónde están los datos (leelos con los conectores antes de responder):
   · Casos abiertos (collection://9a6a6453-58b5-4b55-9fd1-dd77ba37d62b).
   · Reuniones de venta › Funnel de venta (collection://39dcc8a7-5766-4687-905d-c19effa21f19): fecha de reunión, estado (No Atendio / Evaluando / Contrato), fecha de contratación, campaña de origen, calificación y pago.
   · Comentarios de cada cliente: en la página de cada cliente.
-- Follow ups de clientes y meses consolidados en la plataforma: Thomy los pega en la charla (botón "Copiar datos" de la plataforma) o están en el archivo subido al proyecto.
 
 Cómo trabajás:
 - Basate en los datos. Citá los números y el período de donde salen ("en agosto 2026…", "según el Funnel de venta…"). Si algo no está, decilo y no lo inventes; si hace falta un supuesto, explicitalo.

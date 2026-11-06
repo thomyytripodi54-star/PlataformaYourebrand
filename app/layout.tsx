@@ -32,7 +32,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           }
         />
         <main className="tema px-4 py-6 md:px-10 md:py-8">{children}</main>
-        <Asistente />
+        <Asistente proyecto={process.env.CLAUDE_PROYECTO_URL || null} />
       </body>
     </html>
   );
