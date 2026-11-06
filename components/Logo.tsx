@@ -9,7 +9,7 @@ export function Logo({ cliente, size = 40, casos = 0 }: { cliente: Pick<Cliente,
   const color = colores[[...cliente.nombre].reduce((a, ch) => a + ch.charCodeAt(0), 0) % colores.length];
   const base = cliente.logo ? (
     // eslint-disable-next-line @next/next/no-img-element
-    <img src={cliente.logo} alt={cliente.nombre} style={style} className="shrink-0 rounded-full bg-zinc-50 object-contain p-[12%]" />
+    <img src={cliente.logo} alt={cliente.nombre} style={style} className="shrink-0 rounded-full border border-zinc-200 object-cover" />
   ) : (
     <div style={{ ...style, fontSize: size * 0.36 }} className={`flex shrink-0 items-center justify-center rounded-full font-semibold ${color}`}>
       {iniciales}
