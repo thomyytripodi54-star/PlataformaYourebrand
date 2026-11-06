@@ -143,3 +143,22 @@ body {
 .tema .text-emerald-600:not(.sin-tema, .sin-tema *) { color: #34d399; }
 /* Cifras y textos en blanco, más sobrio; el rojo queda para el punto de marca y las alertas. */
 .tema .text-accent:not(.punto, .sin-tema, .sin-tema *) { color: #fff; }
+
+/* Follow up vencido: reloj en la esquina inferior izquierda (los casos van arriba a la derecha) */
+.yb-marcador-fu {
+  position: absolute;
+  left: -5px;
+  bottom: -5px;
+  display: flex;
+  height: 17px;
+  width: 17px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  background: #fff;
+  color: #121111;
+  box-shadow: 0 0 0 2px #272626, 0 0 10px 1px rgb(255 255 255 / 0.55);
+  animation: yb-fu 2s ease-in-out infinite;
+}
+.yb-marcador-fu svg { height: 11px; width: 11px; }
+@keyframes yb-fu { 50% { box-shadow: 0 0 0 2px #272626, 0 0 16px 4px rgb(255 255 255 / 0.25); } }

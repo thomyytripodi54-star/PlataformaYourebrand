@@ -9,6 +9,11 @@ import "maplibre-gl/dist/maplibre-gl.css";
 maplibregl.setWorkerUrl("/maplibre/maplibre-gl-worker.mjs");
 
 export type PuntoInicio = { lat: number; lng: number };
+export type Notificaciones = {
+  followUp: { id: string; nombre: string; dias: number }[];
+  casos: { titulo: string; cliente: string | null; gravedad: string; fecha: string }[];
+  comentarios: { id: string; cliente: string; autor: string; texto: string; fecha: string }[];
+};
 export type AreaInicio = { nombre: string; detalle: string; href: string | null; alerta?: boolean };
 
 const ease = [0.22, 1, 0.36, 1] as const;
@@ -31,7 +36,7 @@ function columna(p: PuntoInicio, lado: number, h: number): GeoJSON.Feature {
   return { type: "Feature", properties: { h }, geometry: { type: "Polygon", coordinates: [c] } };
 }
 
-export function Inicio({ puntos, areas, nombre }: { puntos: PuntoInicio[]; areas: AreaInicio[]; nombre?: string }) {
+export function Inicio({ puntos, areas, nombre, notificaciones }: { puntos: PuntoInicio[]; areas: AreaInicio[]; nombre?: string; notificaciones: Notificaciones }) {
   const router = useRouter();
   const contenedor = useRef<HTMLDivElement>(null);
   const mapa = useRef<maplibregl.Map | null>(null);
@@ -119,9 +124,9 @@ export function Inicio({ puntos, areas, nombre }: { puntos: PuntoInicio[]; areas
       setListo(true);
 
       // Entrada de cámara: desde el mundo hasta Argentina en perspectiva.
-      const camara = { center: CENTRO_AR, zoom: 3.6, pitch: 58, bearing: -18, padding: { top: 0, left: 0, right: 0, bottom: m.getContainer().clientHeight * 0.38 } };
+      const camara = { center: CENTRO_AR, zoom: 3.6, pitch: 58, bearing: -18, padding: { top: 0, left: 0, right: m.getContainer().clientWidth >= 768 ? 420 : 0, bottom: m.getContainer().clientHeight * 0.38 } };
       if (rapido) m.jumpTo(camara);
-      else m.flyTo({ center: CENTRO_AR, zoom: 3.6, pitch: 58, bearing: -18, padding: { top: 0, left: 0, right: 0, bottom: m.getContainer().clientHeight * 0.38 }, duration: 4200, curve: 1.2, essential: true });
+      else m.flyTo({ center: CENTRO_AR, zoom: 3.6, pitch: 58, bearing: -18, padding: camara.padding, duration: 4200, curve: 1.2, essential: true });
 
       // Columnas que crecen escalonadas + pulso del halo + órbita lenta de cámara.
       const altos = puntos.map((_, i) => 70000 + ((i * 7919) % 9) * 9000);
@@ -202,7 +207,22 @@ export function Inicio({ puntos, areas, nombre }: { puntos: PuntoInicio[]; areas
         )}
       </AnimatePresence>
 
-      <div className="absolute inset-x-0 bottom-0 px-4 pb-8 md:px-10 md:pb-12" style={{ perspective: 1400 }}>
+      <AnimatePresence>
+        {!saliendo && listo && (
+          <motion.aside
+            key="notif"
+            initial={{ opacity: 0, x: 40, filter: "blur(8px)" }}
+            animate={{ opacity: 1, x: 0, filter: "blur(0px)" }}
+            exit={{ opacity: 0, x: 40, filter: "blur(8px)", transition: { duration: 0.5 } }}
+            transition={{ duration: rapido ? 0.6 : 1, delay: rapido ? 0.15 : 3.4, ease }}
+            className="absolute bottom-8 right-10 top-8 hidden w-[380px] md:block"
+          >
+            <PanelNotificaciones n={notificaciones} />
+          </motion.aside>
+        )}
+      </AnimatePresence>
+
+      <div className="absolute inset-x-0 bottom-0 px-4 pb-8 md:right-[440px] md:px-10 md:pb-12" style={{ perspective: 1400 }}>
         <AnimatePresence>
           {!saliendo && (
             <motion.div key="titulo" exit={{ opacity: 0, y: 20, filter: "blur(6px)", transition: { duration: 0.5 } }}>
@@ -220,7 +240,7 @@ export function Inicio({ puntos, areas, nombre }: { puntos: PuntoInicio[]; areas
             </motion.div>
           )}
         </AnimatePresence>
-        <div className="grid grid-cols-2 gap-3 md:grid-cols-5 md:gap-4">
+        <div className="grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-4 2xl:grid-cols-5">
           {areas.map((a, i) => {
             const elegido = saliendo?.nombre === a.nombre;
             return (
@@ -241,9 +261,9 @@ export function Inicio({ puntos, areas, nombre }: { puntos: PuntoInicio[]; areas
                 }
                 whileHover={a.href && !saliendo ? { y: -8, rotateX: 8, scale: 1.03, transition: { duration: 0.35, ease } } : undefined}
                 whileTap={a.href ? { scale: 0.97 } : undefined}
-                className={`group relative flex aspect-[4/3] flex-col justify-between overflow-hidden rounded-3xl border p-5 text-left backdrop-blur-xl transition-colors md:aspect-square md:p-6 ${
+                className={`group relative flex aspect-[4/3] flex-col justify-between overflow-hidden rounded-3xl border p-5 text-left backdrop-blur-xl transition-colors md:aspect-[5/4] md:p-5 2xl:aspect-square ${
                   a.href ? "cursor-pointer border-white/15 bg-white/[0.06] hover:border-white/30 hover:bg-white/[0.1]" : "cursor-default border-white/5 bg-white/[0.02] text-white/35"
-                } ${i === areas.length - 1 && areas.length % 2 ? "col-span-2 aspect-[8/3] md:col-span-1 md:aspect-square" : ""}`}
+                } ${i === areas.length - 1 && areas.length % 2 ? "col-span-2 aspect-[8/3] md:col-span-1 md:aspect-[5/4] 2xl:aspect-square" : ""}`}
                 style={{ transformStyle: "preserve-3d" }}
               >
                 <span className="pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full bg-accent/0 blur-3xl transition-all duration-500 group-hover:bg-accent/40" />
@@ -275,6 +295,97 @@ export function Inicio({ puntos, areas, nombre }: { puntos: PuntoInicio[]; areas
         transition={{ duration: 0.55, ease }}
         style={{ background: saliendo?.nombre === "Dirección" ? "#eceae6" : "#ffffff" }}
       />
+    </div>
+  );
+}
+
+/* ---------- Notificaciones importantes ---------- */
+const CLAVE_LEIDOS = "yb_comentarios_leidos";
+const hace = (iso: string) => {
+  const d = Math.floor((Date.now() - new Date(iso).getTime()) / 86_400_000);
+  return d <= 0 ? "hoy" : d === 1 ? "ayer" : `hace ${d} días`;
+};
+
+function Grupo({ titulo, cantidad, href, vacio, children }: { titulo: string; cantidad: number; href: string; vacio: string; children: React.ReactNode }) {
+  return (
+    <section className="border-t border-white/10 py-4 first:border-t-0 first:pt-0">
+      <a href={href} className="group mb-2 flex items-center justify-between">
+        <span className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.18em] text-white/55 group-hover:text-white">
+          {titulo}
+          {cantidad > 0 && <span className="rounded-full bg-white/95 px-1.5 text-[10px] leading-4 text-[#121111]">{cantidad}</span>}
+        </span>
+        <span className="text-xs text-white/30 transition-transform group-hover:translate-x-0.5 group-hover:text-white">→</span>
+      </a>
+      {cantidad ? <ul className="space-y-1">{children}</ul> : <p className="text-xs text-white/35">{vacio}</p>}
+    </section>
+  );
+}
+
+function Item({ href, titulo, sub, extra }: { href: string; titulo: string; sub: string; extra?: React.ReactNode }) {
+  return (
+    <li>
+      <a href={href} className="flex items-center gap-3 rounded-xl px-2 py-1.5 transition-colors hover:bg-white/[0.07]">
+        <span className="min-w-0 flex-1">
+          <span className="block truncate text-sm font-semibold">{titulo}</span>
+          <span className="block truncate text-[11px] text-white/45">{sub}</span>
+        </span>
+        {extra}
+      </a>
+    </li>
+  );
+}
+
+function PanelNotificaciones({ n }: { n: Notificaciones }) {
+  // Los comentarios leídos se marcan en este navegador desde RRHH › Comentarios.
+  const [leidos, setLeidos] = useState<Set<string> | null>(null);
+  useEffect(() => {
+    try {
+      setLeidos(new Set(JSON.parse(localStorage.getItem(CLAVE_LEIDOS) ?? "[]") as string[]));
+    } catch {
+      setLeidos(new Set());
+    }
+  }, []);
+  const comentarios = leidos ? n.comentarios.filter((c) => !leidos.has(c.id)) : [];
+  const total = n.followUp.length + n.casos.length + comentarios.length;
+
+  return (
+    <div className="flex h-full flex-col rounded-3xl border border-white/15 bg-[#161515]/70 p-5 backdrop-blur-xl">
+      <div className="mb-4 flex items-baseline justify-between">
+        <p className="text-lg font-black tracking-tight">
+          Notificaciones<span className="punto text-accent">.</span>
+        </p>
+        <p className="text-xs text-white/45">{total ? `${total} importantes` : "Todo al día"}</p>
+      </div>
+      <div className="-mr-2 min-h-0 flex-1 overflow-y-auto pr-2">
+        <Grupo titulo="Follow up" cantidad={n.followUp.length} href="/clientes/dashboard" vacio="Ningún cliente para revisar.">
+          {n.followUp.map((f) => (
+            <Item
+              key={f.id}
+              href={`/clientes/${f.id}`}
+              titulo={f.nombre}
+              sub={f.dias === 0 ? "Toca hoy" : `Atrasado ${-f.dias} ${-f.dias === 1 ? "día" : "días"}`}
+              extra={<span className="h-2 w-2 shrink-0 animate-pulse rounded-full bg-white/95" />}
+            />
+          ))}
+        </Grupo>
+        <Grupo titulo="Casos nuevos" cantidad={n.casos.length} href="/rrhh/casos" vacio="Sin casos nuevos esta semana.">
+          {n.casos.map((c, i) => (
+            <Item
+              key={i}
+              href="/rrhh/casos"
+              titulo={c.titulo}
+              sub={`${c.cliente ?? "Sin cliente"} · ${hace(c.fecha)}`}
+              extra={<span className={`shrink-0 rounded-full border px-2 py-0.5 text-[10px] font-bold uppercase ${c.gravedad === "Leve" ? "border-white/20 text-white/60" : "border-accent/70 text-accent"}`}>{c.gravedad}</span>}
+            />
+          ))}
+        </Grupo>
+        <Grupo titulo="Comentarios nuevos" cantidad={comentarios.length} href="/rrhh/comentarios" vacio={leidos ? "No hay comentarios sin leer." : "…"}>
+          {comentarios.slice(0, 6).map((c) => (
+            <Item key={c.id} href="/rrhh/comentarios" titulo={c.cliente} sub={`${c.autor}: ${c.texto}`} />
+          ))}
+          {comentarios.length > 6 && <li className="px-2 pt-1 text-[11px] text-white/40">y {comentarios.length - 6} más…</li>}
+        </Grupo>
+      </div>
     </div>
   );
 }

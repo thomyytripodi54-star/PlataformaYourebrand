@@ -4,6 +4,8 @@ import { CalendarioCliente } from "@/components/CalendarioCliente";
 import { Logo } from "@/components/Logo";
 import { formatFecha, formatPago } from "@/lib/clientes";
 import { getCalendario, getDatos } from "@/lib/datos";
+import { FollowUpCliente } from "@/components/FollowUpCliente";
+import { estado as estadoFollowUp, followUps } from "@/lib/followup";
 
 export const revalidate = 60;
 
@@ -29,6 +31,7 @@ export default async function FichaCliente({ params }: { params: Promise<{ id: s
   const c = datos.clientes.find((x) => x.id === id);
   if (!c) notFound();
   const casos = datos.casos.filter((k) => k.cliente === c.id);
+  const fu = (await followUps())[c.id];
   const nombreDe = new Map(datos.equipo.map((p) => [p.id, p.nombre]));
   const sinContenido = c.planes.length > 0 && c.planes.every((p) => PLANES_SIN_CONTENIDO.has(p));
   const cal = sinContenido ? null : await getCalendario(c.notionUrl);
@@ -75,7 +78,11 @@ export default async function FichaCliente({ params }: { params: Promise<{ id: s
         </div>
       </header>
 
-      <div className="mt-6 grid grid-cols-1 gap-3 md:grid-cols-3">
+      <div className="mt-6">
+        <FollowUpCliente id={c.id} estado={fu ? estadoFollowUp(fu) : null} />
+      </div>
+
+      <div className="mt-3 grid grid-cols-1 gap-3 md:grid-cols-3">
         <section className="rounded-2xl border border-zinc-200 bg-white p-4">
           <h2 className="mb-3 text-[11px] font-bold uppercase tracking-wider text-zinc-400">Planes contratados</h2>
           <div className="flex flex-wrap gap-1.5">

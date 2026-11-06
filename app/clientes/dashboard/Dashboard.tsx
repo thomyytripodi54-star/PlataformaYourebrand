@@ -288,7 +288,7 @@ function Buscador({ clientes, casosPorCliente, onMapa }: { clientes: Cliente[]; 
 }
 
 /* ---------- Dashboard ---------- */
-export function Dashboard({ clientes: clientesProp, casos, vistaInicial }: { clientes: Cliente[]; casos: Caso[]; vistaInicial: Vista }) {
+export function Dashboard({ clientes: clientesProp, casos, vistaInicial, followUp = [] }: { clientes: Cliente[]; casos: Caso[]; vistaInicial: Vista; followUp?: string[] }) {
   // Orden de entrada (fecha "Desde"), no alfabético
   const clientes = [...clientesProp].sort(porEntrada);
   const [vista, setVista] = useState<Vista>(vistaInicial);
@@ -332,6 +332,7 @@ export function Dashboard({ clientes: clientesProp, casos, vistaInicial }: { cli
         casos={casos}
         embebido
         pantallaCompleta
+        followUp={followUp}
         cabecera={
           <div className="mb-6 space-y-3 text-ink">
             {pestanas(true)}

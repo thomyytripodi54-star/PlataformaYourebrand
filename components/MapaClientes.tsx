@@ -157,7 +157,7 @@ function Globo({ paises, foco }: { paises: [string, number][]; foco: string | nu
   );
 }
 
-function TarjetaCliente({ c, i, casos, lugar, activo, onSeleccionar }: { c: Cliente; i: number; casos: number; lugar?: string; activo?: boolean; onSeleccionar?: () => void }) {
+function TarjetaCliente({ c, i, casos, lugar, activo, onSeleccionar, fu }: { c: Cliente; i: number; casos: number; fu?: boolean; lugar?: string; activo?: boolean; onSeleccionar?: () => void }) {
   // inclinación 3D siguiendo el mouse
   const x = useMotionValue(0);
   const y = useMotionValue(0);
@@ -173,6 +173,7 @@ function TarjetaCliente({ c, i, casos, lugar, activo, onSeleccionar }: { c: Clie
         <p className="truncate text-sm font-semibold text-white">{c.nombre}</p>
         <p className="truncate text-[11px] text-white/45">{lugar ?? (c.rubros.slice(0, 2).join(" · ") || "—")}</p>
       </div>
+      {fu && <span className="shrink-0 rounded-full bg-white px-2 py-0.5 text-[10px] font-bold text-[#121111]">Follow up</span>}
     </>
   );
   return (
@@ -286,7 +287,9 @@ export function MapaClientes({
   ref,
   pantallaCompleta = false,
   cabecera,
+  followUp = [],
 }: {
+  followUp?: string[];
   clientes: Cliente[];
   embebido?: boolean;
   pantallaCompleta?: boolean;
@@ -342,7 +345,7 @@ export function MapaClientes({
   const amba = ubicados.filter((x) => x.u.precisa && esAMBA(x.u.lat, x.u.lng));
   const interior = esArg ? ubicados.filter((x) => !amba.includes(x)) : [];
   const visibles = esArg && !todaArgentina ? amba : ubicados;
-  const puntos: PuntoCliente[] = visibles.map(({ c, u }) => ({ id: c.id, nombre: c.nombre, logo: c.logo, lat: u.lat, lng: u.lng, lugar: u.lugar, satisfaccion: c.satisfaccion, casos: casosPorCliente[c.id] ?? 0 }));
+  const puntos: PuntoCliente[] = visibles.map(({ c, u }) => ({ id: c.id, nombre: c.nombre, logo: c.logo, lat: u.lat, lng: u.lng, lugar: u.lugar, satisfaccion: c.satisfaccion, followUp: followUp.includes(c.id), casos: casosPorCliente[c.id] ?? 0 }));
   const encuadre = useMemo<[number, number, number, number]>(
     () =>
       esArg
@@ -455,7 +458,7 @@ export function MapaClientes({
               <motion.ul layout className={`mt-6 grid grid-cols-1 gap-2 ${pantallaCompleta ? "" : "sm:grid-cols-2"}`}>
                 <AnimatePresence mode="popLayout">
                   {lista.map((c, i) => (
-                    <TarjetaCliente key={c.id} c={c} i={i} casos={casosPorCliente[c.id] ?? 0} />
+                    <TarjetaCliente key={c.id} c={c} i={i} fu={followUp.includes(c.id)} casos={casosPorCliente[c.id] ?? 0} />
                   ))}
                 </AnimatePresence>
               </motion.ul>
@@ -488,7 +491,7 @@ export function MapaClientes({
                 <motion.ul layout className={`mt-2 grid grid-cols-1 gap-2 ${pantallaCompleta ? "" : "sm:grid-cols-2"}`}>
                   <AnimatePresence mode="popLayout">
                     {visibles.map(({ c, u }, i) => (
-                      <TarjetaCliente key={c.id} c={c} i={i} casos={casosPorCliente[c.id] ?? 0} lugar={u.lugar} activo={sel === c.id} onSeleccionar={() => setSel(c.id)} />
+                      <TarjetaCliente key={c.id} c={c} i={i} fu={followUp.includes(c.id)} casos={casosPorCliente[c.id] ?? 0} lugar={u.lugar} activo={sel === c.id} onSeleccionar={() => setSel(c.id)} />
                     ))}
                   </AnimatePresence>
                 </motion.ul>
