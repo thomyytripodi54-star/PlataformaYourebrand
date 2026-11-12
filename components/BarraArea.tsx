@@ -29,7 +29,7 @@ export function BarraArea({ pendiente, extra }: { pendiente: boolean; extra?: Re
       {area && area.secciones.length > 1 && (
         <nav className="flex min-w-0 gap-1 overflow-x-auto">
           {area.secciones.map((s) => {
-            const activo = path === s.href || path.startsWith(s.href + "/");
+            const activo = path === s.href || (!s.exacta && path.startsWith(s.href + "/"));
             return (
               <Link key={s.href} href={s.href} className="relative shrink-0 rounded-full px-3.5 py-1.5 text-sm font-semibold">
                 {activo && <motion.span layoutId="seccion-activa" className="absolute inset-0 rounded-full bg-white/10" transition={{ type: "spring", stiffness: 400, damping: 34 }} />}
