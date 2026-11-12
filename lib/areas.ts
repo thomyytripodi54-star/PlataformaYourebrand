@@ -1,4 +1,5 @@
-export type Seccion = { href: string; label: string; alerta?: boolean };
+/** `exacta`: la sección solo se marca activa en su propia ruta (el resumen de un área). */
+export type Seccion = { href: string; label: string; alerta?: boolean; exacta?: boolean };
 export type Area = { nombre: string; detalle: string; prefijo: string | null; secciones: Seccion[] };
 
 /** Áreas de la plataforma: alimentan el menú de inicio y la barra de cada área. */
@@ -14,7 +15,16 @@ export const AREAS: Area[] = [
       { href: "/rrhh/comentarios", label: "Comentarios" },
     ],
   },
-  { nombre: "Finanzas", detalle: "Estado de Resultados", prefijo: "/finanzas", secciones: [{ href: "/finanzas/estado-de-resultados", label: "Estado de Resultados", alerta: true }] },
+  {
+    nombre: "Finanzas",
+    detalle: "Reservas y estado de resultados",
+    prefijo: "/finanzas",
+    secciones: [
+      { href: "/finanzas", label: "Resumen", exacta: true },
+      { href: "/finanzas/reservas", label: "Reservas" },
+      { href: "/finanzas/estado-de-resultados", label: "Estado de Resultados", alerta: true },
+    ],
+  },
   { nombre: "Creativa", detalle: "", prefijo: null, secciones: [] },
   { nombre: "Operaciones", detalle: "", prefijo: null, secciones: [] },
 ];

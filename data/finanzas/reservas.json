@@ -1,0 +1,39 @@
+{
+  "fuente": "Google Sheets · Yourebrand Finanzas: fila «Reservas U$D Acumuladas» de «Metricas Agencia 2026» y bloque «Reservas» de cada mes (julio y octubre con desglose).",
+  "meses": [
+    { "anio": 2026, "mes": 1, "totalUsd": 5733, "cuentas": null },
+    { "anio": 2026, "mes": 2, "totalUsd": 5200, "cuentas": null },
+    { "anio": 2026, "mes": 3, "totalUsd": 6000, "cuentas": null },
+    { "anio": 2026, "mes": 4, "totalUsd": 7300, "cuentas": null },
+    { "anio": 2026, "mes": 5, "totalUsd": 7300, "cuentas": null },
+    { "anio": 2026, "mes": 6, "totalUsd": 6000, "cuentas": null },
+    {
+      "anio": 2026,
+      "mes": 7,
+      "totalUsd": 5928.57,
+      "cuentas": [
+        { "nombre": "Efectivo", "tipo": "efectivo", "montoUsd": 2963 },
+        { "nombre": "Banco", "tipo": "banco", "montoUsd": 2737.09 },
+        { "nombre": "Binance", "tipo": "cripto", "montoUsd": 1136 },
+        { "nombre": "IOL", "tipo": "inversiones", "montoUsd": 231.48 },
+        { "nombre": "Meli", "tipo": "billetera", "montoUsd": 0 },
+        { "nombre": "Deudas", "tipo": "deudas", "montoUsd": -1139 }
+      ]
+    },
+    { "anio": 2026, "mes": 8, "totalUsd": 8372.67, "cuentas": null },
+    { "anio": 2026, "mes": 9, "totalUsd": 11183.32, "cuentas": null },
+    {
+      "anio": 2026,
+      "mes": 10,
+      "totalUsd": 12703.48,
+      "cuentas": [
+        { "nombre": "Efectivo", "tipo": "efectivo", "montoUsd": 1395.6 },
+        { "nombre": "Banco", "tipo": "banco", "montoUsd": 8259.93 },
+        { "nombre": "Binance", "tipo": "cripto", "montoUsd": 624 },
+        { "nombre": "IOL", "tipo": "inversiones", "montoUsd": 239.48 },
+        { "nombre": "Meli", "tipo": "billetera", "montoUsd": 786.41 },
+        { "nombre": "Deudas", "tipo": "deudas", "montoUsd": 1398.06 }
+      ]
+    }
+  ]
+}
