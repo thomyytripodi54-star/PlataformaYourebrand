@@ -153,10 +153,112 @@ function encuadreDe(puntos: { lat: number; lng: number }[], m = 0.08): [number, 
   return [o - m, s - m, e + m, n + m];
 }
 
+export type Responsable = { id: string; nombre: string; grupo: "Community Managers" | "Publicistas"; clientes: string[] };
+
+const iniciales = (n: string) =>
+  n
+    .split(/\s+/)
+    .slice(0, 2)
+    .map((p) => p[0]?.toUpperCase())
+    .join("");
+
+/** Selector de integrante (arriba del mapa): solo CMs y publicistas con cuentas, con cuántas tienen casos abiertos. */
+function FiltroEquipo({
+  responsables,
+  elegido,
+  casosPorCliente,
+  onElegir,
+}: {
+  responsables: Responsable[];
+  elegido: string | null;
+  casosPorCliente: Record<string, number>;
+  onElegir: (id: string | null) => void;
+}) {
+  const [abierto, setAbierto] = useState(false);
+  const actual = responsables.find((r) => r.id === elegido);
+  const conCasos = (r: Responsable) => r.clientes.filter((id) => casosPorCliente[id]).length;
+  const elegir = (id: string | null) => {
+    onElegir(id);
+    setAbierto(false);
+  };
+  return (
+    <div className="absolute left-3 top-12 z-20">
+      <div className="flex items-center gap-1">
+        <button
+          onClick={() => setAbierto((a) => !a)}
+          className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-bold backdrop-blur transition-colors ${actual ? "bg-white text-ink" : "bg-ink/80 text-white hover:bg-ink"}`}
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" className="h-3.5 w-3.5" aria-hidden>
+            <circle cx="9" cy="8" r="3.5" />
+            <path d="M2.5 20a6.5 6.5 0 0113 0M16 4.5a3.5 3.5 0 010 7M21.5 20a6.5 6.5 0 00-4-6" />
+          </svg>
+          {actual ? `${actual.nombre} · ${actual.clientes.length}` : "Todo el equipo"}
+          <span className={`text-[9px] transition-transform ${abierto ? "rotate-180" : ""}`}>▼</span>
+        </button>
+        {actual && (
+          <button onClick={() => elegir(null)} aria-label="Quitar filtro" className="flex h-6 w-6 items-center justify-center rounded-full bg-ink/80 text-sm text-white backdrop-blur hover:bg-accent">
+            ×
+          </button>
+        )}
+      </div>
+      <AnimatePresence>
+        {abierto && (
+          <>
+            <button aria-label="Cerrar" className="fixed inset-0 z-0 cursor-default" onClick={() => setAbierto(false)} />
+            <motion.div
+              initial={{ opacity: 0, y: -6, scale: 0.98 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -6, scale: 0.98 }}
+              transition={{ duration: 0.18 }}
+              className="relative z-10 mt-2 max-h-[min(420px,60vh)] w-64 overflow-y-auto rounded-2xl border border-white/10 bg-ink/95 p-1.5 text-white shadow-2xl backdrop-blur"
+            >
+              <button
+                onClick={() => elegir(null)}
+                className={`flex w-full items-center justify-between rounded-xl px-2.5 py-2 text-left text-xs font-semibold hover:bg-white/10 ${!elegido ? "bg-white/10" : ""}`}
+              >
+                Todo el equipo
+              </button>
+              {(["Community Managers", "Publicistas"] as const).map((g) => {
+                const grupo = responsables.filter((r) => r.grupo === g);
+                if (!grupo.length) return null;
+                return (
+                  <div key={g} className="mt-1.5">
+                    <p className="px-2.5 pb-1 pt-1 text-[10px] font-bold uppercase tracking-[0.16em] text-white/40">{g}</p>
+                    {grupo.map((r) => {
+                      const k = conCasos(r);
+                      return (
+                        <button
+                          key={r.id}
+                          onClick={() => elegir(r.id)}
+                          className={`flex w-full items-center gap-2.5 rounded-xl px-2.5 py-1.5 text-left hover:bg-white/10 ${elegido === r.id ? "bg-white/10" : ""}`}
+                        >
+                          <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-white/10 text-[10px] font-bold">{iniciales(r.nombre)}</span>
+                          <span className="min-w-0 flex-1">
+                            <span className="block truncate text-xs font-semibold">{r.nombre}</span>
+                            <span className="block text-[10px] text-white/45">
+                              {r.clientes.length} {r.clientes.length === 1 ? "cuenta" : "cuentas"}
+                              {k ? ` · ${k} con casos` : ""}
+                            </span>
+                          </span>
+                          {k > 0 && <span className="h-2 w-2 shrink-0 rounded-full bg-accent" />}
+                        </button>
+                      );
+                    })}
+                  </div>
+                );
+              })}
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
 export type MapaHandle = { enfocar: (clienteId: string) => void };
 
 export function MapaClientes({
-  clientes,
+  clientes: todos,
   embebido = false,
   casos = [],
   ref,
@@ -164,7 +266,9 @@ export function MapaClientes({
   cabecera,
   followUp = [],
   estadosFollowUp = {},
+  responsables = [],
 }: {
+  responsables?: Responsable[];
   followUp?: string[];
   estadosFollowUp?: Record<string, FollowUpVista>;
   clientes: Cliente[];
@@ -180,6 +284,10 @@ export function MapaClientes({
     return m;
   }, [casos]);
   const casosPorCliente = Object.fromEntries(Object.entries(casosDe).map(([k, v]) => [k, v.length]));
+  // Filtro por integrante del equipo (Community Managers y Publicistas): mapa y lista muestran solo sus cuentas.
+  const [persona, setPersona] = useState<string | null>(null);
+  const responsable = responsables.find((r) => r.id === persona) ?? null;
+  const clientes = useMemo(() => (responsable ? todos.filter((c) => responsable.clientes.includes(c.id)) : todos), [todos, responsable]);
   const [pais, setPais] = useState<string | null>("Argentina");
   const [todaArgentina, setTodaArgentina] = useState(false);
   const [sel, setSel] = useState<string | null>(null);
@@ -215,8 +323,9 @@ export function MapaClientes({
   // Desde el buscador: ir al país del cliente, abrir la zona correcta y seleccionarlo.
   useImperativeHandle(ref, () => ({
     enfocar: (id) => {
-      const c = clientes.find((x) => x.id === id);
+      const c = todos.find((x) => x.id === id);
       if (!c?.pais) return;
+      if (responsable && !responsable.clientes.includes(id)) setPersona(null);
       const u = ubicar(c.ubicacion ?? [], c.pais);
       setPais(c.pais);
       setTodaArgentina(c.pais === "Argentina" && !(u?.precisa && esAMBA(u.lat, u.lng)));
@@ -249,7 +358,7 @@ export function MapaClientes({
             : ENCUADRES.AMBA
         : (ENCUADRES[pais ?? ""] ?? (ubicados.length ? encuadreDe(ubicados.map((x) => x.u), 2.5) : ENCUADRES.Argentina)), // el país completo, con sus clientes marcados
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [pais, todaArgentina, ubicados.length],
+    [pais, todaArgentina, ubicados.length, persona],
   );
 
   const lista = clientes.filter((c) => !pais || c.pais === pais).sort(porEntrada);
@@ -283,6 +392,17 @@ export function MapaClientes({
                   <div className="pointer-events-none absolute left-3 top-3 rounded-full bg-ink/80 px-3 py-1.5 text-xs font-bold backdrop-blur">
                     {PAISES[pais]?.bandera} {esArg ? (todaArgentina ? "Toda Argentina" : "CABA y Gran Buenos Aires") : pais}
                   </div>
+                  {responsables.length > 0 && (
+                    <FiltroEquipo
+                      responsables={responsables}
+                      elegido={persona}
+                      casosPorCliente={casosPorCliente}
+                      onElegir={(id) => {
+                        setPersona(id);
+                        setSel(null);
+                      }}
+                    />
+                  )}
                   <button
                     onClick={() => elegirPais(null)}
                     className="absolute right-3 top-3 rounded-full bg-ink/80 px-3 py-1.5 text-xs font-bold text-white backdrop-blur hover:bg-accent"
